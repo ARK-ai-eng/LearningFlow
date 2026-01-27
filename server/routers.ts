@@ -147,16 +147,37 @@ export const appRouter = router({
         adminLastName: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        // 1. Firma sofort erstellen
+        const email = input.adminEmail.toLowerCase();
+        
+        // E-MAIL-DUPLIKAT-PRÜFUNG
+        // 1. Existiert bereits ein User mit dieser E-Mail?
+        const existingUser = await db.getUserByEmail(email);
+        if (existingUser) {
+          throw new TRPCError({ 
+            code: "CONFLICT", 
+            message: "Diese E-Mail-Adresse ist bereits registriert" 
+          });
+        }
+        
+        // 2. Existiert bereits eine aktive Einladung für diese E-Mail?
+        const existingInvitation = await db.getActiveInvitationByEmail(email);
+        if (existingInvitation) {
+          throw new TRPCError({ 
+            code: "CONFLICT", 
+            message: "Für diese E-Mail-Adresse existiert bereits eine aktive Einladung" 
+          });
+        }
+        
+        // 1. Firma erstellen
         const companyId = await db.createCompany({ name: input.name });
         
-        // 2. Einladung für FirmenAdmin erstellen (mit companyId)
+        // 2. Einladung für FirmenAdmin erstellen
         const token = generateToken();
         await db.createInvitation({
           token,
-          email: input.adminEmail,
+          email: email,
           type: 'companyadmin',
-          companyId: companyId, // Firma existiert bereits!
+          companyId: companyId,
           companyName: input.name,
           firstName: input.adminFirstName || null,
           lastName: input.adminLastName || null,
@@ -196,15 +217,34 @@ export const appRouter = router({
         lastName: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const email = input.email.toLowerCase();
+        
         const company = await db.getCompanyById(input.companyId);
         if (!company) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Firma nicht gefunden" });
         }
 
+        // E-MAIL-DUPLIKAT-PRÜFUNG
+        const existingUser = await db.getUserByEmail(email);
+        if (existingUser) {
+          throw new TRPCError({ 
+            code: "CONFLICT", 
+            message: "Diese E-Mail-Adresse ist bereits registriert" 
+          });
+        }
+        
+        const existingInvitation = await db.getActiveInvitationByEmail(email);
+        if (existingInvitation) {
+          throw new TRPCError({ 
+            code: "CONFLICT", 
+            message: "Für diese E-Mail-Adresse existiert bereits eine aktive Einladung" 
+          });
+        }
+
         const token = generateToken();
         await db.createInvitation({
           token,
-          email: input.email,
+          email: email,
           type: 'companyadmin',
           companyId: input.companyId,
           companyName: company.name,
@@ -259,13 +299,32 @@ export const appRouter = router({
         if (!ctx.user.companyId) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Firma zugeordnet" });
         }
+        
+        const email = input.email.toLowerCase();
+
+        // E-MAIL-DUPLIKAT-PRÜFUNG
+        const existingUser = await db.getUserByEmail(email);
+        if (existingUser) {
+          throw new TRPCError({ 
+            code: "CONFLICT", 
+            message: "Diese E-Mail-Adresse ist bereits registriert" 
+          });
+        }
+        
+        const existingInvitation = await db.getActiveInvitationByEmail(email);
+        if (existingInvitation) {
+          throw new TRPCError({ 
+            code: "CONFLICT", 
+            message: "Für diese E-Mail-Adresse existiert bereits eine aktive Einladung" 
+          });
+        }
 
         const company = await db.getCompanyById(ctx.user.companyId);
         const token = generateToken();
         
         await db.createInvitation({
           token,
-          email: input.email,
+          email: email,
           type: 'user',
           companyId: ctx.user.companyId,
           companyName: company?.name || null,
@@ -295,13 +354,31 @@ export const appRouter = router({
         }
 
         const company = await db.getCompanyById(ctx.user.companyId);
-        const results = [];
+        const results: { email: string; token?: string; error?: string }[] = [];
+        const skipped: string[] = [];
 
         for (const emp of input.employees) {
+          const email = emp.email.toLowerCase();
+          
+          // E-MAIL-DUPLIKAT-PRÜFUNG
+          const existingUser = await db.getUserByEmail(email);
+          if (existingUser) {
+            results.push({ email, error: "E-Mail bereits registriert" });
+            skipped.push(email);
+            continue;
+          }
+          
+          const existingInvitation = await db.getActiveInvitationByEmail(email);
+          if (existingInvitation) {
+            results.push({ email, error: "Aktive Einladung existiert bereits" });
+            skipped.push(email);
+            continue;
+          }
+
           const token = generateToken();
           await db.createInvitation({
             token,
-            email: emp.email,
+            email: email,
             type: 'user',
             companyId: ctx.user.companyId,
             companyName: company?.name || null,
@@ -311,10 +388,16 @@ export const appRouter = router({
             invitedBy: ctx.user.id,
             expiresAt: getExpirationDate(24),
           });
-          results.push({ email: emp.email, token });
+          results.push({ email, token });
         }
 
-        return { success: true, imported: results.length, results };
+        const imported = results.filter(r => r.token).length;
+        return { 
+          success: true, 
+          imported, 
+          skipped: skipped.length,
+          results 
+        };
       }),
 
     delete: companyAdminProcedure

@@ -1,4 +1,4 @@
-import { eq, and, lt, isNull, desc } from "drizzle-orm";
+import { eq, and, lt, gt, isNull, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   users, InsertUser, User,
@@ -108,6 +108,14 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+// HAUPT-FUNKTION: E-Mail ist der einzige Identifier
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email.toLowerCase())).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function getUserById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
@@ -192,14 +200,20 @@ export async function getInvitationByToken(token: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function getInvitationByEmail(email: string) {
+// Prüft ob eine AKTIVE (nicht benutzt, nicht abgelaufen) Einladung für diese E-Mail existiert
+export async function getActiveInvitationByEmail(email: string) {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db.select().from(invitations)
-    .where(and(eq(invitations.email, email), isNull(invitations.usedAt)))
+    .where(and(
+      eq(invitations.email, email.toLowerCase()),
+      isNull(invitations.usedAt),
+      gt(invitations.expiresAt, new Date()) // Nicht abgelaufen
+    ))
     .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
+
 
 export async function markInvitationUsed(token: string) {
   const db = await getDb();

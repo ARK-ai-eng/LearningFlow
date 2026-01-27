@@ -88,3 +88,16 @@
 - [x] BUG: OAuth erstellt automatisch User ohne Einladung - muss verhindert werden
   - Fix: OAuth-Callback erstellt User nur noch wenn: 1) User existiert bereits, 2) User ist Owner/SysAdmin, 3) Gültige Einladung für E-Mail vorhanden
   - Fix: Ohne Einladung wird User auf Startseite mit Fehlermeldung umgeleitet
+- [x] E-Mail als einziger Identifier im gesamten System (Industriestandard)
+  - Schema geändert: email ist jetzt unique in users-Tabelle
+  - getUserByEmail() als Haupt-Identifikationsfunktion
+- [x] Duplikat-Prüfung bei Einladungs-Erstellung (E-Mail bereits als User oder offene Einladung)
+  - company.create, inviteAdmin, employee.invite, importCSV alle mit Prüfung
+  - Fehlermeldung wenn E-Mail bereits registriert oder aktive Einladung existiert
+- [x] OAuth: User nur erstellen wenn gültige Einladung für E-Mail existiert
+  - OAuth-Callback komplett neu geschrieben
+  - SDK authenticateRequest sucht User über E-Mail, nicht openId
+  - Keine automatische User-Erstellung mehr
+- [x] Altlasten/toter Code entfernen
+  - getInvitationByEmail durch getActiveInvitationByEmail ersetzt
+  - 20 Tests bestanden

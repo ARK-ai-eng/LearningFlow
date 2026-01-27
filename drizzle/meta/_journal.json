@@ -15,6 +15,13 @@
       "when": 1769480842545,
       "tag": "0001_mighty_spiral",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1769525553385,
+      "tag": "0002_mighty_mandrill",
+      "breakpoints": true
     }
   ]
 }

@@ -14,7 +14,6 @@ function getQueryParam(req: Request, key: string): string | undefined {
 function decodeState(state: string): { callbackUrl: string; returnTo: string | null } {
   try {
     const decoded = atob(state);
-    // Versuche als JSON zu parsen (neues Format)
     try {
       const parsed = JSON.parse(decoded);
       return {
@@ -22,7 +21,6 @@ function decodeState(state: string): { callbackUrl: string; returnTo: string | n
         returnTo: parsed.returnTo || null
       };
     } catch {
-      // Altes Format - state ist nur die callbackUrl
       return {
         callbackUrl: decoded,
         returnTo: null
@@ -50,36 +48,32 @@ export function registerOAuthRoutes(app: Express) {
       const tokenResponse = await sdk.exchangeCodeForToken(code, state);
       const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
 
-      if (!userInfo.openId) {
-        res.status(400).json({ error: "openId missing from user info" });
+      if (!userInfo.openId || !userInfo.email) {
+        res.status(400).json({ error: "openId or email missing from user info" });
         return;
       }
 
-      // Prüfen ob User bereits existiert
-      const existingUser = await db.getUserByOpenId(userInfo.openId);
+      const email = userInfo.email.toLowerCase();
+      const { returnTo } = decodeState(state);
+
+      // ============================================
+      // E-MAIL IST DER EINZIGE IDENTIFIER
+      // ============================================
       
-      // Prüfen ob es der Owner ist (SysAdmin)
+      // 1. Prüfen ob User mit dieser E-Mail bereits existiert
+      const existingUser = await db.getUserByEmail(email);
+      
+      // 2. Prüfen ob es der Owner ist (SysAdmin) - einzige Ausnahme
       const isOwner = userInfo.openId === ENV.ownerOpenId;
       
-      // returnTo aus dem state extrahieren
-      const { returnTo } = decodeState(state);
-      
-      // Prüfen ob eine Einladung für diese E-Mail existiert
-      let hasValidInvitation = false;
-      if (userInfo.email) {
-        const invitation = await db.getInvitationByEmail(userInfo.email);
-        hasValidInvitation = !!invitation && new Date() < invitation.expiresAt && !invitation.usedAt;
-      }
+      // 3. Prüfen ob eine gültige Einladung für diese E-Mail existiert
+      const invitation = await db.getActiveInvitationByEmail(email);
 
-      // User nur erstellen/aktualisieren wenn:
-      // 1. User bereits existiert (Update)
-      // 2. User ist der Owner (SysAdmin)
-      // 3. User hat eine gültige Einladung
-      if (existingUser || isOwner || hasValidInvitation) {
+      // FALL 1: User existiert bereits → Login erlauben, openId aktualisieren
+      if (existingUser) {
         await db.upsertUser({
           openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email || "",
+          email: email,
           loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
           lastSignedIn: new Date(),
         });
@@ -97,11 +91,54 @@ export function registerOAuthRoutes(app: Express) {
         } else {
           res.redirect(302, "/");
         }
-      } else {
-        // Kein existierender User, kein Owner, keine Einladung
-        // Redirect zur Fehlerseite oder Startseite mit Fehlermeldung
-        res.redirect(302, "/?error=no_invitation");
+        return;
       }
+
+      // FALL 2: Owner (SysAdmin) → Immer erlauben, User erstellen falls nicht existiert
+      if (isOwner) {
+        await db.upsertUser({
+          openId: userInfo.openId,
+          email: email,
+          name: userInfo.name || null,
+          role: 'sysadmin',
+          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+          lastSignedIn: new Date(),
+        });
+
+        const sessionToken = await sdk.createSessionToken(userInfo.openId, {
+          name: userInfo.name || "",
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        const cookieOptions = getSessionCookieOptions(req);
+        res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        res.redirect(302, "/");
+        return;
+      }
+
+      // FALL 3: Gültige Einladung vorhanden → Session erstellen, aber User wird erst bei invitation.accept erstellt
+      if (invitation) {
+        const sessionToken = await sdk.createSessionToken(userInfo.openId, {
+          name: userInfo.name || "",
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        const cookieOptions = getSessionCookieOptions(req);
+        res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        // Zurück zur Einladungsseite
+        if (returnTo && returnTo.startsWith("/invite/")) {
+          res.redirect(302, returnTo);
+        } else {
+          res.redirect(302, `/invite/${invitation.token}`);
+        }
+        return;
+      }
+
+      // FALL 4: Kein User, kein Owner, keine Einladung → Zugang verweigert
+      res.redirect(302, "/?error=no_invitation");
+
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });

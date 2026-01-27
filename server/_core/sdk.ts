@@ -277,34 +277,34 @@ class SDKServer {
       throw ForbiddenError("Invalid session cookie");
     }
 
-    const sessionUserId = session.openId;
     const signedInAt = new Date();
-    let user = await db.getUserByOpenId(sessionUserId);
-
-    // If user not in DB, sync from OAuth server automatically
-    if (!user) {
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email || "",
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
-      }
+    
+    // E-MAIL IST DER EINZIGE IDENTIFIER
+    // Hole User-Info vom OAuth-Server um E-Mail zu bekommen
+    let userInfo;
+    try {
+      userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
+    } catch (error) {
+      console.error("[Auth] Failed to get user info from OAuth:", error);
+      throw ForbiddenError("Failed to get user info");
     }
 
-    if (!user) {
-      throw ForbiddenError("User not found");
+    if (!userInfo.email) {
+      throw ForbiddenError("No email in user info");
     }
 
+    // User über E-Mail suchen (NICHT über openId!)
+    const user = await db.getUserByEmail(userInfo.email.toLowerCase());
+
+    // KEINE automatische User-Erstellung!
+    // User muss entweder existieren oder eine Einladung annehmen
+    if (!user) {
+      throw ForbiddenError("User not found - please accept your invitation first");
+    }
+
+    // LastSignedIn aktualisieren
     await db.upsertUser({
-      openId: user.openId,
+      openId: userInfo.openId, // openId aktualisieren falls geändert
       email: user.email,
       lastSignedIn: signedInAt,
     });

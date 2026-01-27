@@ -2,11 +2,12 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json } f
 
 // ============================================
 // USERS - Alle Benutzer mit Rollen
+// E-Mail ist der einzige eindeutige Identifier im System
 // ============================================
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  email: varchar("email", { length: 320 }).notNull(),
+  openId: varchar("openId", { length: 64 }).notNull(), // Für OAuth-Session, NICHT für Identifikation
+  email: varchar("email", { length: 320 }).notNull().unique(), // EINZIGER Identifier
   name: text("name"),
   firstName: varchar("firstName", { length: 100 }),
   lastName: varchar("lastName", { length: 100 }),
@@ -40,11 +41,12 @@ export type InsertCompany = typeof companies.$inferInsert;
 
 // ============================================
 // INVITATIONS - Einladungen mit 24h Token
+// E-Mail muss systemweit eindeutig sein (keine Duplikate)
 // ============================================
 export const invitations = mysqlTable("invitations", {
   id: int("id").autoincrement().primaryKey(),
   token: varchar("token", { length: 64 }).notNull().unique(),
-  email: varchar("email", { length: 320 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(), // Nicht unique - kann nach Ablauf neu eingeladen werden
   type: mysqlEnum("type", ["companyadmin", "user"]).notNull(),
   companyId: int("companyId"),
   companyName: varchar("companyName", { length: 255 }),
