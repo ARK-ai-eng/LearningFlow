@@ -85,3 +85,6 @@
 - [x] BUG: E-Mail-Validierung fehlt - jeder eingeloggte User kann jede Einladung annehmen
   - Fix: Backend prüft ob eingeloggte E-Mail mit Einladungs-E-Mail übereinstimmt
   - Fix: Frontend zeigt Warnung wenn E-Mail nicht übereinstimmt mit "Abmelden und neu anmelden" Button
+- [x] BUG: OAuth erstellt automatisch User ohne Einladung - muss verhindert werden
+  - Fix: OAuth-Callback erstellt User nur noch wenn: 1) User existiert bereits, 2) User ist Owner/SysAdmin, 3) Gültige Einladung für E-Mail vorhanden
+  - Fix: Ohne Einladung wird User auf Startseite mit Fehlermeldung umgeleitet

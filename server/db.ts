@@ -192,6 +192,15 @@ export async function getInvitationByToken(token: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getInvitationByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(invitations)
+    .where(and(eq(invitations.email, email), isNull(invitations.usedAt)))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function markInvitationUsed(token: string) {
   const db = await getDb();
   if (!db) return;

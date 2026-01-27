@@ -1,13 +1,28 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { getLoginUrl } from "@/const";
-import { useLocation } from "wouter";
-import { useEffect } from "react";
-import { GraduationCap, Shield, Award, ArrowRight, Sparkles } from "lucide-react";
+import { useLocation, useSearch } from "wouter";
+import { useEffect, useState } from "react";
+import { GraduationCap, Shield, Award, ArrowRight, Sparkles, AlertCircle, X } from "lucide-react";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const searchString = useSearch();
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Check for error parameter in URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const error = params.get("error");
+    if (error === "no_invitation") {
+      setShowError(true);
+      setErrorMessage("Sie haben keine gültige Einladung. Bitte wenden Sie sich an Ihren Administrator, um eine Einladung zu erhalten.");
+      // Remove error from URL
+      window.history.replaceState({}, "", "/");
+    }
+  }, [searchString]);
 
   // Redirect authenticated users to their dashboard
   useEffect(() => {
@@ -29,8 +44,26 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Error Banner */}
+      {showError && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-destructive/90 text-destructive-foreground p-4">
+          <div className="container flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+            <button 
+              onClick={() => setShowError(false)}
+              className="p-1 hover:bg-destructive-foreground/10 rounded"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className={`relative overflow-hidden ${showError ? 'pt-16' : ''}`}>
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5" />
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-float" />
