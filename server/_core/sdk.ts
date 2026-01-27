@@ -39,8 +39,19 @@ class OAuthService {
   }
 
   private decodeState(state: string): string {
-    const redirectUri = atob(state);
-    return redirectUri;
+    try {
+      const decoded = atob(state);
+      // Versuche als JSON zu parsen (neues Format)
+      try {
+        const parsed = JSON.parse(decoded);
+        return parsed.callbackUrl || decoded;
+      } catch {
+        // Altes Format - state ist nur die callbackUrl
+        return decoded;
+      }
+    } catch {
+      return "";
+    }
   }
 
   async getTokenByCode(

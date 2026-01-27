@@ -9,6 +9,32 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+// Decode state und extrahiere returnTo falls vorhanden
+function decodeState(state: string): { callbackUrl: string; returnTo: string | null } {
+  try {
+    const decoded = atob(state);
+    // Versuche als JSON zu parsen (neues Format)
+    try {
+      const parsed = JSON.parse(decoded);
+      return {
+        callbackUrl: parsed.callbackUrl || decoded,
+        returnTo: parsed.returnTo || null
+      };
+    } catch {
+      // Altes Format - state ist nur die callbackUrl
+      return {
+        callbackUrl: decoded,
+        returnTo: null
+      };
+    }
+  } catch {
+    return {
+      callbackUrl: "",
+      returnTo: null
+    };
+  }
+}
+
 export function registerOAuthRoutes(app: Express) {
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
@@ -44,8 +70,8 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      // Check for returnTo parameter to redirect back to invitation page
-      const returnTo = getQueryParam(req, "returnTo");
+      // returnTo aus dem state extrahieren
+      const { returnTo } = decodeState(state);
       if (returnTo && returnTo.startsWith("/")) {
         res.redirect(302, returnTo);
       } else {

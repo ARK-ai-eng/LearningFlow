@@ -41,6 +41,8 @@ const getMenuItems = (role: string | undefined) => {
       { icon: LayoutDashboard, label: "Dashboard", path: "/company" },
       { icon: Users, label: "Mitarbeiter", path: "/company/employees" },
       { icon: Upload, label: "CSV Import", path: "/company/employees/import" },
+      { icon: BookOpen, label: "Meine Kurse", path: "/dashboard" },
+      { icon: Award, label: "Zertifikate", path: "/certificates" },
     ];
   }
   // Default: user

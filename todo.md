@@ -72,3 +72,9 @@
 - [x] BUG: Fehler 10002 - War kein Bug, User war mit falschem Account eingeloggt
 - [x] BUG: React-Fehler "Cannot update a component while rendering" in Home.tsx
   - Fix: setLocation in useEffect gewrappt
+- [ ] BUG: OAuth-Fehler "code and state are required" nach Anmeldung
+- [x] BUG: OAuth returnTo Parameter verursacht doppeltes ? in URL - code/state werden nicht erkannt
+  - Fix: returnTo wird jetzt im state als JSON kodiert statt in der URL
+- [x] BUG: FirmenAdmin sieht keine Lernmodule - muss Mitarbeiterverwaltung UND Kurse sehen können
+  - Fix: Company Dashboard mit Lernmodulen erweitert
+  - Fix: Navigation für FirmenAdmin um "Meine Kurse" und "Zertifikate" erweitert

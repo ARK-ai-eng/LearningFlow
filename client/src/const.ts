@@ -6,19 +6,20 @@ export const getLoginUrl = (returnTo?: string) => {
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
   
-  // If returnTo is provided, encode it in the callback URL
-  let callbackUrl = `${window.location.origin}/api/oauth/callback`;
-  if (returnTo) {
-    callbackUrl += `?returnTo=${encodeURIComponent(returnTo)}`;
-  }
+  // Callback URL ohne Query-Parameter - returnTo wird im state kodiert
+  const callbackUrl = `${window.location.origin}/api/oauth/callback`;
   
-  const state = btoa(callbackUrl);
+  // State enthält sowohl die callbackUrl als auch optional returnTo
+  const stateData = {
+    callbackUrl,
+    returnTo: returnTo || null
+  };
+  const state = btoa(JSON.stringify(stateData));
 
   const url = new URL(`${oauthPortalUrl}/app-auth`);
   url.searchParams.set("appId", appId);
   url.searchParams.set("redirectUri", callbackUrl);
   url.searchParams.set("state", state);
-  url.searchParams.set("type", "signIn");
 
   return url.toString();
 };
