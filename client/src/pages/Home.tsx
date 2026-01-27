@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 import { GraduationCap, Shield, Award, ArrowRight, Sparkles } from "lucide-react";
 
 export default function Home() {
@@ -9,14 +10,20 @@ export default function Home() {
   const [, setLocation] = useLocation();
 
   // Redirect authenticated users to their dashboard
-  if (isAuthenticated && user) {
-    if (user.role === 'sysadmin') {
-      setLocation('/admin');
-    } else if (user.role === 'companyadmin') {
-      setLocation('/company');
-    } else {
-      setLocation('/dashboard');
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'sysadmin') {
+        setLocation('/admin');
+      } else if (user.role === 'companyadmin') {
+        setLocation('/company');
+      } else {
+        setLocation('/dashboard');
+      }
     }
+  }, [isAuthenticated, user, setLocation]);
+
+  // Show nothing while redirecting
+  if (isAuthenticated && user) {
     return null;
   }
 

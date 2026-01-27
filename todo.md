@@ -69,3 +69,6 @@
 - [x] BUG: Firma wird erst bei Einladungsannahme erstellt statt beim Anlegen durch SysAdmin
   - Fix: company.create erstellt jetzt sofort die Firma
   - Fix: invitation.accept ordnet FirmenAdmin nur noch der bestehenden Firma zu
+- [x] BUG: Fehler 10002 - War kein Bug, User war mit falschem Account eingeloggt
+- [x] BUG: React-Fehler "Cannot update a component while rendering" in Home.tsx
+  - Fix: setLocation in useEffect gewrappt
