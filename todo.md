@@ -60,4 +60,9 @@
 - [x] Bugs fixen die beim Testen gefunden werden
 - [x] Wiederverwendbares Template-Paket erstellen (docs/TEMPLATE_GUIDE.md)
 - [x] Sprint-Dokumentation schreiben (docs/SPRINT_2_DOKUMENTATION.md)
-- [ ] Test-Ready Checkpoint erstellen
+- [x] Test-Ready Checkpoint erstellen (30e8110d)
+
+## Sprint 3 - Bugfixes
+- [x] BUG: FirmenAdmin sieht User-Dashboard statt FirmenAdmin-Dashboard nach Registrierung
+  - Ursache: Nach OAuth-Login wurde User nicht zur Einladungsseite zurückgeleitet
+  - Fix: returnTo Parameter in getLoginUrl() und OAuth Callback implementiert

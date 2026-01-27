@@ -92,7 +92,7 @@ export default function AcceptInvitation() {
             </div>
             <Button 
               className="w-full" 
-              onClick={() => window.location.href = getLoginUrl()}
+              onClick={() => window.location.href = getLoginUrl(`/invite/${token}`)}
             >
               Anmelden um fortzufahren
             </Button>

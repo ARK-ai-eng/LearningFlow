@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, openId, email, role, companyId, firstName, lastName FROM users ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, openId, email, role, companyId, firstName, lastName FROM users ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90032",
+      "openId": "3tmpHYyHyodju6vVnbedU2",
+      "email": "arton.kodra@web.de",
+      "role": "user",
+      "companyId": "NULL",
+      "firstName": "NULL",
+      "lastName": "NULL"
+    },
+    {
+      "id": "1",
+      "openId": "7pQVdLdRdNeRXm8tKz5MU5",
+      "email": "toni91k@gmail.com",
+      "role": "sysadmin",
+      "companyId": "NULL",
+      "firstName": "NULL",
+      "lastName": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\temail\trole\tcompanyId\tfirstName\tlastName\n90032\t3tmpHYyHyodju6vVnbedU2\tarton.kodra@web.de\tuser\tNULL\tNULL\tNULL\n1\t7pQVdLdRdNeRXm8tKz5MU5\ttoni91k@gmail.com\tsysadmin\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 360
+}
