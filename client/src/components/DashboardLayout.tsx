@@ -21,16 +21,34 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Building2, BookOpen, Award, Upload, Settings } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
-];
+// Menu items will be determined by user role
+const getMenuItems = (role: string | undefined) => {
+  if (role === 'sysadmin') {
+    return [
+      { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
+      { icon: Building2, label: "Firmen", path: "/admin/companies" },
+      { icon: BookOpen, label: "Kurse", path: "/admin/courses" },
+    ];
+  }
+  if (role === 'companyadmin') {
+    return [
+      { icon: LayoutDashboard, label: "Dashboard", path: "/company" },
+      { icon: Users, label: "Mitarbeiter", path: "/company/employees" },
+      { icon: Upload, label: "CSV Import", path: "/company/employees/import" },
+    ];
+  }
+  // Default: user
+  return [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: Award, label: "Zertifikate", path: "/certificates" },
+  ];
+};
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
@@ -112,6 +130,7 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const menuItems = getMenuItems(user?.role);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
 
