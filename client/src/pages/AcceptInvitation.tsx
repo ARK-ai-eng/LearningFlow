@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { useParams, useLocation } from "wouter";
-import { CheckCircle, XCircle, Loader2, GraduationCap } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, GraduationCap, AlertTriangle } from "lucide-react";
 
 export default function AcceptInvitation() {
   const { token } = useParams<{ token: string }>();
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
   const [, setLocation] = useLocation();
 
   const { data: invitation, isLoading } = trpc.invitation.validate.useQuery(
@@ -62,6 +62,7 @@ export default function AcceptInvitation() {
     );
   }
 
+  // Nicht eingeloggt - zur Anmeldung auffordern
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -102,6 +103,47 @@ export default function AcceptInvitation() {
     );
   }
 
+  // Eingeloggt, aber mit falscher E-Mail
+  const emailMatches = user?.email?.toLowerCase() === invitation.email?.toLowerCase();
+  
+  if (!emailMatches) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md glass-card">
+          <CardHeader className="text-center">
+            <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+            <CardTitle>Falsche E-Mail-Adresse</CardTitle>
+            <CardDescription>
+              Sie sind mit einer anderen E-Mail-Adresse angemeldet.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 rounded-lg bg-muted/50">
+              <p className="text-sm text-muted-foreground mb-1">Einladung für</p>
+              <p className="font-medium text-primary">{invitation.email}</p>
+              <p className="text-sm text-muted-foreground mt-3 mb-1">Sie sind angemeldet als</p>
+              <p className="font-medium text-amber-500">{user?.email}</p>
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              Bitte melden Sie sich ab und dann mit der E-Mail-Adresse <strong>{invitation.email}</strong> an.
+            </p>
+            <Button 
+              className="w-full" 
+              variant="outline"
+              onClick={async () => {
+                await logout();
+                window.location.href = getLoginUrl(`/invite/${token}`);
+              }}
+            >
+              Abmelden und neu anmelden
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Eingeloggt mit korrekter E-Mail - Einladung annehmen
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md glass-card">
@@ -124,6 +166,8 @@ export default function AcceptInvitation() {
                 <p className="font-medium">{invitation.companyName}</p>
               </>
             )}
+            <p className="text-sm text-muted-foreground mt-3 mb-1">E-Mail</p>
+            <p className="font-medium text-emerald-500">{invitation.email}</p>
           </div>
           <Button 
             className="w-full" 

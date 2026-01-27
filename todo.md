@@ -78,3 +78,10 @@
 - [x] BUG: FirmenAdmin sieht keine Lernmodule - muss Mitarbeiterverwaltung UND Kurse sehen können
   - Fix: Company Dashboard mit Lernmodulen erweitert
   - Fix: Navigation für FirmenAdmin um "Meine Kurse" und "Zertifikate" erweitert
+
+## Backlog / Später umsetzen
+- [ ] Personalnummer von optional auf Pflichtfeld ändern (Eindeutige Identifikation bei Namensgleichheit)
+- [ ] BUG: User kann Einladung ohne Anmeldung annehmen - muss erst OAuth durchlaufen
+- [x] BUG: E-Mail-Validierung fehlt - jeder eingeloggte User kann jede Einladung annehmen
+  - Fix: Backend prüft ob eingeloggte E-Mail mit Einladungs-E-Mail übereinstimmt
+  - Fix: Frontend zeigt Warnung wenn E-Mail nicht übereinstimmt mit "Abmelden und neu anmelden" Button

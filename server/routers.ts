@@ -82,6 +82,14 @@ export const appRouter = router({
         if (new Date() > invitation.expiresAt) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Einladung abgelaufen" });
         }
+        
+        // E-Mail-Validierung: Eingeloggte E-Mail muss mit Einladungs-E-Mail übereinstimmen
+        if (ctx.user.email?.toLowerCase() !== invitation.email.toLowerCase()) {
+          throw new TRPCError({ 
+            code: "FORBIDDEN", 
+            message: `Diese Einladung ist für ${invitation.email}. Bitte melden Sie sich mit dieser E-Mail-Adresse an.` 
+          });
+        }
 
         // User-Daten aktualisieren
         const updateData: any = {
