@@ -93,9 +93,12 @@ export const appRouter = router({
         };
 
         if (invitation.type === 'companyadmin') {
-          // Firma erstellen
-          const companyId = await db.createCompany({ name: invitation.companyName || "Neue Firma" });
-          updateData.companyId = companyId;
+          // Firma existiert bereits (wurde vom SysAdmin erstellt)
+          // FirmenAdmin wird nur der bestehenden Firma zugeordnet
+          if (!invitation.companyId) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Firma mit dieser Einladung verknüpft" });
+          }
+          updateData.companyId = invitation.companyId;
         } else if (invitation.type === 'user') {
           updateData.companyId = invitation.companyId;
           updateData.personnelNumber = invitation.personnelNumber;
@@ -136,12 +139,16 @@ export const appRouter = router({
         adminLastName: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        // Einladung für FirmenAdmin erstellen
+        // 1. Firma sofort erstellen
+        const companyId = await db.createCompany({ name: input.name });
+        
+        // 2. Einladung für FirmenAdmin erstellen (mit companyId)
         const token = generateToken();
         await db.createInvitation({
           token,
           email: input.adminEmail,
           type: 'companyadmin',
+          companyId: companyId, // Firma existiert bereits!
           companyName: input.name,
           firstName: input.adminFirstName || null,
           lastName: input.adminLastName || null,
@@ -149,7 +156,7 @@ export const appRouter = router({
           expiresAt: getExpirationDate(24),
         });
 
-        return { success: true, token };
+        return { success: true, token, companyId };
       }),
 
     update: adminProcedure

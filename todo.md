@@ -66,3 +66,6 @@
 - [x] BUG: FirmenAdmin sieht User-Dashboard statt FirmenAdmin-Dashboard nach Registrierung
   - Ursache: Nach OAuth-Login wurde User nicht zur Einladungsseite zurückgeleitet
   - Fix: returnTo Parameter in getLoginUrl() und OAuth Callback implementiert
+- [x] BUG: Firma wird erst bei Einladungsannahme erstellt statt beim Anlegen durch SysAdmin
+  - Fix: company.create erstellt jetzt sofort die Firma
+  - Fix: invitation.accept ordnet FirmenAdmin nur noch der bestehenden Firma zu
