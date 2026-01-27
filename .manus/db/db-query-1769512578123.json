@@ -1,0 +1,28 @@
+{
+  "query": "UPDATE courses SET title = 'KI-Kompetenz Prüfung', description = 'Umfassende Prüfung Ihrer KI-Kompetenzen. Bestehen Sie die Jahresprüfung und erhalten Sie Ihr Zertifikat.' WHERE title = 'Datenschutz Zertifizierung';\n\nUPDATE courses SET title = 'Freies Lernmodul', description = 'Flexibles Lernmodul für individuelle Schulungsinhalte. Kann nach Bedarf angepasst werden.' WHERE title = 'Datenschutz Grundlagen';\n\nSELECT id, title, courseType, description FROM courses;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute UPDATE courses SET title = 'KI-Kompetenz Prüfung', description = 'Umfassende Prüfung Ihrer KI-Kompetenzen. Bestehen Sie die Jahresprüfung und erhalten Sie Ihr Zertifikat.' WHERE title = 'Datenschutz Zertifizierung';\n\nUPDATE courses SET title = 'Freies Lernmodul', description = 'Flexibles Lernmodul für individuelle Schulungsinhalte. Kann nach Bedarf angepasst werden.' WHERE title = 'Datenschutz Grundlagen';\n\nSELECT id, title, courseType, description FROM courses;",
+  "rows": [
+    {
+      "id": "1",
+      "title": "Freies Lernmodul",
+      "courseType": "learning",
+      "description": "Flexibles Lernmodul für individuelle Schulungsinhalte. Kann nach Bedarf angepasst werden."
+    },
+    {
+      "id": "2",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "courseType": "sensitization",
+      "description": "Sensibilisierung für IT-Sicherheitsrisiken im Arbeitsalltag. Erkennen Sie Phishing, Social Engineering und andere Bedrohungen."
+    },
+    {
+      "id": "3",
+      "title": "KI-Kompetenz Prüfung",
+      "courseType": "certification",
+      "description": "Umfassende Prüfung Ihrer KI-Kompetenzen. Bestehen Sie die Jahresprüfung und erhalten Sie Ihr Zertifikat."
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tcourseType\tdescription\n1\tFreies Lernmodul\tlearning\tFlexibles Lernmodul für individuelle Schulungsinhalte. Kann nach Bedarf angepasst werden.\n2\tIT-Sicherheit Sensibilisierung\tsensitization\tSensibilisierung für IT-Sicherheitsrisiken im Arbeitsalltag. Erkennen Sie Phishing, Social Engineering und andere Bedrohungen.\n3\tKI-Kompetenz Prüfung\tcertification\tUmfassende Prüfung Ihrer KI-Kompetenzen. Bestehen Sie die Jahresprüfung und erhalten Sie Ihr Zertifikat.\n",
+  "stderr": "",
+  "execution_time_ms": 489
+}

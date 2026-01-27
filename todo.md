@@ -51,3 +51,13 @@
 ## Demo-Modus
 - [x] Rollen-Switcher Dropdown im Header
 - [x] Zwischen SysAdmin, FirmenAdmin und User wechseln ohne Anmeldung
+
+## Sprint 2 - Testversion vorbereiten
+- [x] Demo-Modus entfernen (echte Auth verwenden)
+- [x] Kurse umbenennen: "Datenschutz Zertifizierung" → "KI-Kompetenz Prüfung"
+- [x] Learning-Kurs flexibel/frei lassen (jetzt "Freies Lernmodul")
+- [x] Alle Funktionen testen (12/12 Tests bestanden)
+- [x] Bugs fixen die beim Testen gefunden werden
+- [x] Wiederverwendbares Template-Paket erstellen (docs/TEMPLATE_GUIDE.md)
+- [x] Sprint-Dokumentation schreiben (docs/SPRINT_2_DOKUMENTATION.md)
+- [ ] Test-Ready Checkpoint erstellen
