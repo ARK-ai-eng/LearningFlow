@@ -1,4 +1,4 @@
-import { eq, and, lt, gt, isNull, desc } from "drizzle-orm";
+import { eq, and, desc, gt, isNull, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   users, InsertUser, User,
@@ -30,85 +30,20 @@ export async function getDb() {
 // ============================================
 // USER FUNCTIONS
 // ============================================
-export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
 
+// User erstellen (bei Einladungsannahme)
+export async function createUser(user: InsertUser): Promise<number> {
   const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot upsert user: database not available");
-    return;
-  }
-
-  try {
-    const values: InsertUser = {
-      openId: user.openId,
-      email: user.email || "",
-    };
-    const updateSet: Record<string, unknown> = {};
-
-    if (user.name !== undefined) {
-      values.name = user.name ?? null;
-      updateSet.name = user.name ?? null;
-    }
-    if (user.email !== undefined) {
-      values.email = user.email;
-      updateSet.email = user.email;
-    }
-    if (user.firstName !== undefined) {
-      values.firstName = user.firstName;
-      updateSet.firstName = user.firstName;
-    }
-    if (user.lastName !== undefined) {
-      values.lastName = user.lastName;
-      updateSet.lastName = user.lastName;
-    }
-    if (user.loginMethod !== undefined) {
-      values.loginMethod = user.loginMethod;
-      updateSet.loginMethod = user.loginMethod;
-    }
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
-    if (user.role !== undefined) {
-      values.role = user.role;
-      updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'sysadmin';
-      updateSet.role = 'sysadmin';
-    }
-    if (user.companyId !== undefined) {
-      values.companyId = user.companyId;
-      updateSet.companyId = user.companyId;
-    }
-
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
-
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet,
-    });
-  } catch (error) {
-    console.error("[Database] Failed to upsert user:", error);
-    throw error;
-  }
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(users).values({
+    ...user,
+    email: user.email.toLowerCase(),
+  });
+  return result[0].insertId;
 }
 
-export async function getUserByOpenId(openId: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-// HAUPT-FUNKTION: E-Mail ist der einzige Identifier
+// User per E-Mail finden (HAUPT-FUNKTION)
 export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) return undefined;
@@ -123,22 +58,40 @@ export async function getUserById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function updateUser(id: number, data: Partial<InsertUser>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(users).set(data).where(eq(users.id, id));
+}
+
+export async function updateUserPassword(id: number, passwordHash: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(users).set({ passwordHash }).where(eq(users.id, id));
+}
+
+export async function updateUserLastSignedIn(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(users).set({ lastSignedIn: new Date() }).where(eq(users.id, id));
+}
+
+export async function deleteUser(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(users).where(eq(users.id, id));
+}
+
 export async function getUsersByCompany(companyId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(users).where(eq(users.companyId, companyId));
 }
 
-export async function updateUserRole(userId: number, role: "sysadmin" | "companyadmin" | "user") {
+export async function updateUserRole(id: number, role: 'sysadmin' | 'companyadmin' | 'user') {
   const db = await getDb();
   if (!db) return;
-  await db.update(users).set({ role }).where(eq(users.id, userId));
-}
-
-export async function deleteUser(userId: number) {
-  const db = await getDb();
-  if (!db) return;
-  await db.delete(users).where(eq(users.id, userId));
+  await db.update(users).set({ role }).where(eq(users.id, id));
 }
 
 // ============================================
@@ -173,11 +126,9 @@ export async function updateCompany(id: number, data: Partial<InsertCompany>) {
 export async function deleteCompany(id: number) {
   const db = await getDb();
   if (!db) return;
-  // Lösche alle zugehörigen User
+  // Lösche zugehörige User und Einladungen
   await db.delete(users).where(eq(users.companyId, id));
-  // Lösche alle Einladungen
   await db.delete(invitations).where(eq(invitations.companyId, id));
-  // Lösche die Firma
   await db.delete(companies).where(eq(companies.id, id));
 }
 
@@ -187,20 +138,21 @@ export async function deleteCompany(id: number) {
 export async function createInvitation(invitation: InsertInvitation): Promise<number> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(invitations).values(invitation);
+  const result = await db.insert(invitations).values({
+    ...invitation,
+    email: invitation.email.toLowerCase(),
+  });
   return result[0].insertId;
 }
 
 export async function getInvitationByToken(token: string) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(invitations)
-    .where(and(eq(invitations.token, token), isNull(invitations.usedAt)))
-    .limit(1);
+  const result = await db.select().from(invitations).where(eq(invitations.token, token)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
-// Prüft ob eine AKTIVE (nicht benutzt, nicht abgelaufen) Einladung für diese E-Mail existiert
+// Prüft ob eine aktive (nicht abgelaufene, nicht benutzte) Einladung für diese E-Mail existiert
 export async function getActiveInvitationByEmail(email: string) {
   const db = await getDb();
   if (!db) return undefined;
@@ -208,38 +160,65 @@ export async function getActiveInvitationByEmail(email: string) {
     .where(and(
       eq(invitations.email, email.toLowerCase()),
       isNull(invitations.usedAt),
-      gt(invitations.expiresAt, new Date()) // Nicht abgelaufen
+      gt(invitations.expiresAt, sql`NOW()`)
     ))
     .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
-
-export async function markInvitationUsed(token: string) {
+export async function markInvitationUsed(id: number) {
   const db = await getDb();
   if (!db) return;
-  await db.update(invitations).set({ usedAt: new Date() }).where(eq(invitations.token, token));
-}
-
-export async function deleteExpiredInvitations() {
-  const db = await getDb();
-  if (!db) return 0;
-  const result = await db.delete(invitations)
-    .where(and(lt(invitations.expiresAt, new Date()), isNull(invitations.usedAt)));
-  return result[0].affectedRows;
-}
-
-export async function getPendingInvitationsByCompany(companyId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(invitations)
-    .where(and(eq(invitations.companyId, companyId), isNull(invitations.usedAt)));
+  await db.update(invitations).set({ usedAt: new Date() }).where(eq(invitations.id, id));
 }
 
 export async function deleteInvitation(id: number) {
   const db = await getDb();
   if (!db) return;
   await db.delete(invitations).where(eq(invitations.id, id));
+}
+
+export async function getPendingInvitationsByCompany(companyId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(invitations)
+    .where(and(
+      eq(invitations.companyId, companyId),
+      isNull(invitations.usedAt),
+      gt(invitations.expiresAt, sql`NOW()`)
+    ))
+    .orderBy(desc(invitations.createdAt));
+}
+
+export async function getAllPendingInvitations() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(invitations)
+    .where(and(
+      isNull(invitations.usedAt),
+      gt(invitations.expiresAt, sql`NOW()`)
+    ))
+    .orderBy(desc(invitations.createdAt));
+}
+
+export async function getExpiredInvitations() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(invitations)
+    .where(and(
+      isNull(invitations.usedAt),
+      gt(sql`NOW()`, invitations.expiresAt)
+    ))
+    .orderBy(desc(invitations.createdAt));
+}
+
+export async function deleteExpiredInvitations() {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(invitations).where(and(
+    isNull(invitations.usedAt),
+    gt(sql`NOW()`, invitations.expiresAt)
+  ));
 }
 
 // ============================================
@@ -255,13 +234,13 @@ export async function createCourse(course: InsertCourse): Promise<number> {
 export async function getAllCourses() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(courses).orderBy(desc(courses.createdAt));
+  return db.select().from(courses).orderBy(courses.title);
 }
 
 export async function getActiveCourses() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(courses).where(eq(courses.isActive, true));
+  return db.select().from(courses).where(eq(courses.isActive, true)).orderBy(courses.title);
 }
 
 export async function getCourseById(id: number) {
@@ -353,25 +332,6 @@ export async function deleteQuestion(id: number) {
 // ============================================
 // PROGRESS FUNCTIONS
 // ============================================
-export async function upsertProgress(progress: InsertUserProgress) {
-  const db = await getDb();
-  if (!db) return;
-  
-  const existing = await db.select().from(userProgress)
-    .where(and(
-      eq(userProgress.userId, progress.userId),
-      eq(userProgress.courseId, progress.courseId),
-      progress.topicId ? eq(userProgress.topicId, progress.topicId) : isNull(userProgress.topicId)
-    ))
-    .limit(1);
-
-  if (existing.length > 0) {
-    await db.update(userProgress).set(progress).where(eq(userProgress.id, existing[0].id));
-  } else {
-    await db.insert(userProgress).values(progress);
-  }
-}
-
 export async function getUserProgress(userId: number) {
   const db = await getDb();
   if (!db) return [];
@@ -383,6 +343,28 @@ export async function getUserCourseProgress(userId: number, courseId: number) {
   if (!db) return [];
   return db.select().from(userProgress)
     .where(and(eq(userProgress.userId, userId), eq(userProgress.courseId, courseId)));
+}
+
+export async function upsertProgress(progress: InsertUserProgress) {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Check if exists
+  const existing = await db.select().from(userProgress)
+    .where(and(
+      eq(userProgress.userId, progress.userId),
+      eq(userProgress.courseId, progress.courseId),
+      progress.topicId ? eq(userProgress.topicId, progress.topicId) : isNull(userProgress.topicId)
+    ))
+    .limit(1);
+
+  if (existing.length > 0) {
+    await db.update(userProgress)
+      .set(progress)
+      .where(eq(userProgress.id, existing[0].id));
+  } else {
+    await db.insert(userProgress).values(progress);
+  }
 }
 
 // ============================================

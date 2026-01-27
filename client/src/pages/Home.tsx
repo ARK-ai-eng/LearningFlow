@@ -79,7 +79,7 @@ export default function Home() {
               <span className="text-xl font-bold gradient-text">AISmarterFlow Academy</span>
             </div>
             <Button 
-              onClick={() => window.location.href = getLoginUrl()}
+              onClick={() => setLocation('/login')}
               className="bg-primary hover:bg-primary/90"
             >
               Anmelden
@@ -108,7 +108,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                onClick={() => window.location.href = getLoginUrl()}
+                onClick={() => setLocation('/login')}
                 className="bg-primary hover:bg-primary/90 text-lg px-8"
               >
                 Jetzt starten
@@ -214,7 +214,7 @@ export default function Home() {
             </p>
             <Button 
               size="lg" 
-              onClick={() => window.location.href = getLoginUrl()}
+              onClick={() => setLocation('/login')}
               className="bg-primary hover:bg-primary/90"
             >
               Kostenlos testen

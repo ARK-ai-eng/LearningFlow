@@ -4,6 +4,7 @@ import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 import { ENV } from "./env";
+import { createToken } from "../auth";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -35,6 +36,7 @@ function decodeState(state: string): { callbackUrl: string; returnTo: string | n
 }
 
 export function registerOAuthRoutes(app: Express) {
+  // Manus OAuth nur für SysAdmin (Owner)
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
@@ -56,88 +58,43 @@ export function registerOAuthRoutes(app: Express) {
       const email = userInfo.email.toLowerCase();
       const { returnTo } = decodeState(state);
 
-      // ============================================
-      // E-MAIL IST DER EINZIGE IDENTIFIER
-      // ============================================
-      
-      // 1. Prüfen ob User mit dieser E-Mail bereits existiert
-      const existingUser = await db.getUserByEmail(email);
-      
-      // 2. Prüfen ob es der Owner ist (SysAdmin) - einzige Ausnahme
+      // NUR OWNER (SysAdmin) darf sich via Manus OAuth anmelden
       const isOwner = userInfo.openId === ENV.ownerOpenId;
       
-      // 3. Prüfen ob eine gültige Einladung für diese E-Mail existiert
-      const invitation = await db.getActiveInvitationByEmail(email);
-
-      // FALL 1: User existiert bereits → Login erlauben, openId aktualisieren
-      if (existingUser) {
-        await db.upsertUser({
-          openId: userInfo.openId,
-          email: email,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: new Date(),
-        });
-
-        const sessionToken = await sdk.createSessionToken(userInfo.openId, {
-          name: userInfo.name || "",
-          expiresInMs: ONE_YEAR_MS,
-        });
-
-        const cookieOptions = getSessionCookieOptions(req);
-        res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-        if (returnTo && returnTo.startsWith("/")) {
-          res.redirect(302, returnTo);
-        } else {
-          res.redirect(302, "/");
-        }
+      if (!isOwner) {
+        // Alle anderen müssen sich über E-Mail + Passwort anmelden
+        res.redirect(302, "/?error=use_email_login");
         return;
       }
 
-      // FALL 2: Owner (SysAdmin) → Immer erlauben, User erstellen falls nicht existiert
-      if (isOwner) {
-        await db.upsertUser({
-          openId: userInfo.openId,
+      // Owner: Prüfen ob bereits existiert
+      let user = await db.getUserByEmail(email);
+      
+      if (!user) {
+        // SysAdmin erstellen
+        const userId = await db.createUser({
           email: email,
           name: userInfo.name || null,
           role: 'sysadmin',
           loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: new Date(),
         });
+        user = await db.getUserById(userId);
+      } else {
+        // LastSignedIn aktualisieren
+        await db.updateUserLastSignedIn(user.id);
+      }
 
-        const sessionToken = await sdk.createSessionToken(userInfo.openId, {
-          name: userInfo.name || "",
-          expiresInMs: ONE_YEAR_MS,
-        });
-
-        const cookieOptions = getSessionCookieOptions(req);
-        res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-        res.redirect(302, "/");
+      if (!user) {
+        res.status(500).json({ error: "Failed to create user" });
         return;
       }
 
-      // FALL 3: Gültige Einladung vorhanden → Session erstellen, aber User wird erst bei invitation.accept erstellt
-      if (invitation) {
-        const sessionToken = await sdk.createSessionToken(userInfo.openId, {
-          name: userInfo.name || "",
-          expiresInMs: ONE_YEAR_MS,
-        });
+      // JWT Token erstellen (eigenes System)
+      const token = createToken(user.id, user.email, user.role);
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-        const cookieOptions = getSessionCookieOptions(req);
-        res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-        // Zurück zur Einladungsseite
-        if (returnTo && returnTo.startsWith("/invite/")) {
-          res.redirect(302, returnTo);
-        } else {
-          res.redirect(302, `/invite/${invitation.token}`);
-        }
-        return;
-      }
-
-      // FALL 4: Kein User, kein Owner, keine Einladung → Zugang verweigert
-      res.redirect(302, "/?error=no_invitation");
+      res.redirect(302, "/");
 
     } catch (error) {
       console.error("[OAuth] Callback failed", error);

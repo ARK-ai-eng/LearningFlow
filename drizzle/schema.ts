@@ -6,8 +6,8 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json } f
 // ============================================
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull(), // Für OAuth-Session, NICHT für Identifikation
   email: varchar("email", { length: 320 }).notNull().unique(), // EINZIGER Identifier
+  passwordHash: varchar("passwordHash", { length: 255 }), // bcrypt hash, null für SysAdmin (OAuth)
   name: text("name"),
   firstName: varchar("firstName", { length: 100 }),
   lastName: varchar("lastName", { length: 100 }),

@@ -1,0 +1,9 @@
+{
+  "query": "-- Zuerst alle abhängigen Daten löschen\nDELETE FROM certificates;\nDELETE FROM exam_attempts;\nDELETE FROM user_progress;\nDELETE FROM invitations;\n-- Dann User löschen (außer Owner/SysAdmin)\nDELETE FROM users WHERE role != 'sysadmin';\n-- Firmen löschen\nDELETE FROM companies;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute -- Zuerst alle abhängigen Daten löschen\nDELETE FROM certificates;\nDELETE FROM exam_attempts;\nDELETE FROM user_progress;\nDELETE FROM invitations;\n-- Dann User löschen (außer Owner/SysAdmin)\nDELETE FROM users WHERE role != 'sysadmin';\n-- Firmen löschen\nDELETE FROM companies;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 657
+}

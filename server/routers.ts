@@ -39,6 +39,40 @@ export const appRouter = router({
   // ============================================
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    
+    // Login mit E-Mail + Passwort
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { verifyPassword, createToken } = await import('./auth');
+        
+        const user = await db.getUserByEmail(input.email.toLowerCase());
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "E-Mail oder Passwort falsch" });
+        }
+        if (!user.passwordHash) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Bitte nutzen Sie den Einladungslink um Ihr Passwort zu setzen" });
+        }
+        
+        const validPassword = await verifyPassword(input.password, user.passwordHash);
+        if (!validPassword) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "E-Mail oder Passwort falsch" });
+        }
+        
+        // Last sign in aktualisieren
+        await db.updateUserLastSignedIn(user.id);
+        
+        // JWT Token erstellen und Cookie setzen
+        const token = createToken(user.id, user.email, user.role);
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        
+        return { success: true, role: user.role };
+      }),
+    
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
@@ -71,10 +105,15 @@ export const appRouter = router({
         };
       }),
 
-    // Einladung annehmen und User erstellen
-    accept: protectedProcedure
-      .input(z.object({ token: z.string() }))
+    // Einladung annehmen und Passwort setzen (OHNE Manus OAuth)
+    accept: publicProcedure
+      .input(z.object({ 
+        token: z.string(),
+        password: z.string().min(8),
+      }))
       .mutation(async ({ ctx, input }) => {
+        const { hashPassword, validatePassword, createToken } = await import('./auth');
+        
         const invitation = await db.getInvitationByToken(input.token);
         if (!invitation) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Einladung nicht gefunden" });
@@ -82,38 +121,46 @@ export const appRouter = router({
         if (new Date() > invitation.expiresAt) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Einladung abgelaufen" });
         }
+        if (invitation.usedAt) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Einladung wurde bereits verwendet" });
+        }
         
-        // E-Mail-Validierung: Eingeloggte E-Mail muss mit Einladungs-E-Mail übereinstimmen
-        if (ctx.user.email?.toLowerCase() !== invitation.email.toLowerCase()) {
-          throw new TRPCError({ 
-            code: "FORBIDDEN", 
-            message: `Diese Einladung ist für ${invitation.email}. Bitte melden Sie sich mit dieser E-Mail-Adresse an.` 
-          });
+        // Passwort validieren
+        const pwValidation = validatePassword(input.password);
+        if (!pwValidation.valid) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: pwValidation.error });
         }
 
-        // User-Daten aktualisieren
-        const updateData: any = {
-          openId: ctx.user.openId,
+        // Passwort hashen
+        const passwordHash = await hashPassword(input.password);
+
+        // User erstellen
+        const userData: any = {
           email: invitation.email,
+          passwordHash,
           role: invitation.type,
           firstName: invitation.firstName,
           lastName: invitation.lastName,
+          name: `${invitation.firstName || ''} ${invitation.lastName || ''}`.trim() || null,
         };
 
         if (invitation.type === 'companyadmin') {
-          // Firma existiert bereits (wurde vom SysAdmin erstellt)
-          // FirmenAdmin wird nur der bestehenden Firma zugeordnet
           if (!invitation.companyId) {
             throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Firma mit dieser Einladung verknüpft" });
           }
-          updateData.companyId = invitation.companyId;
+          userData.companyId = invitation.companyId;
         } else if (invitation.type === 'user') {
-          updateData.companyId = invitation.companyId;
-          updateData.personnelNumber = invitation.personnelNumber;
+          userData.companyId = invitation.companyId;
+          userData.personnelNumber = invitation.personnelNumber;
         }
 
-        await db.upsertUser(updateData);
-        await db.markInvitationUsed(input.token);
+        const userId = await db.createUser(userData);
+        await db.markInvitationUsed(invitation.id);
+
+        // JWT Token erstellen und Cookie setzen
+        const token = createToken(userId, invitation.email, invitation.type);
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
         return { success: true };
       }),

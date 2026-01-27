@@ -303,11 +303,7 @@ class SDKServer {
     }
 
     // LastSignedIn aktualisieren
-    await db.upsertUser({
-      openId: userInfo.openId, // openId aktualisieren falls geändert
-      email: user.email,
-      lastSignedIn: signedInAt,
-    });
+    await db.updateUserLastSignedIn(user.id);
 
     return user;
   }

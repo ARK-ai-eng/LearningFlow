@@ -1,0 +1,26 @@
+{
+  "query": "SELECT * FROM users;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT * FROM users;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "7pQVdLdRdNeRXm8tKz5MU5",
+      "name": "ToniK K",
+      "email": "toni91k@gmail.com",
+      "loginMethod": "google",
+      "role": "sysadmin",
+      "createdAt": "2026-01-27 02:39:03",
+      "updatedAt": "2026-01-27 15:09:06",
+      "lastSignedIn": "2026-01-27 15:09:07",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "personnelNumber": "NULL",
+      "companyId": "NULL",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tloginMethod\trole\tcreatedAt\tupdatedAt\tlastSignedIn\tfirstName\tlastName\tpersonnelNumber\tcompanyId\tisActive\n1\t7pQVdLdRdNeRXm8tKz5MU5\tToniK K\ttoni91k@gmail.com\tgoogle\tsysadmin\t2026-01-27 02:39:03\t2026-01-27 15:09:06\t2026-01-27 15:09:07\tNULL\tNULL\tNULL\tNULL\t1\n",
+  "stderr": "",
+  "execution_time_ms": 354
+}

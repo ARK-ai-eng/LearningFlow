@@ -114,3 +114,21 @@
 - [x] Zertifikate 1 Jahr gültig (KI-Kompetenz)
   - expiresAt wird auf 365 Tage gesetzt
   - Abgelaufene Zertifikate werden rot markiert
+
+## Ausstehende Features
+
+- [ ] Automatischer E-Mail-Versand für Einladungslinks
+  - Aktuell werden Links nur erstellt, nicht versendet
+  - Benötigt externen E-Mail-Service (Resend, SendGrid, oder SMTP)
+  - E-Mail an FirmenAdmin bei Firmen-Erstellung
+  - E-Mail an Mitarbeiter bei Einladung
+  - "Link erneut senden" Funktion für abgelaufene/nicht erhaltene Links
+
+## In Arbeit
+
+- [x] Eigenes Login-System mit E-Mail + Passwort (ohne Manus OAuth)
+  - Passwort-Hash in Users-Tabelle (bcryptjs)
+  - Login-Seite mit E-Mail + Passwort (/login)
+  - Einladungs-Flow: Passwort setzen bei Annahme
+  - JWT-basierte Session-Verwaltung
+  - Manus OAuth nur noch für SysAdmin (Owner)
