@@ -101,3 +101,16 @@
 - [x] Altlasten/toter Code entfernen
   - getInvitationByEmail durch getActiveInvitationByEmail ersetzt
   - 20 Tests bestanden
+- [x] FirmenAdmin Doppelrolle: Kann selbst Kurse absolvieren und Prüfungen ablegen
+  - Company Dashboard zeigt "Meine Schulungen" Sektion
+  - FirmenAdmin kann Kurse starten, Fortschritt sehen, Prüfungen ablegen
+- [x] Automatische Zertifikat-Erstellung nach bestandener Prüfung
+  - Bereits implementiert in exam.submit (Zeile 709-719)
+  - Zertifikat wird automatisch mit 1 Jahr Gültigkeit erstellt
+- [x] PDF-Download für Zertifikate
+  - PDF-Generator mit pdfkit implementiert
+  - certificate.generatePdf Endpoint erstellt
+  - Frontend Download-Button funktioniert
+- [x] Zertifikate 1 Jahr gültig (KI-Kompetenz)
+  - expiresAt wird auf 365 Tage gesetzt
+  - Abgelaufene Zertifikate werden rot markiert

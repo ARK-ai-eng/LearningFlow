@@ -298,7 +298,7 @@ export default function CompanyDashboard() {
                     <Award className="w-6 h-6 text-emerald-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{cert.certificateNumber}</p>
+                    <p className="font-medium truncate">{(cert as any).courseName || cert.certificateNumber}</p>
                     <p className="text-sm text-muted-foreground">
                       {new Date(cert.issuedAt).toLocaleDateString('de-DE')}
                     </p>

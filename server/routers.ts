@@ -733,9 +733,56 @@ export const appRouter = router({
   // CERTIFICATE ROUTES
   // ============================================
   certificate: router({
+    // Eigene Zertifikate abrufen
     my: protectedProcedure.query(async ({ ctx }) => {
-      return db.getUserCertificates(ctx.user.id);
+      const certs = await db.getUserCertificates(ctx.user.id);
+      // Kursnamen hinzufügen
+      const certsWithCourse = await Promise.all(certs.map(async (cert) => {
+        const course = await db.getCourseById(cert.courseId);
+        return {
+          ...cert,
+          courseName: course?.title || 'Unbekannt',
+        };
+      }));
+      return certsWithCourse;
     }),
+
+    // PDF generieren und URL zurückgeben
+    generatePdf: protectedProcedure
+      .input(z.object({ certificateId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const cert = await db.getCertificateById(input.certificateId);
+        if (!cert || cert.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Keine Berechtigung" });
+        }
+
+        // Wenn PDF bereits existiert, URL zurückgeben
+        if (cert.pdfUrl) {
+          return { url: cert.pdfUrl };
+        }
+
+        // PDF generieren
+        const { generateCertificatePdf } = await import('./certificatePdf');
+        const user = await db.getUserById(cert.userId);
+        const course = await db.getCourseById(cert.courseId);
+        const attempt = await db.getExamAttempt(cert.examAttemptId);
+        const company = user?.companyId ? await db.getCompanyById(user.companyId) : null;
+
+        const pdfUrl = await generateCertificatePdf({
+          certificateNumber: cert.certificateNumber,
+          userName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || 'Unbekannt' : 'Unbekannt',
+          courseName: course?.title || 'Unbekannt',
+          issuedAt: cert.issuedAt,
+          expiresAt: cert.expiresAt,
+          score: attempt?.score || 0,
+          companyName: company?.name,
+        });
+
+        // URL in DB speichern
+        await db.updateCertificatePdfUrl(cert.id, pdfUrl);
+
+        return { url: pdfUrl };
+      }),
 
     verify: publicProcedure
       .input(z.object({ certificateNumber: z.string() }))
