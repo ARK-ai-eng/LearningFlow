@@ -47,3 +47,7 @@
 - [x] Vitest-Tests für kritische Funktionen (12 Tests bestanden)
 - [x] UI-Polish und Responsiveness
 - [ ] E-Mail-Versand für Einladungen (OAuth/API)
+
+## Demo-Modus
+- [x] Rollen-Switcher Dropdown im Header
+- [x] Zwischen SysAdmin, FirmenAdmin und User wechseln ohne Anmeldung
