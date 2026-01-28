@@ -140,3 +140,19 @@
 - [x] FirmenAdmin legt Mitarbeiter direkt an (E-Mail + Passwort, keine Einladung)
 - [ ] Einladungs-System deaktivieren (Code entfernen, Tabelle behalten)
 - [ ] Dokumentation in docs/ aktualisieren
+
+## Sprint 4 - Schlanker Lern-Flow (28.01.2026)
+
+- [x] Lern-Flow vereinfachen: Jede Frage nur 1x beantworten
+- [x] Sofortiges Feedback nach Antwort (grün = richtig, rot = falsch)
+- [x] Bei falscher Antwort: Rotes Kreuz + richtige Antwort mit grünem Haken zeigen
+- [x] "Nächste Frage" Button nach Feedback
+- [x] Keine Wiederholung der Fragen möglich
+- [x] Nach allen 12 Themen: "Lernmodul abgeschlossen" Meldung
+- [x] Lernfortschritt speichern (welche Fragen bereits bearbeitet)
+- [x] "Quiz abschließen" Button entfernen für Lernmodule
+- [ ] Mini-Quiz für IT Security Awareness (später) - 5 Fragen a 4 Antworten
+
+## Später (Backlog)
+
+- [ ] SysAdmin: Alle Antwortmöglichkeiten (A, B, C, D) anzeigen und bearbeiten können
