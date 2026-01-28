@@ -16,8 +16,21 @@ export async function createContext(
   let user: User | null = null;
 
   try {
-    // JWT Token aus Cookie lesen
-    const token = opts.req.cookies?.[COOKIE_NAME];
+    // Token aus Authorization Header (Hauptmethode) oder Cookie (Fallback) lesen
+    let token: string | undefined;
+    
+    // 1. Versuche Authorization Header (Bearer Token)
+    const authHeader = opts.req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    }
+    
+    // 2. Fallback: Cookie
+    if (!token) {
+      token = opts.req.cookies?.[COOKIE_NAME];
+    }
+    
+    console.log("[Auth] Token source:", authHeader ? "header" : "cookie", "Token present:", !!token);
     
     if (token) {
       const decoded = verifyToken(token);

@@ -1,9 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { getLoginUrl } from "@/const";
+// OAuth entfernt - alle nutzen /login
 import { useLocation, useSearch } from "wouter";
 import { useEffect, useState } from "react";
 import { GraduationCap, Shield, Award, ArrowRight, Sparkles, AlertCircle, X } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -12,17 +13,55 @@ export default function Home() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Check for error parameter in URL
+  // exchangeToken läuft jetzt über REST, nicht mehr über tRPC
+
+  // Check for exchange_token or error parameter in URL - runs ONCE on mount
   useEffect(() => {
-    const params = new URLSearchParams(searchString);
+    // Direkt window.location.search verwenden statt wouter hook
+    const params = new URLSearchParams(window.location.search);
+    const exchangeToken = params.get("exchange_token");
     const error = params.get("error");
+    
+    console.log("[Home] URL params:", { exchangeToken: !!exchangeToken, error });
+    
+    // Exchange-Token verarbeiten
+    if (exchangeToken) {
+      console.log("[Home] Processing exchange token...");
+      // URL sofort bereinigen
+      window.history.replaceState({}, "", "/");
+      
+      // REST-Call für Auth-Bootstrap (nicht tRPC!)
+      fetch("/api/auth/exchange-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exchangeToken }),
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("[Home] Exchange response:", data);
+          if (data.success) {
+            // Seite neu laden um Auth-State zu aktualisieren
+            window.location.href = "/";
+          } else {
+            setShowError(true);
+            setErrorMessage(data.error || "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
+          }
+        })
+        .catch((err) => {
+          console.error("[Home] Exchange error:", err);
+          setShowError(true);
+          setErrorMessage("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
+        });
+      return;
+    }
+    
     if (error === "no_invitation") {
       setShowError(true);
       setErrorMessage("Sie haben keine gültige Einladung. Bitte wenden Sie sich an Ihren Administrator, um eine Einladung zu erhalten.");
-      // Remove error from URL
       window.history.replaceState({}, "", "/");
     }
-  }, [searchString]);
+  }, []); // Empty deps - run once on mount
 
   // Redirect authenticated users to their dashboard
   useEffect(() => {

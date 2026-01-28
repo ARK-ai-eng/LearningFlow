@@ -14,13 +14,37 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-// JWT Token erstellen
+// JWT Token erstellen (7 Tage gültig, für Session)
 export function createToken(userId: number, email: string, role: string): string {
   return jwt.sign(
     { userId, email, role },
     ENV.jwtSecret,
     { expiresIn: '7d' }
   );
+}
+
+// Kurzlebiges Exchange-Token (60 Sekunden, nur für Token-Austausch)
+export function createExchangeToken(userId: number, email: string, role: string): string {
+  return jwt.sign(
+    { userId, email, role, type: 'exchange' },
+    ENV.jwtSecret,
+    { expiresIn: '60s' }
+  );
+}
+
+// Exchange-Token verifizieren
+export function verifyExchangeToken(token: string): { userId: number; email: string; role: string } | null {
+  try {
+    const decoded = jwt.verify(token, ENV.jwtSecret) as any;
+    if (decoded.type !== 'exchange') return null;
+    return {
+      userId: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
+  } catch {
+    return null;
+  }
 }
 
 // JWT Token verifizieren

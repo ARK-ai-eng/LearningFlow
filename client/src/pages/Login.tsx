@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
 import { GraduationCap, Loader2, Eye, EyeOff, LogIn } from "lucide-react";
 import { useState } from "react";
-import { getLoginUrl } from "@/const";
+// OAuth entfernt - alle nutzen E-Mail + Passwort
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -17,13 +17,18 @@ export default function Login() {
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data) => {
+      // Token in localStorage speichern (Hauptmethode, da Cookies im Proxy nicht funktionieren)
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+      }
+      
       // Redirect based on role
       if (data.role === 'sysadmin') {
-        setLocation('/admin');
+        window.location.href = '/admin';
       } else if (data.role === 'companyadmin') {
-        setLocation('/company');
+        window.location.href = '/company';
       } else {
-        setLocation('/dashboard');
+        window.location.href = '/dashboard';
       }
     },
     onError: (err) => {
@@ -111,18 +116,7 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-border">
-            <p className="text-sm text-muted-foreground text-center mb-4">
-              Systemadministrator?
-            </p>
-            <Button 
-              variant="outline"
-              className="w-full"
-              onClick={() => window.location.href = getLoginUrl()}
-            >
-              Mit Manus anmelden
-            </Button>
-          </div>
+          
 
           <div className="mt-4 text-center">
             <Button 

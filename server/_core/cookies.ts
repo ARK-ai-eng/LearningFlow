@@ -39,10 +39,11 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
+  // Für Manus-Proxy: secure muss false sein damit Cookie funktioniert
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req),
+    sameSite: "lax",
+    secure: false,
   };
 }

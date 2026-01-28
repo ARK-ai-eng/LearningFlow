@@ -65,12 +65,15 @@ export const appRouter = router({
         // Last sign in aktualisieren
         await db.updateUserLastSignedIn(user.id);
         
-        // JWT Token erstellen und Cookie setzen
+        // JWT Token erstellen
         const token = createToken(user.id, user.email, user.role);
+        
+        // Cookie setzen (Fallback)
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
         
-        return { success: true, role: user.role };
+        // Token auch zurückgeben für localStorage (Hauptmethode)
+        return { success: true, role: user.role, token };
       }),
     
     logout: publicProcedure.mutation(({ ctx }) => {
@@ -78,6 +81,10 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    
+    // HINWEIS: exchangeToken wurde entfernt!
+    // Auth-Bootstrap läuft jetzt über REST: POST /api/auth/exchange-session
+    // Grund: OAuth-Flows sind redirect-basiert und müssen vor tRPC-Initialisierung abgeschlossen sein
   }),
 
   // ============================================

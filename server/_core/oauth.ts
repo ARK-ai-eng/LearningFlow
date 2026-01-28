@@ -4,7 +4,7 @@ import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 import { ENV } from "./env";
-import { createToken } from "../auth";
+import { createExchangeToken } from "../auth";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -38,19 +38,28 @@ function decodeState(state: string): { callbackUrl: string; returnTo: string | n
 export function registerOAuthRoutes(app: Express) {
   // Manus OAuth nur für SysAdmin (Owner)
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
+    console.log("[OAuth] Callback received");
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
 
+    console.log("[OAuth] Code:", code ? "present" : "missing");
+    console.log("[OAuth] State:", state ? "present" : "missing");
+
     if (!code || !state) {
+      console.log("[OAuth] Missing code or state");
       res.status(400).json({ error: "code and state are required" });
       return;
     }
 
     try {
+      console.log("[OAuth] Exchanging code for token...");
       const tokenResponse = await sdk.exchangeCodeForToken(code, state);
+      console.log("[OAuth] Token received, getting user info...");
       const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
+      console.log("[OAuth] User info:", { openId: userInfo.openId, email: userInfo.email, name: userInfo.name });
 
       if (!userInfo.openId || !userInfo.email) {
+        console.log("[OAuth] Missing openId or email");
         res.status(400).json({ error: "openId or email missing from user info" });
         return;
       }
@@ -60,18 +69,22 @@ export function registerOAuthRoutes(app: Express) {
 
       // NUR OWNER (SysAdmin) darf sich via Manus OAuth anmelden
       const isOwner = userInfo.openId === ENV.ownerOpenId;
+      console.log("[OAuth] Is owner:", isOwner, "userOpenId:", userInfo.openId, "ownerOpenId:", ENV.ownerOpenId);
       
       if (!isOwner) {
         // Alle anderen müssen sich über E-Mail + Passwort anmelden
+        console.log("[OAuth] Not owner, redirecting to use email login");
         res.redirect(302, "/?error=use_email_login");
         return;
       }
 
       // Owner: Prüfen ob bereits existiert
       let user = await db.getUserByEmail(email);
+      console.log("[OAuth] Existing user:", user ? user.id : "none");
       
       if (!user) {
         // SysAdmin erstellen
+        console.log("[OAuth] Creating new sysadmin user...");
         const userId = await db.createUser({
           email: email,
           name: userInfo.name || null,
@@ -79,22 +92,24 @@ export function registerOAuthRoutes(app: Express) {
           loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
         });
         user = await db.getUserById(userId);
+        console.log("[OAuth] Created user:", userId);
       } else {
         // LastSignedIn aktualisieren
         await db.updateUserLastSignedIn(user.id);
+        console.log("[OAuth] Updated lastSignedIn for user:", user.id);
       }
 
       if (!user) {
+        console.log("[OAuth] Failed to create/get user");
         res.status(500).json({ error: "Failed to create user" });
         return;
       }
 
-      // JWT Token erstellen (eigenes System)
-      const token = createToken(user.id, user.email, user.role);
-      const cookieOptions = getSessionCookieOptions(req);
-      res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
+      // Kurzlebiges Exchange-Token erstellen (60 Sekunden)
+      const exchangeToken = createExchangeToken(user.id, user.email, user.role);
+      console.log("[OAuth] Exchange token created, redirecting with token in URL");
 
-      res.redirect(302, "/");
+      res.redirect(302, `/?exchange_token=${exchangeToken}`);
 
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
