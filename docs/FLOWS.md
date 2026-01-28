@@ -34,7 +34,7 @@ SysAdmin ruft FirmenAdmin an und teilt Passwort mit
 
 ## FirmenAdmin Flows
 
-### Mitarbeiter anlegen (TODO: auf direkte Erstellung umstellen)
+### Mitarbeiter anlegen
 ```
 FirmenAdmin → /company → "Mitarbeiter" → "Neuer Mitarbeiter" →
 Formular ausfüllen:
@@ -42,7 +42,9 @@ Formular ausfüllen:
   - Passwort (wird telefonisch mitgeteilt)
   - Vorname/Nachname
   - Personalnummer (optional)
-→ "Mitarbeiter erstellen"
+→ "Mitarbeiter erstellen" →
+Erfolgsseite zeigt Zugangsdaten →
+FirmenAdmin ruft Mitarbeiter an und teilt Passwort mit
 ```
 
 ### Eigene Kurse absolvieren

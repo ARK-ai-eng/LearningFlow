@@ -137,6 +137,6 @@
 ## Aktuell: Direktes Anlegen ohne Einladung
 
 - [x] SysAdmin legt FirmenAdmin direkt an (E-Mail + Passwort, keine Einladung)
-- [ ] FirmenAdmin legt Mitarbeiter direkt an (E-Mail + Passwort, keine Einladung)
+- [x] FirmenAdmin legt Mitarbeiter direkt an (E-Mail + Passwort, keine Einladung)
 - [ ] Einladungs-System deaktivieren (Code entfernen, Tabelle behalten)
 - [ ] Dokumentation in docs/ aktualisieren

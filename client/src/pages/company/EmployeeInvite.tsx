@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
-import { ArrowLeft, UserPlus, CheckCircle, Copy } from "lucide-react";
+import { ArrowLeft, UserPlus, CheckCircle, Eye, EyeOff } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
@@ -12,16 +12,18 @@ export default function EmployeeInvite() {
   const [, setLocation] = useLocation();
   const [formData, setFormData] = useState({
     email: "",
+    password: "",
     firstName: "",
     lastName: "",
     personnelNumber: "",
   });
-  const [inviteToken, setInviteToken] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const inviteMutation = trpc.employee.invite.useMutation({
-    onSuccess: (data) => {
-      setInviteToken(data.token);
-      toast.success("Einladung erstellt!");
+  const createMutation = trpc.employee.create.useMutation({
+    onSuccess: () => {
+      setSuccess(true);
+      toast.success("Mitarbeiter erstellt!");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -30,18 +32,10 @@ export default function EmployeeInvite() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    inviteMutation.mutate(formData);
+    createMutation.mutate(formData);
   };
 
-  const copyInviteLink = () => {
-    const link = `${window.location.origin}/invite/${inviteToken}`;
-    navigator.clipboard.writeText(link);
-    toast.success("Link kopiert!");
-  };
-
-  if (inviteToken) {
-    const inviteLink = `${window.location.origin}/invite/${inviteToken}`;
-    
+  if (success) {
     return (
       <DashboardLayout>
         <div className="max-w-xl mx-auto">
@@ -50,26 +44,28 @@ export default function EmployeeInvite() {
               <CheckCircle className="w-8 h-8 text-emerald-400" />
             </div>
             
-            <h1 className="text-2xl font-bold mb-2">Einladung erstellt!</h1>
+            <h1 className="text-2xl font-bold mb-2">Mitarbeiter erstellt!</h1>
             <p className="text-muted-foreground mb-6">
-              Teilen Sie den folgenden Link mit {formData.firstName} {formData.lastName}.
-              Der Link ist 24 Stunden gültig.
+              {formData.firstName} {formData.lastName} kann sich jetzt anmelden.
             </p>
 
-            <div className="p-4 rounded-lg bg-muted/50 mb-6">
-              <p className="text-sm break-all font-mono">{inviteLink}</p>
+            <div className="p-4 rounded-lg bg-muted/50 mb-6 text-left space-y-2">
+              <p className="text-sm"><strong>E-Mail:</strong> {formData.email}</p>
+              <p className="text-sm"><strong>Passwort:</strong> {formData.password}</p>
+              <p className="text-xs text-muted-foreground mt-4">
+                Bitte teilen Sie diese Zugangsdaten telefonisch mit dem Mitarbeiter.
+              </p>
             </div>
 
             <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={copyInviteLink}>
-                <Copy className="w-4 h-4 mr-2" />
-                Link kopieren
-              </Button>
-              <Button onClick={() => {
-                setInviteToken(null);
-                setFormData({ email: "", firstName: "", lastName: "", personnelNumber: "" });
+              <Button variant="outline" onClick={() => {
+                setSuccess(false);
+                setFormData({ email: "", password: "", firstName: "", lastName: "", personnelNumber: "" });
               }}>
-                Weitere einladen
+                Weiteren Mitarbeiter anlegen
+              </Button>
+              <Button onClick={() => setLocation('/company')}>
+                Zur Übersicht
               </Button>
             </div>
           </div>
@@ -96,9 +92,9 @@ export default function EmployeeInvite() {
               <UserPlus className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Mitarbeiter einladen</h1>
+              <h1 className="text-xl font-bold">Neuer Mitarbeiter</h1>
               <p className="text-sm text-muted-foreground">
-                Senden Sie eine Einladung per E-Mail
+                Erstellen Sie einen neuen Mitarbeiter-Zugang
               </p>
             </div>
           </div>
@@ -137,6 +133,33 @@ export default function EmployeeInvite() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="password">Passwort *</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Min. 8 Zeichen, Groß-/Kleinbuchstaben, Zahl"
+                  required
+                  minLength={8}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Dieses Passwort teilen Sie telefonisch mit dem Mitarbeiter.
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="personnelNumber">Personalnummer (optional)</Label>
               <Input
                 id="personnelNumber"
@@ -150,9 +173,9 @@ export default function EmployeeInvite() {
               <Button 
                 type="submit" 
                 className="w-full"
-                disabled={inviteMutation.isPending}
+                disabled={createMutation.isPending}
               >
-                {inviteMutation.isPending ? 'Wird erstellt...' : 'Einladung senden'}
+                {createMutation.isPending ? 'Wird erstellt...' : 'Mitarbeiter erstellen'}
               </Button>
             </div>
           </form>

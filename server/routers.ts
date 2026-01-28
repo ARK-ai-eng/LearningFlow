@@ -339,14 +339,18 @@ export const appRouter = router({
         return users.filter(u => u.role === 'user');
       }),
 
-    invite: companyAdminProcedure
+    // Mitarbeiter direkt erstellen (ohne Einladung)
+    create: companyAdminProcedure
       .input(z.object({
         email: z.string().email(),
+        password: z.string().min(8),
         firstName: z.string(),
         lastName: z.string(),
         personnelNumber: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { hashPassword, validatePassword } = await import('./auth');
+        
         if (!ctx.user.companyId) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Firma zugeordnet" });
         }
@@ -362,31 +366,27 @@ export const appRouter = router({
           });
         }
         
-        const existingInvitation = await db.getActiveInvitationByEmail(email);
-        if (existingInvitation) {
-          throw new TRPCError({ 
-            code: "CONFLICT", 
-            message: "Für diese E-Mail-Adresse existiert bereits eine aktive Einladung" 
-          });
+        // Passwort validieren
+        const pwValidation = validatePassword(input.password);
+        if (!pwValidation.valid) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: pwValidation.error });
         }
-
-        const company = await db.getCompanyById(ctx.user.companyId);
-        const token = generateToken();
         
-        await db.createInvitation({
-          token,
+        // Passwort hashen
+        const passwordHash = await hashPassword(input.password);
+        
+        // User direkt erstellen
+        await db.createUser({
           email: email,
-          type: 'user',
+          passwordHash,
+          role: 'user',
           companyId: ctx.user.companyId,
-          companyName: company?.name || null,
           firstName: input.firstName,
           lastName: input.lastName,
           personnelNumber: input.personnelNumber || null,
-          invitedBy: ctx.user.id,
-          expiresAt: getExpirationDate(24),
         });
 
-        return { success: true, token };
+        return { success: true };
       }),
 
     // CSV Import
