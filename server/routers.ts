@@ -197,14 +197,15 @@ export const appRouter = router({
       .input(z.object({
         name: z.string().min(1),
         adminEmail: z.string().email(),
+        adminPassword: z.string().min(8),
         adminFirstName: z.string().optional(),
         adminLastName: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { hashPassword, validatePassword } = await import('./auth');
         const email = input.adminEmail.toLowerCase();
         
         // E-MAIL-DUPLIKAT-PRÜFUNG
-        // 1. Existiert bereits ein User mit dieser E-Mail?
         const existingUser = await db.getUserByEmail(email);
         if (existingUser) {
           throw new TRPCError({ 
@@ -213,33 +214,29 @@ export const appRouter = router({
           });
         }
         
-        // 2. Existiert bereits eine aktive Einladung für diese E-Mail?
-        const existingInvitation = await db.getActiveInvitationByEmail(email);
-        if (existingInvitation) {
-          throw new TRPCError({ 
-            code: "CONFLICT", 
-            message: "Für diese E-Mail-Adresse existiert bereits eine aktive Einladung" 
-          });
+        // Passwort validieren
+        const pwValidation = validatePassword(input.adminPassword);
+        if (!pwValidation.valid) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: pwValidation.error });
         }
+        
+        // Passwort hashen
+        const passwordHash = await hashPassword(input.adminPassword);
         
         // 1. Firma erstellen
         const companyId = await db.createCompany({ name: input.name });
         
-        // 2. Einladung für FirmenAdmin erstellen
-        const token = generateToken();
-        await db.createInvitation({
-          token,
+        // 2. FirmenAdmin direkt erstellen (keine Einladung)
+        await db.createUser({
           email: email,
-          type: 'companyadmin',
+          passwordHash,
+          role: 'companyadmin',
           companyId: companyId,
-          companyName: input.name,
           firstName: input.adminFirstName || null,
           lastName: input.adminLastName || null,
-          invitedBy: ctx.user.id,
-          expiresAt: getExpirationDate(24),
         });
 
-        return { success: true, token, companyId };
+        return { success: true, companyId };
       }),
 
     update: adminProcedure

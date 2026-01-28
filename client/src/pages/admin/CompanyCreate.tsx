@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
-import { ArrowLeft, Building2, CheckCircle, Copy } from "lucide-react";
+import { ArrowLeft, Building2, CheckCircle, Eye, EyeOff } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
@@ -13,15 +13,17 @@ export default function CompanyCreate() {
   const [formData, setFormData] = useState({
     name: "",
     adminEmail: "",
+    adminPassword: "",
     adminFirstName: "",
     adminLastName: "",
   });
-  const [inviteToken, setInviteToken] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const createMutation = trpc.company.create.useMutation({
-    onSuccess: (data) => {
-      setInviteToken(data.token);
-      toast.success("Firma erstellt!");
+    onSuccess: () => {
+      setSuccess(true);
+      toast.success("Firma und Administrator erstellt!");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -33,15 +35,7 @@ export default function CompanyCreate() {
     createMutation.mutate(formData);
   };
 
-  const copyInviteLink = () => {
-    const link = `${window.location.origin}/invite/${inviteToken}`;
-    navigator.clipboard.writeText(link);
-    toast.success("Link kopiert!");
-  };
-
-  if (inviteToken) {
-    const inviteLink = `${window.location.origin}/invite/${inviteToken}`;
-    
+  if (success) {
     return (
       <DashboardLayout>
         <div className="max-w-xl mx-auto">
@@ -52,23 +46,20 @@ export default function CompanyCreate() {
             
             <h1 className="text-2xl font-bold mb-2">Firma erstellt!</h1>
             <p className="text-muted-foreground mb-6">
-              Teilen Sie den folgenden Einladungslink mit dem Firmenadministrator.
-              Der Link ist 24 Stunden gültig.
+              Der Firmenadministrator kann sich jetzt anmelden.
             </p>
 
-            <div className="p-4 rounded-lg bg-muted/50 mb-6">
-              <p className="text-sm break-all font-mono">{inviteLink}</p>
+            <div className="p-4 rounded-lg bg-muted/50 mb-6 text-left space-y-2">
+              <p className="text-sm"><strong>E-Mail:</strong> {formData.adminEmail}</p>
+              <p className="text-sm"><strong>Passwort:</strong> {formData.adminPassword}</p>
+              <p className="text-xs text-muted-foreground mt-4">
+                Bitte teilen Sie diese Zugangsdaten telefonisch mit dem Administrator.
+              </p>
             </div>
 
-            <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={copyInviteLink}>
-                <Copy className="w-4 h-4 mr-2" />
-                Link kopieren
-              </Button>
-              <Button onClick={() => setLocation('/admin/companies')}>
-                Zur Firmenliste
-              </Button>
-            </div>
+            <Button onClick={() => setLocation('/admin/companies')}>
+              Zur Firmenliste
+            </Button>
           </div>
         </div>
       </DashboardLayout>
@@ -95,7 +86,7 @@ export default function CompanyCreate() {
             <div>
               <h1 className="text-xl font-bold">Neue Firma erstellen</h1>
               <p className="text-sm text-muted-foreground">
-                Erstellen Sie eine neue Firma und laden Sie den Administrator ein
+                Erstellen Sie eine neue Firma mit Administrator
               </p>
             </div>
           </div>
@@ -145,8 +136,32 @@ export default function CompanyCreate() {
                     placeholder="admin@firma.de"
                     required
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="adminPassword">Passwort *</Label>
+                  <div className="relative">
+                    <Input
+                      id="adminPassword"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.adminPassword}
+                      onChange={(e) => setFormData(prev => ({ ...prev, adminPassword: e.target.value }))}
+                      placeholder="Min. 8 Zeichen, Groß-/Kleinbuchstaben, Zahl"
+                      required
+                      minLength={8}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    An diese Adresse wird der Einladungslink gesendet.
+                    Dieses Passwort teilen Sie telefonisch mit dem Administrator.
                   </p>
                 </div>
               </div>

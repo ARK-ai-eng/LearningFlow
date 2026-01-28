@@ -124,11 +124,19 @@
   - E-Mail an Mitarbeiter bei Einladung
   - "Link erneut senden" Funktion für abgelaufene/nicht erhaltene Links
 
-## In Arbeit
+## Erledigt (Session 28.01.2026)
 
 - [x] Eigenes Login-System mit E-Mail + Passwort (ohne Manus OAuth)
   - Passwort-Hash in Users-Tabelle (bcryptjs)
   - Login-Seite mit E-Mail + Passwort (/login)
-  - Einladungs-Flow: Passwort setzen bei Annahme
-  - JWT-basierte Session-Verwaltung
-  - Manus OAuth nur noch für SysAdmin (Owner)
+  - JWT-Token in localStorage (Cookies funktionieren nicht im Manus-Proxy)
+  - Authorization Header für API-Requests
+  - OAuth komplett entfernt
+  - SysAdmin: arton.ritter@aismarterflow.de / Manus§123*
+
+## Aktuell: Direktes Anlegen ohne Einladung
+
+- [x] SysAdmin legt FirmenAdmin direkt an (E-Mail + Passwort, keine Einladung)
+- [ ] FirmenAdmin legt Mitarbeiter direkt an (E-Mail + Passwort, keine Einladung)
+- [ ] Einladungs-System deaktivieren (Code entfernen, Tabelle behalten)
+- [ ] Dokumentation in docs/ aktualisieren
