@@ -156,3 +156,96 @@
 ## Später (Backlog)
 
 - [ ] SysAdmin: Alle Antwortmöglichkeiten (A, B, C, D) anzeigen und bearbeiten können
+
+
+## Sprint 8 - Kurs-Management & Lern-Flow Verbesserungen (29.01.2026)
+
+### Feature 1: Kurs-Status-Management
+- [ ] Backend: `isActive` Boolean-Feld in `courses` Tabelle prüfen/hinzufügen
+- [ ] Backend: `course.deactivate()` API-Endpoint
+- [ ] Backend: `course.activate()` API-Endpoint
+- [ ] Backend: `course.list()` mit Sortierung (aktiv zuerst, inaktiv hinten)
+- [ ] Frontend: Visuelle Unterscheidung (Opacity 50%, Badge "Inaktiv")
+- [ ] Frontend: Toggle-Button (Aktivieren/Deaktivieren)
+- [ ] Frontend: Filter (Alle/Aktiv/Inaktiv)
+- [ ] Tests: Unit Tests für Endpoints
+- [ ] Tests: Manual Testing im Browser
+- [ ] Code Review
+
+### Feature 2: Lern-Flow Logik (Sensitization-Kurse)
+- [ ] ADR-014: Breaking Change Strategie dokumentieren
+- [ ] ADR-015: Fortschritt-Berechnung bei Wiederholung dokumentieren
+- [ ] Backend: Migration-Script für alte Fortschritte (3/5 → %)
+- [ ] Backend: Fisher-Yates Shuffle-Algorithmus implementieren
+- [ ] Backend: `progress.getIncorrectQuestions()` API-Endpoint
+- [ ] Backend: `progress.calculateScore()` (% basiert) API-Endpoint
+- [ ] Backend: `progress.repeatIncorrectQuestions()` API-Endpoint
+- [ ] Backend: Antworten-Shuffle in API integrieren
+- [ ] Frontend: "Nächste Frage" Button (statt "Thema abschließen")
+- [ ] Frontend: Dialog "Fehlerhafte Fragen wiederholen?"
+- [ ] Frontend: Anzeige nur falsche Fragen
+- [ ] Frontend: Fortschritt-Anzeige % statt "3/5 richtig"
+- [ ] Frontend: Antworten-Reihenfolge shuffeln bei Wiederholung
+- [ ] Tests: Unit Tests (Shuffle, Fortschritt, Wiederholung)
+- [ ] Tests: Integration Tests
+- [ ] Tests: Manual Testing
+- [ ] Tests: User Testing (5 Personen)
+- [ ] Code Review
+- [ ] Staging-Deployment + Test
+- [ ] Production-Deployment
+
+### Wissensmanagement
+- [x] ADR-011: Soft-Delete für Kurse
+- [x] ADR-012: Mitarbeiter sehen zugewiesene inaktive Kurse
+- [x] ADR-013: Erste Antwort zählt bei Wiederholung
+- [x] ADR-014: Fisher-Yates Shuffle für Antworten
+- [x] ADR-015: Migration-Strategie für Breaking Changes
+- [x] PATTERN-Soft-Delete
+- [x] PATTERN-Fisher-Yates-Shuffle
+- [x] PATTERN-Migration-Script
+- [x] Sprint-8-Analyse dokumentiert
+- [x] Sprint-8-Dependencies-Risks dokumentiert
+- [x] Sprint-8-Roadmap dokumentiert
+
+## Sprint 9 - E-Mail & Mini-Quiz (Geplant: 03.02.2026)
+
+### Feature 1: Mini-Quiz nach Lernphase
+- [ ] Backend: 5 zufällige Fragen aus allen Themen auswählen
+- [ ] Backend: Quiz-Score berechnen
+- [ ] Frontend: Quiz-UI mit 5 Fragen
+- [ ] Frontend: Ergebnis-Anzeige
+- [ ] Tests: Unit Tests
+
+### Feature 2: E-Mail-Versand
+- [ ] Backend: E-Mail-Service Integration (Resend/SendGrid)
+- [ ] Backend: E-Mail-Templates (Einladung, Kurszuweisung, Zertifikat)
+- [ ] Backend: E-Mail-Versand bei Einladung
+- [ ] Backend: E-Mail-Versand bei Kurszuweisung
+- [ ] Backend: E-Mail-Versand bei Zertifikat
+- [ ] Tests: E-Mail-Versand testen
+
+### Feature 3: Passwort-Reset
+- [ ] Backend: Passwort-Reset-Token generieren
+- [ ] Backend: E-Mail mit Reset-Link
+- [ ] Frontend: Passwort-Reset-Seite
+- [ ] Tests: Passwort-Reset Flow testen
+
+## Sprint 10+ - Langfristige Features (Q1-Q3 2026)
+
+### Q1 2026 (Feb-März)
+- [ ] Analytics-Dashboard (Welche Fragen sind am schwierigsten?)
+- [ ] Gamification (Badges, Punkte, Leaderboard)
+- [ ] Video-Tutorials (Optional)
+- [ ] Mobile App (Optional)
+
+### Q2 2026 (Apr-Jun)
+- [ ] Multi-Language Support (Englisch, Französisch)
+- [ ] Advanced Reporting (Excel-Export, PDF-Reports)
+- [ ] API für externe Systeme
+- [ ] Single Sign-On (SSO)
+
+### Q3 2026 (Jul-Sep)
+- [ ] AI-gestützte Fragen-Generierung
+- [ ] Adaptive Learning (Schwierigkeit anpassen)
+- [ ] Live-Chat Support
+- [ ] White-Label Option

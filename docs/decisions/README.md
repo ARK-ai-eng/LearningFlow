@@ -667,3 +667,390 @@ Wie sollte Design konsistent bleiben, wenn neue Features hinzukommen?
 **Status**: ✅ 10 ADRs dokumentiert  
 **Letzte Aktualisierung**: 28.01.2026  
 **Skalierbar für**: Neue Entscheidungen, neue Entwickler, andere Projekte
+
+
+---
+
+## ADR-011: Soft-Delete für Kurse
+
+**Titel**: Soft-Delete statt Hard-Delete für Kurse
+
+**Datum**: 29.01.2026  
+**Status**: ✅ Akzeptiert  
+**Entscheidungsträger**: Senior Dev Team
+
+### Problem
+
+Wie sollten Kurse "gelöscht" werden? Hard-Delete (aus Datenbank löschen) oder Soft-Delete (isActive = false)?
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **Hard-Delete** | Einfach, Datenbank bleibt klein | Datenverlust, kein Rollback, Zertifikate verloren |
+| **Soft-Delete** | Rollback möglich, Daten erhalten, Zertifikate bleiben gültig | Datenbank wird größer, komplexere Queries |
+
+### Entscheidung
+
+**Soft-Delete** (`isActive = false`)
+
+### Begründung
+
+1. **Datensicherheit**: Kurse können versehentlich deaktiviert werden → Rollback möglich
+2. **Zertifikate**: Zertifikate bleiben gültig, auch wenn Kurs inaktiv
+3. **Fortschritte**: Mitarbeiter-Fortschritte bleiben erhalten
+4. **Compliance**: Audit-Trail bleibt erhalten (wann wurde Kurs deaktiviert?)
+5. **Skalierbarkeit**: Datenbank-Größe ist kein Problem (< 1000 Kurse erwartet)
+
+### Konsequenzen
+
+**Positiv**:
+- ✅ Rollback möglich
+- ✅ Zertifikate bleiben gültig
+- ✅ Fortschritte bleiben erhalten
+- ✅ Audit-Trail
+
+**Negativ**:
+- ⚠️ Queries müssen `WHERE isActive = true` filtern
+- ⚠️ Datenbank wird größer (aber vernachlässigbar)
+
+### Implementierung
+
+```typescript
+// Datenbank-Schema
+export const courses = sqliteTable('courses', {
+  // ... existing fields
+  isActive: boolean('is_active').default(true),
+});
+
+// API-Endpoint
+course.deactivate: adminProcedure
+  .input(z.object({ id: z.number() }))
+  .mutation(async ({ input }) => {
+    return await db.update(courses)
+      .set({ isActive: false })
+      .where(eq(courses.id, input.id));
+  }),
+```
+
+---
+
+## ADR-012: Mitarbeiter sehen zugewiesene inaktive Kurse
+
+**Titel**: Mitarbeiter sehen zugewiesene inaktive Kurse weiterhin
+
+**Datum**: 29.01.2026  
+**Status**: ✅ Akzeptiert  
+**Entscheidungsträger**: Senior Dev Team
+
+### Problem
+
+Was passiert, wenn ein Mitarbeiter einen Kurs bearbeitet und der SysAdmin setzt ihn inaktiv? Verschwindet der Kurs für den Mitarbeiter?
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **Kurs verschwindet sofort** | Einfach, konsistent | Mitarbeiter verliert Fortschritt, Verwirrung |
+| **Kurs bleibt sichtbar** | Mitarbeiter kann fertig machen | Inkonsistent (Kurs ist "inaktiv" aber sichtbar) |
+
+### Entscheidung
+
+**Kurs bleibt sichtbar für zugewiesene Mitarbeiter**
+
+### Begründung
+
+1. **UX**: Mitarbeiter sollte nicht plötzlich Fortschritt verlieren
+2. **Fairness**: Mitarbeiter hat Zeit investiert → sollte fertig machen können
+3. **Business-Logik**: "Inaktiv" bedeutet "keine NEUEN Zuweisungen", nicht "sofort entfernen"
+
+### Konsequenzen
+
+**Positiv**:
+- ✅ Mitarbeiter kann Kurs fertig machen
+- ✅ Keine Verwirrung
+- ✅ Fortschritt bleibt erhalten
+
+**Negativ**:
+- ⚠️ Komplexere Query-Logik (für Mitarbeiter: `isActive = true OR assigned = true`)
+- ⚠️ UI muss zeigen: "Dieser Kurs ist inaktiv, aber du kannst ihn fertig machen"
+
+### Implementierung
+
+```typescript
+// API-Endpoint für Mitarbeiter
+course.list: protectedProcedure
+  .query(async ({ ctx }) => {
+    if (ctx.user.role === 'user') {
+      // Mitarbeiter sieht: Aktive Kurse + zugewiesene inaktive Kurse
+      return await db.select()
+        .from(courses)
+        .where(
+          or(
+            eq(courses.isActive, true),
+            inArray(courses.id, assignedCourseIds)
+          )
+        );
+    } else {
+      // Admin sieht alle Kurse
+      return await db.select().from(courses);
+    }
+  }),
+```
+
+---
+
+## ADR-013: Erste Antwort zählt bei Wiederholung
+
+**Titel**: Fortschritt-Berechnung bei Wiederholung - Erste Antwort zählt
+
+**Datum**: 29.01.2026  
+**Status**: ✅ Akzeptiert  
+**Entscheidungsträger**: Senior Dev Team
+
+### Problem
+
+Wenn ein Mitarbeiter falsche Fragen wiederholt, wie wird der Fortschritt berechnet? Zählt die erste Antwort? Die beste? Die letzte?
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **A: Erste Antwort zählt** | Ehrlich, verhindert "Cheating" | Keine zweite Chance |
+| **B: Beste Antwort zählt** | Motivierend, zweite Chance | User kann "cheaten" (wiederholen bis 100%) |
+| **C: Letzte Antwort zählt** | Aktuelles Wissen | Kann schlechter werden |
+| **D: Durchschnitt** | Fair | Komplex zu implementieren |
+
+### Entscheidung
+
+**Option A: Erste Antwort zählt**
+
+### Begründung
+
+1. **Ehrlichkeit**: Erste Antwort zeigt echtes Wissen
+2. **Prävention**: Verhindert "Cheating" (wiederholen bis 100%)
+3. **Standard**: E-Learning-Systeme nutzen meist "erste Antwort"
+4. **Einfachheit**: Einfach zu implementieren und zu erklären
+5. **Lernziel**: Wiederholung dient dem Lernen, nicht dem Score-Verbessern
+
+### Konsequenzen
+
+**Positiv**:
+- ✅ Ehrlich und transparent
+- ✅ Verhindert "Cheating"
+- ✅ Einfach zu implementieren
+- ✅ Standard in E-Learning
+
+**Negativ**:
+- ⚠️ Keine zweite Chance für Score
+- ⚠️ User könnte frustriert sein
+
+**Mitigation**:
+- UI zeigt klar: "Wiederholung dient dem Lernen, nicht dem Score-Verbessern"
+- Dialog-Text: "Möchtest du die fehlerhaften Fragen wiederholen, um dein Wissen zu vertiefen? (Score wird nicht geändert)"
+
+### Implementierung
+
+```typescript
+// Fortschritt-Tracking
+export const userProgress = sqliteTable('user_progress', {
+  // ... existing fields
+  firstAttemptScore: int('first_attempt_score'), // Zählt für Zertifikat
+  currentScore: int('current_score'), // Aktueller Score (kann besser sein)
+  attempts: int('attempts').default(1),
+});
+
+// Bei Wiederholung
+if (isRepeat) {
+  // Nur currentScore aktualisieren, firstAttemptScore bleibt
+  await db.update(userProgress)
+    .set({
+      currentScore: newScore,
+      attempts: attempts + 1,
+    })
+    .where(eq(userProgress.id, progressId));
+}
+```
+
+---
+
+## ADR-014: Fisher-Yates Shuffle für Antworten
+
+**Titel**: Fisher-Yates Shuffle-Algorithmus für Antworten-Reihenfolge
+
+**Datum**: 29.01.2026  
+**Status**: ✅ Akzeptiert  
+**Entscheidungsträger**: Senior Dev Team
+
+### Problem
+
+Wie sollten Antworten-Reihenfolgen zufällig gemischt werden? Welcher Shuffle-Algorithmus?
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **Math.random().sort()** | Einfach, eine Zeile | Nicht uniform, kann Antworten "verlieren" |
+| **Fisher-Yates** | Uniform, korrekt, bewährt | Etwas komplexer |
+| **Lodash shuffle** | Einfach, library | Dependency |
+
+### Entscheidung
+
+**Fisher-Yates Shuffle**
+
+### Begründung
+
+1. **Korrektheit**: Uniform distribution (jede Permutation gleich wahrscheinlich)
+2. **Bewährt**: Standard-Algorithmus seit 1938
+3. **Keine Bugs**: `Math.random().sort()` kann Antworten "verlieren"
+4. **Performance**: O(n) - optimal
+5. **Keine Dependency**: Kein Lodash nötig
+
+### Konsequenzen
+
+**Positiv**:
+- ✅ Korrekt und uniform
+- ✅ Keine Bugs
+- ✅ Keine Dependency
+
+**Negativ**:
+- ⚠️ Etwas komplexer als `Math.random().sort()` (aber nur 5 Zeilen)
+
+### Implementierung
+
+```typescript
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]; // Kopie erstellen
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Nutzen in API
+const question = await db.select().from(questions).where(eq(questions.id, questionId));
+const shuffledAnswers = shuffleArray([
+  question.answerA,
+  question.answerB,
+  question.answerC,
+  question.answerD,
+]);
+```
+
+### Unit Tests
+
+```typescript
+describe('shuffleArray', () => {
+  it('should not lose any elements', () => {
+    const input = [1, 2, 3, 4];
+    const output = shuffleArray(input);
+    expect(output.sort()).toEqual(input.sort());
+  });
+
+  it('should shuffle (not always same order)', () => {
+    const input = [1, 2, 3, 4];
+    const outputs = Array.from({ length: 100 }, () => shuffleArray(input));
+    const allSame = outputs.every(o => JSON.stringify(o) === JSON.stringify(input));
+    expect(allSame).toBe(false);
+  });
+});
+```
+
+---
+
+## ADR-015: Migration-Strategie für Breaking Changes
+
+**Titel**: Migration-Strategie für Breaking Changes (Alte Logik → Neue Logik)
+
+**Datum**: 29.01.2026  
+**Status**: ✅ Akzeptiert  
+**Entscheidungsträger**: Senior Dev Team
+
+### Problem
+
+Wie sollten Breaking Changes gehandhabt werden? Alte Fortschritte haben "3/5 Fragen richtig" Logik, neue Fortschritte haben "% Logik".
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **A: Alte Fortschritte löschen** | Einfach, clean start | Datenverlust, User verlieren Fortschritt |
+| **B: Alte Fortschritte migrieren** | Kein Datenverlust, fair | Komplexer, Migration-Script nötig |
+| **C: Zwei Systeme parallel** | Keine Migration nötig | Komplexer Code, Wartungsaufwand |
+
+### Entscheidung
+
+**Option B: Alte Fortschritte migrieren**
+
+### Begründung
+
+1. **Fairness**: User haben Zeit investiert → sollten nicht verlieren
+2. **Datensicherheit**: Kein Datenverlust
+3. **Business**: User-Vertrauen ist wichtiger als Entwicklungs-Aufwand
+4. **Einmaliger Aufwand**: Migration ist einmalig, zwei Systeme sind dauerhaft
+
+### Konsequenzen
+
+**Positiv**:
+- ✅ Kein Datenverlust
+- ✅ User-Vertrauen
+- ✅ Fairness
+
+**Negativ**:
+- ⚠️ Migration-Script nötig (1-2h Aufwand)
+- ⚠️ Staging-Test nötig
+- ⚠️ Backup vor Production
+
+### Implementierung
+
+```typescript
+// Migration-Script: migrate-progress.mjs
+import { db } from './server/db.js';
+import { userProgress } from './drizzle/schema.js';
+
+async function migrateProgress() {
+  // Alle alten Fortschritte
+  const oldProgress = await db.select()
+    .from(userProgress)
+    .where(eq(userProgress.scoreType, 'fraction')); // 3/5
+
+  for (const progress of oldProgress) {
+    // Umrechnen: 3/5 → 60%
+    const percentage = (progress.correctAnswers / progress.totalQuestions) * 100;
+
+    // Update
+    await db.update(userProgress)
+      .set({
+        score: percentage,
+        scoreType: 'percentage',
+      })
+      .where(eq(userProgress.id, progress.id));
+  }
+
+  console.log(`Migrated ${oldProgress.length} progress records`);
+}
+
+migrateProgress();
+```
+
+### Rollback-Plan
+
+Falls Migration fehlschlägt:
+1. Datenbank-Backup wiederherstellen
+2. Alte Logik reaktivieren
+3. Fehler analysieren
+4. Migration-Script fixen
+5. Nochmal versuchen
+
+---
+
+## Index aktualisieren
+
+| ADR | Titel | Datum | Status |
+|-----|-------|-------|--------|
+| [ADR-011](#adr-011-soft-delete-für-kurse) | Soft-Delete statt Hard-Delete für Kurse | 29.01.2026 | ✅ Akzeptiert |
+| [ADR-012](#adr-012-mitarbeiter-sehen-zugewiesene-inaktive-kurse) | Mitarbeiter sehen zugewiesene inaktive Kurse | 29.01.2026 | ✅ Akzeptiert |
+| [ADR-013](#adr-013-erste-antwort-zählt-bei-wiederholung) | Erste Antwort zählt bei Wiederholung | 29.01.2026 | ✅ Akzeptiert |
+| [ADR-014](#adr-014-fisher-yates-shuffle-für-antworten) | Fisher-Yates Shuffle für Antworten | 29.01.2026 | ✅ Akzeptiert |
+| [ADR-015](#adr-015-migration-strategie-für-breaking-changes) | Migration-Strategie für Breaking Changes | 29.01.2026 | ✅ Akzeptiert |

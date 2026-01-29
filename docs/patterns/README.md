@@ -801,3 +801,416 @@ Wie erstelle ich ein responsive Grid?
 **Status**: ✅ 8 Patterns dokumentiert  
 **Letzte Aktualisierung**: 28.01.2026  
 **Skalierbar für**: Neue Patterns, neue Entwickler, andere Projekte
+
+
+---
+
+## PATTERN-Soft-Delete
+
+**Titel**: Soft-Delete statt Hard-Delete
+
+**Komplexität**: ⭐⭐ (Mittel)  
+**Kategorie**: Database Pattern  
+**Status**: ✅ Implementiert (Sprint 8)
+
+### Wann nutzen?
+
+- Wenn Daten "gelöscht" werden sollen, aber Rollback möglich sein muss
+- Wenn Audit-Trail wichtig ist
+- Wenn Zertifikate/Referenzen erhalten bleiben sollen
+
+### Implementierung
+
+```typescript
+// 1. Datenbank-Schema
+export const courses = sqliteTable('courses', {
+  id: int('id').primaryKey().autoincrement(),
+  title: text('title').notNull(),
+  // ... other fields
+  isActive: boolean('is_active').default(true), // ← Soft-Delete Flag
+  deletedAt: timestamp('deleted_at'), // Optional: Zeitstempel
+});
+
+// 2. API-Endpoints
+export const courseRouter = router({
+  // Deaktivieren (Soft-Delete)
+  deactivate: adminProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await db.update(courses)
+        .set({
+          isActive: false,
+          deletedAt: new Date(),
+        })
+        .where(eq(courses.id, input.id))
+        .returning();
+    }),
+
+  // Aktivieren (Rollback)
+  activate: adminProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await db.update(courses)
+        .set({
+          isActive: true,
+          deletedAt: null,
+        })
+        .where(eq(courses.id, input.id))
+        .returning();
+    }),
+
+  // Liste (mit Filter)
+  list: adminProcedure
+    .input(z.object({
+      status: z.enum(['active', 'inactive', 'all']).default('all'),
+    }))
+    .query(async ({ input }) => {
+      let query = db.select().from(courses);
+      
+      if (input.status === 'active') {
+        query = query.where(eq(courses.isActive, true));
+      } else if (input.status === 'inactive') {
+        query = query.where(eq(courses.isActive, false));
+      }
+      
+      return await query;
+    }),
+});
+
+// 3. Frontend-UI
+export function CourseList() {
+  const [status, setStatus] = useState<'active' | 'inactive' | 'all'>('all');
+  const { data: courses } = trpc.course.list.useQuery({ status });
+
+  return (
+    <div className="space-y-4">
+      {/* Filter */}
+      <div className="flex gap-2">
+        <Button
+          variant={status === 'all' ? 'default' : 'outline'}
+          onClick={() => setStatus('all')}
+        >
+          Alle
+        </Button>
+        <Button
+          variant={status === 'active' ? 'default' : 'outline'}
+          onClick={() => setStatus('active')}
+        >
+          Aktiv
+        </Button>
+        <Button
+          variant={status === 'inactive' ? 'default' : 'outline'}
+          onClick={() => setStatus('inactive')}
+        >
+          Inaktiv
+        </Button>
+      </div>
+
+      {/* Liste */}
+      <div className="grid gap-4">
+        {courses?.map((course) => (
+          <Card
+            key={course.id}
+            className={!course.isActive ? 'opacity-50' : ''}
+          >
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>{course.title}</CardTitle>
+                {!course.isActive && (
+                  <Badge variant="secondary">Inaktiv</Badge>
+                )}
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Best Practices
+
+✅ **DO**:
+- Nutze `isActive` Boolean (nicht `deleted`)
+- Nutze `deletedAt` Timestamp für Audit
+- Filter standardmäßig auf `isActive = true`
+- Zeige inaktive Elemente visuell unterschiedlich (Opacity, Badge)
+
+❌ **DON'T**:
+- Nutze nicht `deleted` Boolean (verwirrend)
+- Vergiss nicht Filter in Queries (`WHERE isActive = true`)
+- Lösche nicht wirklich aus Datenbank (Hard-Delete)
+
+---
+
+## PATTERN-Fisher-Yates-Shuffle
+
+**Titel**: Fisher-Yates Shuffle-Algorithmus
+
+**Komplexität**: ⭐ (Einfach)  
+**Kategorie**: Algorithm Pattern  
+**Status**: ✅ Implementiert (Sprint 8)
+
+### Wann nutzen?
+
+- Wenn Arrays zufällig gemischt werden sollen
+- Wenn uniform distribution wichtig ist (jede Permutation gleich wahrscheinlich)
+- Wenn keine Elemente "verloren" gehen dürfen
+
+### Implementierung
+
+```typescript
+/**
+ * Fisher-Yates Shuffle Algorithm
+ * - Uniform distribution (jede Permutation gleich wahrscheinlich)
+ * - O(n) Performance
+ * - Keine Elemente gehen verloren
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]; // Kopie erstellen (nicht Original mutieren)
+  
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // Swap
+  }
+  
+  return shuffled;
+}
+
+// Nutzen in API
+const question = await db.select()
+  .from(questions)
+  .where(eq(questions.id, questionId))
+  .limit(1);
+
+const answers = [
+  { id: 'A', text: question.answerA, isCorrect: question.correctAnswer === 'A' },
+  { id: 'B', text: question.answerB, isCorrect: question.correctAnswer === 'B' },
+  { id: 'C', text: question.answerC, isCorrect: question.correctAnswer === 'C' },
+  { id: 'D', text: question.answerD, isCorrect: question.correctAnswer === 'D' },
+];
+
+const shuffledAnswers = shuffleArray(answers);
+
+return {
+  question: question.text,
+  answers: shuffledAnswers,
+};
+```
+
+### Unit Tests
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('shuffleArray', () => {
+  it('should not lose any elements', () => {
+    const input = [1, 2, 3, 4];
+    const output = shuffleArray(input);
+    
+    // Sortieren und vergleichen
+    expect(output.sort()).toEqual(input.sort());
+  });
+
+  it('should shuffle (not always same order)', () => {
+    const input = [1, 2, 3, 4];
+    const outputs = Array.from({ length: 100 }, () => shuffleArray(input));
+    
+    // Nicht alle Outputs sollten gleich sein
+    const allSame = outputs.every(o => 
+      JSON.stringify(o) === JSON.stringify(input)
+    );
+    expect(allSame).toBe(false);
+  });
+
+  it('should not mutate original array', () => {
+    const input = [1, 2, 3, 4];
+    const inputCopy = [...input];
+    
+    shuffleArray(input);
+    
+    expect(input).toEqual(inputCopy);
+  });
+});
+```
+
+### Best Practices
+
+✅ **DO**:
+- Nutze Fisher-Yates (nicht `Math.random().sort()`)
+- Erstelle Kopie (nicht Original mutieren)
+- Schreibe Unit Tests
+
+❌ **DON'T**:
+- Nutze nicht `Math.random().sort()` (nicht uniform, kann Elemente verlieren)
+- Mutiere nicht Original-Array
+- Vergiss nicht Unit Tests
+
+---
+
+## PATTERN-Migration-Script
+
+**Titel**: Migration-Script für Breaking Changes
+
+**Komplexität**: ⭐⭐⭐ (Hoch)  
+**Kategorie**: Database Pattern  
+**Status**: ✅ Implementiert (Sprint 8)
+
+### Wann nutzen?
+
+- Wenn Breaking Changes in Datenbank-Schema
+- Wenn alte Daten migriert werden müssen
+- Wenn Rollback-Plan wichtig ist
+
+### Implementierung
+
+```typescript
+// migrate-progress.mjs
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
+import { userProgress } from './drizzle/schema.js';
+import { eq } from 'drizzle-orm';
+
+async function migrateProgress() {
+  // 1. Datenbank-Verbindung
+  const connection = await mysql.createConnection(process.env.DATABASE_URL);
+  const db = drizzle(connection);
+
+  console.log('Starting migration...');
+
+  // 2. Backup erstellen (optional, aber empfohlen)
+  console.log('Creating backup...');
+  await connection.execute(`
+    CREATE TABLE user_progress_backup AS 
+    SELECT * FROM user_progress
+  `);
+
+  // 3. Alle alten Fortschritte laden
+  const oldProgress = await db.select()
+    .from(userProgress)
+    .where(eq(userProgress.scoreType, 'fraction')); // 3/5
+
+  console.log(`Found ${oldProgress.length} records to migrate`);
+
+  // 4. Migrieren
+  let migrated = 0;
+  let errors = 0;
+
+  for (const progress of oldProgress) {
+    try {
+      // Umrechnen: 3/5 → 60%
+      const percentage = Math.round(
+        (progress.correctAnswers / progress.totalQuestions) * 100
+      );
+
+      // Update
+      await db.update(userProgress)
+        .set({
+          score: percentage,
+          scoreType: 'percentage',
+          migratedAt: new Date(), // Optional: Zeitstempel
+        })
+        .where(eq(userProgress.id, progress.id));
+
+      migrated++;
+    } catch (error) {
+      console.error(`Error migrating progress ${progress.id}:`, error);
+      errors++;
+    }
+  }
+
+  // 5. Zusammenfassung
+  console.log(`Migration complete:`);
+  console.log(`- Migrated: ${migrated}`);
+  console.log(`- Errors: ${errors}`);
+
+  // 6. Validierung
+  const newProgress = await db.select()
+    .from(userProgress)
+    .where(eq(userProgress.scoreType, 'percentage'));
+
+  console.log(`Validation: ${newProgress.length} records with new format`);
+
+  await connection.end();
+}
+
+// Ausführen
+migrateProgress()
+  .then(() => {
+    console.log('Migration successful!');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Migration failed:', error);
+    process.exit(1);
+  });
+```
+
+### Rollback-Script
+
+```typescript
+// rollback-migration.mjs
+async function rollbackMigration() {
+  const connection = await mysql.createConnection(process.env.DATABASE_URL);
+  const db = drizzle(connection);
+
+  console.log('Rolling back migration...');
+
+  // Backup wiederherstellen
+  await connection.execute(`
+    DELETE FROM user_progress
+  `);
+  await connection.execute(`
+    INSERT INTO user_progress 
+    SELECT * FROM user_progress_backup
+  `);
+
+  console.log('Rollback complete!');
+  await connection.end();
+}
+```
+
+### Checkliste
+
+**Vor Migration**:
+- [ ] Backup erstellen
+- [ ] Migration-Script auf Staging testen
+- [ ] Rollback-Script bereit
+- [ ] Downtime kommunizieren (falls nötig)
+
+**Während Migration**:
+- [ ] Migration-Script ausführen
+- [ ] Logs prüfen (Fehler?)
+- [ ] Validierung durchführen
+
+**Nach Migration**:
+- [ ] Funktionalität testen
+- [ ] Monitoring prüfen
+- [ ] Backup aufbewahren (7 Tage)
+- [ ] Rollback-Script löschen (nach 7 Tagen)
+
+### Best Practices
+
+✅ **DO**:
+- Erstelle Backup vor Migration
+- Teste auf Staging zuerst
+- Schreibe Rollback-Script
+- Logge alle Fehler
+- Validiere nach Migration
+
+❌ **DON'T**:
+- Migriere nicht ohne Backup
+- Teste nicht direkt auf Production
+- Vergiss nicht Rollback-Plan
+- Ignoriere nicht Fehler
+
+---
+
+## Index aktualisieren
+
+| Pattern | Kategorie | Komplexität | Status |
+|---------|-----------|-------------|--------|
+| [PATTERN-Soft-Delete](#pattern-soft-delete) | Database | ⭐⭐ | ✅ Implementiert |
+| [PATTERN-Fisher-Yates-Shuffle](#pattern-fisher-yates-shuffle) | Algorithm | ⭐ | ✅ Implementiert |
+| [PATTERN-Migration-Script](#pattern-migration-script) | Database | ⭐⭐⭐ | ✅ Implementiert |
