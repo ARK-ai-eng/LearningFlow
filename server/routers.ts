@@ -676,6 +676,36 @@ export const appRouter = router({
         await db.deleteQuestion(input.id);
         return { success: true };
       }),
+
+    // Get question with shuffled answers (for sensitization courses)
+    getWithShuffledAnswers: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const { shuffleQuestionAnswers } = await import('./shuffle');
+        const question = await db.getQuestionById(input.id);
+        
+        if (!question) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Frage nicht gefunden' });
+        }
+        
+        // Shuffle answers
+        const shuffled = shuffleQuestionAnswers({
+          optionA: question.optionA,
+          optionB: question.optionB,
+          optionC: question.optionC,
+          optionD: question.optionD,
+          correctAnswer: question.correctAnswer,
+        });
+        
+        return {
+          ...question,
+          optionA: shuffled.optionA,
+          optionB: shuffled.optionB,
+          optionC: shuffled.optionC,
+          optionD: shuffled.optionD,
+          correctAnswer: shuffled.correctAnswer,
+        };
+      }),
   }),
 
   // ============================================
@@ -720,9 +750,28 @@ export const appRouter = router({
         answer: z.enum(['A', 'B', 'C', 'D']),
       }))
       .mutation(async ({ input }) => {
-        const questions = await db.getQuestionsByTopic(0); // Workaround
-        // In real implementation, get question by ID
-        return { correct: true, explanation: "" };
+        const question = await db.getQuestionById(input.questionId);
+        if (!question) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Frage nicht gefunden' });
+        }
+        const correct = input.answer === question.correctAnswer;
+        return { 
+          correct, 
+          correctAnswer: question.correctAnswer,
+          explanation: question.explanation || "" 
+        };
+      }),
+
+    // Get incorrect questions for a topic (for review/repeat)
+    getIncorrectQuestions: protectedProcedure
+      .input(z.object({
+        courseId: z.number(),
+        topicId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        // This would require tracking incorrect answers in the database
+        // For now, return empty array (to be implemented with answer tracking)
+        return [];
       }),
   }),
 

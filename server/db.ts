@@ -313,6 +313,13 @@ export async function createQuestion(question: InsertQuestion): Promise<number> 
   return result[0].insertId;
 }
 
+export async function getQuestionById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(questions).where(eq(questions.id, id)).limit(1);
+  return result[0] || null;
+}
+
 export async function getQuestionsByTopic(topicId: number) {
   const db = await getDb();
   if (!db) return [];

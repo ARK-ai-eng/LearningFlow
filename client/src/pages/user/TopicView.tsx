@@ -6,6 +6,25 @@ import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen } from "lucide-re
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
+// Fisher-Yates Shuffle (client-side)
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+type ShuffledQuestion = {
+  id: number;
+  questionText: string;
+  options: Array<{ label: 'A' | 'B' | 'C' | 'D'; text: string }>;
+  correctAnswer: 'A' | 'B' | 'C' | 'D';
+  originalCorrectAnswer: 'A' | 'B' | 'C' | 'D';
+  explanation?: string;
+};
+
 export default function TopicView() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
   const [, setLocation] = useLocation();
@@ -16,6 +35,7 @@ export default function TopicView() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   const [topicCompleted, setTopicCompleted] = useState(false);
+  const [shuffledQuestions, setShuffledQuestions] = useState<ShuffledQuestion[]>([]);
 
   const { data: course } = trpc.course.get.useQuery({ id: cId }, { enabled: cId > 0 });
   const { data: questions, isLoading } = trpc.question.listByTopic.useQuery(
@@ -30,9 +50,42 @@ export default function TopicView() {
   });
 
   const topic = course?.topics?.find(t => t.id === tId);
-  const question = questions?.[currentQuestion];
-  const totalQuestions = questions?.length || 0;
+  const totalQuestions = shuffledQuestions.length;
+  const question = shuffledQuestions[currentQuestion];
   const isLearningMode = course?.courseType === 'learning' || course?.courseType === 'sensitization';
+
+  // Shuffle questions when loaded
+  useEffect(() => {
+    if (questions && questions.length > 0) {
+      const shuffled = questions.map(q => {
+        // Create array of options with their original labels
+        const options = [
+          { label: 'A' as const, text: q.optionA },
+          { label: 'B' as const, text: q.optionB },
+          { label: 'C' as const, text: q.optionC },
+          { label: 'D' as const, text: q.optionD },
+        ];
+
+        // Shuffle the options
+        const shuffledOptions = shuffleArray(options);
+
+        // Find where the correct answer ended up
+        const correctIndex = shuffledOptions.findIndex(opt => opt.label === q.correctAnswer);
+        const newCorrectAnswer = ['A', 'B', 'C', 'D'][correctIndex] as 'A' | 'B' | 'C' | 'D';
+
+        return {
+          id: q.id,
+          questionText: q.questionText,
+          options: shuffledOptions,
+          correctAnswer: newCorrectAnswer,
+          originalCorrectAnswer: q.correctAnswer,
+          explanation: q.explanation || undefined,
+        };
+      });
+
+      setShuffledQuestions(shuffled);
+    }
+  }, [questions]);
 
   // Klick auf Antwort - sofortiges Feedback
   const handleAnswerClick = (answer: string) => {
@@ -72,7 +125,7 @@ export default function TopicView() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || shuffledQuestions.length === 0) {
     return (
       <DashboardLayout>
         <div className="animate-pulse space-y-6">
@@ -114,7 +167,7 @@ export default function TopicView() {
         )}
 
         {/* Fragen-Bereich (Lernmodus) */}
-        {questions && questions.length > 0 && !topicCompleted && (
+        {shuffledQuestions.length > 0 && !topicCompleted && (
           <div className="glass-card p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">
@@ -138,10 +191,10 @@ export default function TopicView() {
               <p className="text-lg font-medium mb-4">{question?.questionText}</p>
               
               <div className="space-y-3">
-                {['A', 'B', 'C', 'D'].map(option => {
-                  const optionText = question?.[`option${option}` as keyof typeof question] as string;
-                  const isSelected = selectedAnswer === option;
-                  const isCorrect = question?.correctAnswer === option;
+                {question?.options.map((option, idx) => {
+                  const displayLabel = ['A', 'B', 'C', 'D'][idx];
+                  const isSelected = selectedAnswer === displayLabel;
+                  const isCorrect = question.correctAnswer === displayLabel;
                   
                   let className = "quiz-option";
                   if (answered) {
@@ -157,15 +210,15 @@ export default function TopicView() {
 
                   return (
                     <div
-                      key={option}
+                      key={displayLabel}
                       className={`${className} ${answered ? 'pointer-events-none' : 'cursor-pointer'}`}
-                      onClick={() => handleAnswerClick(option)}
+                      onClick={() => handleAnswerClick(displayLabel)}
                     >
                       <div className="flex items-center gap-3">
                         <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-medium">
-                          {option}
+                          {displayLabel}
                         </span>
-                        <span className="flex-1">{optionText}</span>
+                        <span className="flex-1">{option.text}</span>
                         {answered && isCorrect && (
                           <CheckCircle className="w-5 h-5 text-emerald-400" />
                         )}
@@ -252,22 +305,6 @@ export default function TopicView() {
                 </Button>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Keine Fragen */}
-        {(!questions || questions.length === 0) && (
-          <div className="glass-card p-8 text-center">
-            <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground mb-4">
-              Dieses Thema hat keine Lernfragen.
-            </p>
-            <Button onClick={() => {
-              completeMutation.mutate({ courseId: cId, topicId: tId });
-              setLocation(`/course/${cId}`);
-            }}>
-              Als gelesen markieren
-            </Button>
           </div>
         )}
       </div>

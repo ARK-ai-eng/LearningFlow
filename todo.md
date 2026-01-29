@@ -263,3 +263,15 @@
 - [x] Backend: Fisher-Yates Shuffle-Algorithmus implementieren
 - [x] Backend: `shuffleQuestionAnswers()` Helper-Funktion
 - [x] Tests: Shuffle-Algorithmus Unit Tests (12 Tests, alle bestanden)
+
+
+### Micro-Prompt 2b: Frontend Lern-Logik (29.01.2026)
+- [ ] Backend: `question.getWithShuffledAnswers()` API-Endpoint
+- [ ] Backend: `progress.getIncorrectQuestions()` API-Endpoint
+- [ ] Frontend: TopicView.tsx - Neue Lern-Logik (keine Quiz-Bewertung)
+- [ ] Frontend: "Nächste Frage" Button statt "Thema abschließen"
+- [ ] Frontend: Dialog "Fehlerhafte Fragen wiederholen?"
+- [ ] Frontend: Anzeige nur falsche Fragen
+- [ ] Frontend: Fortschritt-Anzeige % statt "3/5 richtig"
+- [x] Frontend: Antworten-Shuffle bei jedem Laden integrieren
+- [ ] Tests: Manual Testing im Browser
