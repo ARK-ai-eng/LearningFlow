@@ -325,11 +325,12 @@
 - [x] Klick auf Frage → Einzelfrage-Ansicht öffnen (TODO in Code)
 
 ### Phase 2: Einzelfrage-Ansicht (2h)
-- [ ] Separate Komponente für Einzelfrage
-- [ ] Antworten shufflen bei jedem Laden
-- [ ] Nach Antwort: `trpc.question.submitAnswer.useMutation()` aufrufen
-- [ ] Feedback anzeigen (grün/rot)
-- [ ] "Nächste Frage" Button → zurück zur Fragen-Liste
+- [x] Separate Komponente für Einzelfrage (QuestionDetailDialog)
+- [x] Antworten shufflen bei jedem Laden (Fisher-Yates)
+- [x] `submitAnswer` Mutation nach Antwort
+- [x] Feedback anzeigen (grün/rot)
+- [x] "Nächste Frage" Button
+- [x] Zurück zur Fragen-Liste nach submitAnswer (Dialog schließt)n-Liste
 - [ ] Fortschritt in Fragen-Liste aktualisieren
 
 ### Phase 3: Dialog für Wiederholung (1h)

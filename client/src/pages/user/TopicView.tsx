@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useParams, useLocation } from "wouter";
 import { ArrowLeft, CheckCircle, XCircle, Circle, Pause, ArrowRight } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
+import QuestionDetailDialog from "@/components/QuestionDetailDialog";
 
 export default function TopicView() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
@@ -23,6 +24,7 @@ export default function TopicView() {
 
   const topic = course?.topics?.find(t => t.id === tId);
   const isLoading = questionsLoading || progressLoading;
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
 
   // Merge questions with progress
   const questionsWithStatus = useMemo(() => {
@@ -66,10 +68,14 @@ export default function TopicView() {
     };
   }, [questionsWithStatus]);
 
-  // Open question (will be implemented in Step 2.2)
+  // Open question
   const openQuestion = (questionId: number) => {
-    // TODO: Navigate to question detail view
-    console.log('Open question:', questionId);
+    setSelectedQuestionId(questionId);
+  };
+
+  // Close question dialog
+  const closeQuestion = () => {
+    setSelectedQuestionId(null);
   };
 
   if (isLoading) {
@@ -204,6 +210,13 @@ export default function TopicView() {
 
         {/* TODO: Dialog for repeat incorrect questions (Step 2.3) */}
       </div>
+
+      {/* Question Detail Dialog */}
+      <QuestionDetailDialog
+        questionId={selectedQuestionId}
+        topicId={tId}
+        onClose={closeQuestion}
+      />
     </DashboardLayout>
   );
 }
