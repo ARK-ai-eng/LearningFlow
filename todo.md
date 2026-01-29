@@ -312,3 +312,39 @@
 - [x] Todo.md aktualisieren (erledigte Tasks markieren)
 - [ ] Checkpoint erstellen
 - [ ] Smoke Test (API-Endpoints mit Postman/Insomnia testen)
+
+
+## Sprint 8 - Schritt 2: Frontend-Integration (29.01.2026)
+
+### Phase 1: TopicView.tsx Umbau - Fragen-Liste (2-3h)
+- [x] TopicView.tsx: Fragen-Liste statt Einzelfrage anzeigen
+- [x] Für jede Frage: Status-Icon anzeigen (✅ correct, ❌ incorrect, ⚪ unanswered)
+- [x] Fortschritt laden mit `trpc.question.getProgress.useQuery()`
+- [x] Sortierung: Unbeantwortete oben, beantwortete unten
+- [x] "Pause" Button (zurück zur Kurs-Übersicht)
+- [x] Klick auf Frage → Einzelfrage-Ansicht öffnen (TODO in Code)
+
+### Phase 2: Einzelfrage-Ansicht (2h)
+- [ ] Separate Komponente für Einzelfrage
+- [ ] Antworten shufflen bei jedem Laden
+- [ ] Nach Antwort: `trpc.question.submitAnswer.useMutation()` aufrufen
+- [ ] Feedback anzeigen (grün/rot)
+- [ ] "Nächste Frage" Button → zurück zur Fragen-Liste
+- [ ] Fortschritt in Fragen-Liste aktualisieren
+
+### Phase 3: Dialog für Wiederholung (1h)
+- [ ] Dialog nur nach letzter Frage anzeigen (alle beantwortet)
+- [ ] "Möchtest du fehlerhafte Fragen wiederholen?"
+- [ ] Ja: Nur falsche Fragen anzeigen (`trpc.question.getIncorrectQuestions`)
+- [ ] Nein: Fortschritt speichern, zum nächsten Thema
+
+### Phase 4: Fortschritt-Berechnung (1h)
+- [ ] Dashboard: Fortschritt = (richtige Antworten / Gesamtfragen) × 100%
+- [ ] Themen-Übersicht: % pro Thema anzeigen
+- [ ] "3/5 richtig" Logik komplett entfernen
+
+### Phase 5: Tests & Checkpoint
+- [ ] Manual Testing: Kompletten Flow durchspielen
+- [ ] Smoke Test: Pausieren und weitermachen
+- [ ] Todo.md aktualisieren
+- [ ] Checkpoint erstellen
