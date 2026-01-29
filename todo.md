@@ -365,3 +365,11 @@
 - [ ] Alternative: Batch-Endpoint für alle Kurse (später)
 - [ ] Tests durchführen
 - [ ] Checkpoint erstellen
+
+### Bug-Fix: Einzelfrage-Dialog zeigt leeren Inhalt (29.01.2026)
+- [x] Problem identifiziert: question.getById Endpoint fehlt im Backend
+- [x] TopicView Code analysiert
+- [x] Einzelfrage-Ansicht repariert: Frage als Prop statt API-Call
+- [x] Tests durchgeführt: 61 Tests bestanden
+- [x] Dokumentation erstellt: Bug-Fix-Question-Dialog.md
+- [ ] Checkpoint erstellen

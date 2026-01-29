@@ -28,13 +28,13 @@ type ShuffledOption = {
 };
 
 interface QuestionDetailDialogProps {
-  questionId: number | null;
+  question: any | null;  // Die komplette Frage aus TopicView
   topicId: number;
   onClose: () => void;
 }
 
 export default function QuestionDetailDialog({ 
-  questionId, 
+  question, 
   topicId, 
   onClose 
 }: QuestionDetailDialogProps) {
@@ -42,20 +42,17 @@ export default function QuestionDetailDialog({
   const [answered, setAnswered] = useState(false);
   const utils = trpc.useUtils();
 
-  const { data: question, isLoading } = trpc.question.getById.useQuery(
-    { id: questionId! },
-    { enabled: !!questionId }
-  );
-
   const submitMutation = trpc.question.submitAnswer.useMutation({
     onSuccess: () => {
       // Invalidate progress → Fragen-Liste aktualisiert sich
       utils.question.getProgress.invalidate({ topicId });
       
-      // Dialog schließen
-      onClose();
-      
       toast.success('Antwort gespeichert');
+      
+      // Dialog schließen nach kurzer Verzögerung
+      setTimeout(() => {
+        onClose();
+      }, 500);
     },
     onError: (error) => {
       toast.error(`Fehler: ${error.message}`);
@@ -89,7 +86,7 @@ export default function QuestionDetailDialog({
   useEffect(() => {
     setSelectedAnswer(null);
     setAnswered(false);
-  }, [questionId]);
+  }, [question?.id]);
 
   const handleAnswerClick = (answer: string) => {
     if (answered) return;
@@ -98,24 +95,23 @@ export default function QuestionDetailDialog({
   };
 
   const handleNext = () => {
-    if (!questionId) return;
+    if (!question) return;
 
     submitMutation.mutate({
-      questionId,
+      questionId: question.id,
       topicId,
       isCorrect: selectedAnswer === correctAnswer,
     });
   };
 
-  const isOpen = !!questionId;
+  const isOpen = !!question;
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
       <DialogContent className="max-w-2xl">
-        {isLoading || !question ? (
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 w-3/4 bg-muted rounded" />
-            <div className="h-20 bg-muted rounded" />
+        {!question ? (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Keine Frage ausgewählt</p>
           </div>
         ) : (
           <>

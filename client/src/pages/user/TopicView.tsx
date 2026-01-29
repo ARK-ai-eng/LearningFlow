@@ -25,7 +25,7 @@ export default function TopicView() {
 
   const topic = course?.topics?.find(t => t.id === tId);
   const isLoading = questionsLoading || progressLoading;
-  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
   const [showRepeatDialog, setShowRepeatDialog] = useState(false);
   const [repeatMode, setRepeatMode] = useState(false);
 
@@ -72,13 +72,13 @@ export default function TopicView() {
   }, [questionsWithStatus]);
 
   // Open question
-  const openQuestion = (questionId: number) => {
-    setSelectedQuestionId(questionId);
+  const openQuestion = (question: any) => {
+    setSelectedQuestion(question);
   };
 
   // Close question dialog
   const closeQuestion = () => {
-    setSelectedQuestionId(null);
+    setSelectedQuestion(null);
     
     // Check if all questions are answered (and not in repeat mode)
     if (!repeatMode && stats.answered === stats.total && stats.total > 0) {
@@ -93,7 +93,7 @@ export default function TopicView() {
     // Open first incorrect question
     const firstIncorrect = sortedQuestions.find(q => q.status === 'incorrect');
     if (firstIncorrect) {
-      setSelectedQuestionId(firstIncorrect.id);
+      setSelectedQuestion(firstIncorrect);
     }
   };
 
@@ -214,7 +214,7 @@ export default function TopicView() {
                   <div
                     key={q.id}
                     className={`flex items-center gap-3 p-4 rounded-lg border ${borderColor} cursor-pointer hover:bg-accent transition-colors`}
-                    onClick={() => openQuestion(q.id)}
+                    onClick={() => openQuestion(q)}
                   >
                     <StatusIcon className={`w-5 h-5 flex-shrink-0 ${iconColor}`} />
                     <div className="flex-1 min-w-0">
@@ -244,7 +244,7 @@ export default function TopicView() {
 
       {/* Question Detail Dialog */}
       <QuestionDetailDialog
-        questionId={selectedQuestionId}
+        question={selectedQuestion}
         topicId={tId}
         onClose={closeQuestion}
       />
