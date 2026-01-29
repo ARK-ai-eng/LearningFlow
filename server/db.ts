@@ -9,6 +9,7 @@ import {
   topics, InsertTopic, Topic,
   questions, InsertQuestion, Question,
   userProgress, InsertUserProgress,
+  questionProgress, InsertQuestionProgress, QuestionProgress,
   examAttempts, InsertExamAttempt,
   certificates, InsertCertificate
 } from "../drizzle/schema";
@@ -451,4 +452,87 @@ export async function updateCertificatePdfUrl(id: number, pdfUrl: string) {
   const db = await getDb();
   if (!db) return;
   await db.update(certificates).set({ pdfUrl }).where(eq(certificates.id, id));
+}
+
+
+// ============================================
+// QUESTION PROGRESS FUNCTIONS
+// ============================================
+
+// Holt Fortschritt für alle Fragen eines Themas
+export async function getQuestionProgressByTopic(userId: number, topicId: number): Promise<QuestionProgress[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db
+    .select()
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      eq(questionProgress.topicId, topicId)
+    ));
+}
+
+// Speichert oder aktualisiert Fortschritt für eine Frage
+export async function upsertQuestionProgress(data: {
+  userId: number;
+  questionId: number;
+  topicId: number;
+  status: 'unanswered' | 'correct' | 'incorrect';
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Prüfe ob Eintrag existiert
+  const existing = await db
+    .select()
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, data.userId),
+      eq(questionProgress.questionId, data.questionId)
+    ))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    // Update
+    await db
+      .update(questionProgress)
+      .set({
+        status: data.status,
+        attemptCount: sql`${questionProgress.attemptCount} + 1`,
+        lastAttemptAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(and(
+        eq(questionProgress.userId, data.userId),
+        eq(questionProgress.questionId, data.questionId)
+      ));
+  } else {
+    // Insert
+    await db.insert(questionProgress).values({
+      userId: data.userId,
+      questionId: data.questionId,
+      topicId: data.topicId,
+      status: data.status,
+      attemptCount: 1,
+      lastAttemptAt: new Date(),
+    });
+  }
+}
+
+// Holt nur falsch beantwortete Fragen eines Themas
+export async function getIncorrectQuestionsByTopic(userId: number, topicId: number): Promise<number[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const results = await db
+    .select({ questionId: questionProgress.questionId })
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      eq(questionProgress.topicId, topicId),
+      eq(questionProgress.status, 'incorrect')
+    ));
+  
+  return results.map(r => r.questionId);
 }

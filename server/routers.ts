@@ -706,6 +706,37 @@ export const appRouter = router({
           correctAnswer: shuffled.correctAnswer,
         };
       }),
+
+    // Holt Fortschritt für alle Fragen eines Themas
+    getProgress: protectedProcedure
+      .input(z.object({ topicId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getQuestionProgressByTopic(ctx.user.id, input.topicId);
+      }),
+
+    // Speichert Antwort und aktualisiert Fortschritt
+    submitAnswer: protectedProcedure
+      .input(z.object({
+        questionId: z.number(),
+        topicId: z.number(),
+        isCorrect: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.upsertQuestionProgress({
+          userId: ctx.user.id,
+          questionId: input.questionId,
+          topicId: input.topicId,
+          status: input.isCorrect ? 'correct' : 'incorrect',
+        });
+        return { success: true };
+      }),
+
+    // Holt nur falsch beantwortete Fragen eines Themas
+    getIncorrectQuestions: protectedProcedure
+      .input(z.object({ topicId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getIncorrectQuestionsByTopic(ctx.user.id, input.topicId);
+      }),
   }),
 
   // ============================================

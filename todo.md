@@ -282,3 +282,33 @@
 - [x] Dialog "Fehlerhafte Fragen wiederholen?" nach letzter Frage
 - [x] Tracking: Welche Fragen waren falsch? (State)
 - [x] Dialog-Buttons: "Ja" (Wiederholung) / "Nein" (Fortschritt speichern)
+
+
+## Sprint 8 - Schritt 1: Datenmodell Migration + API (29.01.2026)
+
+### Phase 1: Datenmodell (2h)
+- [x] Schema: `questionProgress` Tabelle in `drizzle/schema.ts` hinzufügen
+- [x] Schema: Unique Constraint `(userId, questionId)`
+- [x] Schema: Index `idx_user_topic_status (userId, topicId, status)`
+- [ ] Schema: Foreign Keys (userId, questionId, topicId) - Nicht implementiert (Performance)
+- [x] Migration: `pnpm db:push` ausführen (0004_free_zombie.sql)
+- [x] Verifizierung: Tabelle in DB erstellt
+
+### Phase 2: API-Endpoints (2h)
+- [x] API: `question.getProgress` Endpoint (holt Fortschritt für Thema)
+- [x] API: `question.submitAnswer` Endpoint (speichert Antwort)
+- [x] API: `question.getIncorrectQuestions` Endpoint (holt nur falsche Fragen)
+- [x] DB: `getQuestionProgressByTopic()` Helper-Funktion
+- [x] DB: `upsertQuestionProgress()` Helper-Funktion
+- [x] DB: `getIncorrectQuestionsByTopic()` Helper-Funktion
+
+### Phase 3: Tests (1h)
+- [x] Tests: `question.getProgress` Unit Tests (3 Tests)
+- [x] Tests: `question.submitAnswer` Unit Tests (3 Tests)
+- [x] Tests: `question.getIncorrectQuestions` Unit Tests (2 Tests)
+- [x] Tests: Alle Tests ausführen (`pnpm test`) - 61 Tests bestanden
+
+### Phase 4: Checkpoint
+- [x] Todo.md aktualisieren (erledigte Tasks markieren)
+- [ ] Checkpoint erstellen
+- [ ] Smoke Test (API-Endpoints mit Postman/Insomnia testen)

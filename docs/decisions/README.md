@@ -1054,3 +1054,171 @@ Falls Migration fehlschlägt:
 | [ADR-013](#adr-013-erste-antwort-zählt-bei-wiederholung) | Erste Antwort zählt bei Wiederholung | 29.01.2026 | ✅ Akzeptiert |
 | [ADR-014](#adr-014-fisher-yates-shuffle-für-antworten) | Fisher-Yates Shuffle für Antworten | 29.01.2026 | ✅ Akzeptiert |
 | [ADR-015](#adr-015-migration-strategie-für-breaking-changes) | Migration-Strategie für Breaking Changes | 29.01.2026 | ✅ Akzeptiert |
+
+## ADR-009: mysql2 Pool
+
+**Titel**: mysql2 Pool statt Direct URL für Drizzle
+
+**Datum**: 28.01.2026  
+**Status**: ✅ Akzeptiert
+
+### Problem
+
+Drizzle ORM schlägt fehl mit `drizzle(process.env.DATABASE_URL)`.
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **Direct URL** | Einfach | Funktioniert nicht mit mysql2 |
+| **mysql2 Pool** | Funktioniert, Connection Pooling | Mehr Code |
+
+### Entscheidung
+
+**mysql2 Pool** verwenden.
+
+### Begründung
+
+- Drizzle braucht mysql2 Client, nicht URL
+- Connection Pooling verbessert Performance
+- Funktioniert mit TiDB/MySQL
+
+### Konsequenzen
+
+✅ **Positiv**:
+- Funktioniert
+- Connection Pooling
+- Bessere Performance
+
+❌ **Negativ**:
+- Mehr Code
+- Braucht mysql2 Package
+
+### Implementierung
+
+```typescript
+// server/db.ts
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
+
+const pool = mysql.createPool(process.env.DATABASE_URL);
+export const db = drizzle(pool);
+```
+
+---
+
+## ADR-010: Design-Tokens
+
+**Titel**: Design-Tokens für zentrale Kontrolle
+
+**Datum**: 28.01.2026  
+**Status**: ✅ Akzeptiert
+
+### Problem
+
+Wie sollten Farben, Spacing, Typographie zentral verwaltet werden?
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **Hardcoded** | Einfach | Inkonsistent |
+| **CSS-Variablen** | Zentral, dynamisch | Braucht Konfiguration |
+| **Tailwind Config** | Zentral, Type-Safe | Nur für Tailwind |
+
+### Entscheidung
+
+**CSS-Variablen** für zentrale Kontrolle.
+
+### Begründung
+
+- Zentrale Kontrolle über alle Farben/Spacing
+- Dynamisch (kann zur Laufzeit geändert werden)
+- Funktioniert mit Tailwind + Custom CSS
+- Einfach zu testen (Dark/Light Theme)
+
+### Konsequenzen
+
+✅ **Positiv**:
+- Zentrale Kontrolle
+- Einfach zu ändern
+- Konsistente Designs
+
+❌ **Negativ**:
+- Braucht Konfiguration
+- Mehr Setup-Code
+
+### Implementierung
+
+```css
+/* client/src/index.css */
+@theme {
+  --color-primary: oklch(0.6 0.2 250);
+  --spacing-md: 1rem;
+}
+```
+
+---
+
+## ADR-014: Question Progress Tracking
+
+**Titel**: Question Progress Tracking mit separater Tabelle
+
+**Datum**: 29.01.2026  
+**Status**: ✅ Akzeptiert
+
+### Problem
+
+User sollen Lern-Flow pausieren und später weitermachen können, mit visueller Übersicht über beantwortete Fragen (richtig/falsch/offen).
+
+### Optionen
+
+| Option | Vorteile | Nachteile |
+|--------|----------|----------|
+| **Neue Tabelle** | Granular, skalierbar, einfache Queries | Viele Rows, komplexe Migration |
+| **JSON-Feld** | Einfach, keine Migration | Schwer zu querien, nicht skalierbar |
+
+### Entscheidung
+
+**Neue Tabelle `questionProgress`** für granulares Tracking.
+
+### Begründung
+
+- Granulares Tracking pro Frage
+- Einfache Queries für "falsche Fragen wiederholen"
+- Skalierbar mit Indexes
+- Historische Daten (attemptCount)
+- Foreign Key Constraints
+
+### Konsequenzen
+
+✅ **Positiv**:
+- Flexibles Querying
+- Foreign Key Constraints
+- Performance mit Indexes
+- Historische Daten
+
+❌ **Negativ**:
+- Viele Rows (User × Fragen)
+- Komplexe Migration
+- Mehr Speicherplatz
+
+### Implementierung
+
+```sql
+CREATE TABLE questionProgress (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  userId INT NOT NULL,
+  questionId INT NOT NULL,
+  topicId INT NOT NULL,
+  status ENUM('unanswered', 'correct', 'incorrect') DEFAULT 'unanswered',
+  attemptCount INT DEFAULT 0,
+  lastAttemptAt TIMESTAMP,
+  UNIQUE KEY unique_user_question (userId, questionId),
+  INDEX idx_user_topic_status (userId, topicId, status)
+);
+```
+
+### Referenzen
+
+- [docs/sprint-8-step1-review.md](../sprint-8-step1-review.md)

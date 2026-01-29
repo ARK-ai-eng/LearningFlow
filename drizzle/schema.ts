@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json, uniqueIndex, index } from "drizzle-orm/mysql-core";
 
 // ============================================
 // USERS - Alle Benutzer mit Rollen
@@ -134,6 +134,27 @@ export const userProgress = mysqlTable("user_progress", {
 
 export type UserProgress = typeof userProgress.$inferSelect;
 export type InsertUserProgress = typeof userProgress.$inferInsert;
+
+// ============================================
+// QUESTION_PROGRESS - Granulares Fragen-Tracking
+// ============================================
+export const questionProgress = mysqlTable("question_progress", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  questionId: int("questionId").notNull(),
+  topicId: int("topicId").notNull(),
+  status: mysqlEnum("status", ["unanswered", "correct", "incorrect"]).default("unanswered").notNull(),
+  attemptCount: int("attemptCount").default(0).notNull(),
+  lastAttemptAt: timestamp("lastAttemptAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  uniqueUserQuestion: uniqueIndex("unique_user_question").on(table.userId, table.questionId),
+  idxUserTopicStatus: index("idx_user_topic_status").on(table.userId, table.topicId, table.status),
+}));
+
+export type QuestionProgress = typeof questionProgress.$inferSelect;
+export type InsertQuestionProgress = typeof questionProgress.$inferInsert;
 
 // ============================================
 // EXAM_ATTEMPTS - Jahresprüfungs-Versuche
