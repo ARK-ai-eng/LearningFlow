@@ -161,16 +161,16 @@
 ## Sprint 8 - Kurs-Management & Lern-Flow Verbesserungen (29.01.2026)
 
 ### Feature 1: Kurs-Status-Management
-- [ ] Backend: `isActive` Boolean-Feld in `courses` Tabelle prüfen/hinzufügen
-- [ ] Backend: `course.deactivate()` API-Endpoint
-- [ ] Backend: `course.activate()` API-Endpoint
-- [ ] Backend: `course.list()` mit Sortierung (aktiv zuerst, inaktiv hinten)
-- [ ] Frontend: Visuelle Unterscheidung (Opacity 50%, Badge "Inaktiv")
-- [ ] Frontend: Toggle-Button (Aktivieren/Deaktivieren)
-- [ ] Frontend: Filter (Alle/Aktiv/Inaktiv)
-- [ ] Tests: Unit Tests für Endpoints
-- [ ] Tests: Manual Testing im Browser
-- [ ] Code Review
+- [x] Backend: `isActive` Boolean-Feld in `courses` Tabelle prüfen/hinzufügen
+- [x] Backend: `course.deactivate()` API-Endpoint
+- [x] Backend: `course.activate()` API-Endpoint
+- [x] Backend: `course.list()` mit Sortierung (aktiv zuerst, inaktiv hinten)
+- [x] Frontend: Visuelle Unterscheidung (Opacity 50%, Badge "Inaktiv")
+- [x] Frontend: Toggle-Button (Aktivieren/Deaktivieren)
+- [x] Frontend: Filter (Alle/Aktiv/Inaktiv)
+- [x] Tests: Unit Tests für Endpoints (9 Tests, alle bestanden)
+- [ ] Tests: Manual Testing im Browser (Smoke Test)
+- [x] Code Review
 
 ### Feature 2: Lern-Flow Logik (Sensitization-Kurse)
 - [ ] ADR-014: Breaking Change Strategie dokumentieren

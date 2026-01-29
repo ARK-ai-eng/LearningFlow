@@ -492,6 +492,47 @@ export const appRouter = router({
       return db.getAllCourses();
     }),
 
+    // Admin: Kurse mit Filter (all/active/inactive) und Sortierung
+    list: adminProcedure
+      .input(z.object({
+        status: z.enum(['all', 'active', 'inactive']).default('all'),
+      }))
+      .query(async ({ input }) => {
+        const courses = await db.getAllCourses();
+        
+        // Filter nach Status
+        let filtered = courses;
+        if (input.status === 'active') {
+          filtered = courses.filter((c: typeof courses[0]) => c.isActive);
+        } else if (input.status === 'inactive') {
+          filtered = courses.filter((c: typeof courses[0]) => !c.isActive);
+        }
+        
+        // Sortierung: Aktive zuerst, dann inaktive
+        filtered.sort((a: typeof courses[0], b: typeof courses[0]) => {
+          if (a.isActive === b.isActive) return 0;
+          return a.isActive ? -1 : 1;
+        });
+        
+        return filtered;
+      }),
+
+    // Admin: Kurs deaktivieren (Soft-Delete)
+    deactivate: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.updateCourse(input.id, { isActive: false });
+        return { success: true };
+      }),
+
+    // Admin: Kurs aktivieren
+    activate: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.updateCourse(input.id, { isActive: true });
+        return { success: true };
+      }),
+
     get: protectedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
