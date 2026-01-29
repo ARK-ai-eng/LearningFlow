@@ -1,11 +1,25 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useParams, useLocation } from "wouter";
-import { ArrowLeft, CheckCircle, XCircle, Circle, Pause, ArrowRight } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Circle, Pause } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
-import QuestionDetailDialog from "@/components/QuestionDetailDialog";
-import RepeatIncorrectDialog from "@/components/RepeatIncorrectDialog";
+import { toast } from "sonner";
+
+// Fisher-Yates Shuffle
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+type ShuffledOption = {
+  label: 'A' | 'B' | 'C' | 'D';
+  text: string;
+};
 
 export default function TopicView() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
@@ -25,9 +39,7 @@ export default function TopicView() {
 
   const topic = course?.topics?.find(t => t.id === tId);
   const isLoading = questionsLoading || progressLoading;
-  const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
-  const [showRepeatDialog, setShowRepeatDialog] = useState(false);
-  const [repeatMode, setRepeatMode] = useState(false);
+  const utils = trpc.useUtils();
 
   // Merge questions with progress
   const questionsWithStatus = useMemo(() => {
@@ -43,15 +55,25 @@ export default function TopicView() {
     });
   }, [questions, progress]);
 
-  // Sort: unanswered first, then answered
-  const sortedQuestions = useMemo(() => {
-    return [...questionsWithStatus].sort((a, b) => {
-      // Unanswered first
-      if (a.status === 'unanswered' && b.status !== 'unanswered') return -1;
-      if (a.status !== 'unanswered' && b.status === 'unanswered') return 1;
-      
-      // Then by ID (original order)
-      return a.id - b.id;
+  // Shuffle answers for each question (memoized per question)
+  const questionsWithShuffledAnswers = useMemo(() => {
+    return questionsWithStatus.map(q => {
+      const options: ShuffledOption[] = [
+        { label: 'A', text: q.optionA },
+        { label: 'B', text: q.optionB },
+        { label: 'C', text: q.optionC },
+        { label: 'D', text: q.optionD },
+      ];
+
+      const shuffled = shuffleArray(options);
+      const correctIndex = shuffled.findIndex(opt => opt.label === q.correctAnswer);
+      const newCorrectAnswer = ['A', 'B', 'C', 'D'][correctIndex] as 'A' | 'B' | 'C' | 'D';
+
+      return {
+        ...q,
+        shuffledOptions: shuffled,
+        correctAnswer: newCorrectAnswer,
+      };
     });
   }, [questionsWithStatus]);
 
@@ -71,37 +93,59 @@ export default function TopicView() {
     };
   }, [questionsWithStatus]);
 
-  // Open question
-  const openQuestion = (question: any) => {
-    setSelectedQuestion(question);
+  // Track selected answers and answered state per question
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
+
+  const submitMutation = trpc.question.submitAnswer.useMutation({
+    onSuccess: () => {
+      utils.question.getProgress.invalidate({ topicId: tId });
+      toast.success('Antwort gespeichert');
+    },
+    onError: (error) => {
+      toast.error(`Fehler: ${error.message}`);
+    },
+  });
+
+  const handleAnswerClick = (questionId: number, answer: string, correctAnswer: string) => {
+    if (answeredQuestions.has(questionId)) return;
+
+    setSelectedAnswers(prev => ({ ...prev, [questionId]: answer }));
+    setAnsweredQuestions(prev => new Set(prev).add(questionId));
+
+    // Submit answer
+    submitMutation.mutate({
+      questionId,
+      topicId: tId,
+      isCorrect: answer === correctAnswer,
+    });
+
+    // Scroll to next question after short delay
+    setTimeout(() => {
+      const nextQuestion = questionsWithShuffledAnswers.find(
+        q => q.id > questionId && !answeredQuestions.has(q.id)
+      );
+      if (nextQuestion) {
+        const element = document.getElementById(`question-${nextQuestion.id}`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 1000);
   };
 
-  // Close question dialog
-  const closeQuestion = () => {
-    setSelectedQuestion(null);
-    
-    // Check if all questions are answered (and not in repeat mode)
-    if (!repeatMode && stats.answered === stats.total && stats.total > 0) {
-      setShowRepeatDialog(true);
+  // Auto-scroll to first unanswered question on load
+  const hasScrolled = useRef(false);
+  useEffect(() => {
+    if (!hasScrolled.current && questionsWithShuffledAnswers.length > 0) {
+      const firstUnanswered = questionsWithShuffledAnswers.find(q => q.status === 'unanswered');
+      if (firstUnanswered) {
+        setTimeout(() => {
+          const element = document.getElementById(`question-${firstUnanswered.id}`);
+          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+      hasScrolled.current = true;
     }
-  };
-
-  // Handle repeat incorrect questions
-  const handleRepeat = () => {
-    setShowRepeatDialog(false);
-    setRepeatMode(true);
-    // Open first incorrect question
-    const firstIncorrect = sortedQuestions.find(q => q.status === 'incorrect');
-    if (firstIncorrect) {
-      setSelectedQuestion(firstIncorrect);
-    }
-  };
-
-  // Handle skip repeat
-  const handleSkipRepeat = () => {
-    setShowRepeatDialog(false);
-    setLocation(`/course/${cId}`);
-  };
+  }, [questionsWithShuffledAnswers]);
 
   if (isLoading) {
     return (
@@ -183,71 +227,140 @@ export default function TopicView() {
           </div>
         )}
 
-        {/* Questions List */}
-        <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold mb-4">Fragen</h2>
-          
-          {sortedQuestions.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Circle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>Keine Fragen verfügbar</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {sortedQuestions.map((q, idx) => {
-                const StatusIcon = 
-                  q.status === 'correct' ? CheckCircle :
-                  q.status === 'incorrect' ? XCircle :
-                  Circle;
-                
-                const iconColor = 
-                  q.status === 'correct' ? 'text-emerald-400' :
-                  q.status === 'incorrect' ? 'text-red-400' :
-                  'text-muted-foreground';
-                
-                const borderColor =
-                  q.status === 'correct' ? 'border-emerald-500/30' :
-                  q.status === 'incorrect' ? 'border-red-500/30' :
-                  'border-border';
+        {/* Questions */}
+        {questionsWithShuffledAnswers.length === 0 ? (
+          <div className="glass-card p-12 text-center">
+            <Circle className="w-12 h-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
+            <p className="text-muted-foreground">Keine Fragen verfügbar</p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {questionsWithShuffledAnswers.map((q, qIdx) => {
+              const selectedAnswer = selectedAnswers[q.id];
+              const isAnswered = answeredQuestions.has(q.id) || q.status !== 'unanswered';
+              const isCorrect = selectedAnswer === q.correctAnswer;
 
-                return (
-                  <div
-                    key={q.id}
-                    className={`flex items-center gap-3 p-4 rounded-lg border ${borderColor} cursor-pointer hover:bg-accent transition-colors`}
-                    onClick={() => openQuestion(q)}
-                  >
-                    <StatusIcon className={`w-5 h-5 flex-shrink-0 ${iconColor}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{q.questionText}</p>
-                      {q.attemptCount > 0 && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {q.attemptCount} {q.attemptCount === 1 ? 'Versuch' : 'Versuche'}
-                        </p>
+              return (
+                <div
+                  key={q.id}
+                  id={`question-${q.id}`}
+                  className="glass-card p-6 scroll-mt-24"
+                >
+                  {/* Question Header */}
+                  <div className="flex items-start gap-3 mb-6">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-medium">
+                      {qIdx + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium mb-2">{q.questionText}</h3>
+                      {q.status !== 'unanswered' && (
+                        <div className="flex items-center gap-2 text-sm">
+                          {q.status === 'correct' ? (
+                            <>
+                              <CheckCircle className="w-4 h-4 text-emerald-400" />
+                              <span className="text-emerald-400">Richtig beantwortet</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-4 h-4 text-red-400" />
+                              <span className="text-red-400">Falsch beantwortet</span>
+                            </>
+                          )}
+                          {q.attemptCount > 1 && (
+                            <span className="text-muted-foreground">
+                              · {q.attemptCount} Versuche
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
-                    <ArrowRight className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-        {/* Repeat Incorrect Dialog */}
-        <RepeatIncorrectDialog
-          isOpen={showRepeatDialog}
-          incorrectCount={stats.incorrect}
-          onRepeat={handleRepeat}
-          onSkip={handleSkipRepeat}
-        />
+                  {/* Answers */}
+                  <div className="space-y-3">
+                    {q.shuffledOptions.map((option, idx) => {
+                      const displayLabel = ['A', 'B', 'C', 'D'][idx];
+                      const isSelected = selectedAnswer === displayLabel;
+                      const isCorrectOption = q.correctAnswer === displayLabel;
+
+                      let className = "quiz-option";
+                      if (isAnswered) {
+                        if (isCorrectOption) {
+                          className += " correct";
+                        } else if (isSelected && !isCorrectOption) {
+                          className += " incorrect";
+                        }
+                      } else if (isSelected) {
+                        className += " selected";
+                      }
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`${className} ${isAnswered ? 'pointer-events-none' : 'cursor-pointer'}`}
+                          onClick={() => handleAnswerClick(q.id, displayLabel, q.correctAnswer)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-medium">
+                              {displayLabel}
+                            </span>
+                            <span className="flex-1">{option.text}</span>
+                            {isAnswered && isCorrectOption && (
+                              <CheckCircle className="w-5 h-5 text-emerald-400" />
+                            )}
+                            {isAnswered && isSelected && !isCorrectOption && (
+                              <XCircle className="w-5 h-5 text-red-400" />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Explanation */}
+                  {isAnswered && q.explanation && (
+                    <div className={`mt-4 p-4 rounded-lg ${
+                      isCorrect
+                        ? 'bg-emerald-500/10 border border-emerald-500/30'
+                        : 'bg-red-500/10 border border-red-500/30'
+                    }`}>
+                      <p className="text-sm text-muted-foreground">
+                        {q.explanation}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Completion Message */}
+        {stats.answered === stats.total && stats.total > 0 && (
+          <div className="glass-card p-8 text-center">
+            {stats.incorrect === 0 ? (
+              <>
+                <div className="text-6xl mb-4">🎉</div>
+                <h2 className="text-2xl font-bold mb-2">Perfekt!</h2>
+                <p className="text-muted-foreground mb-6">
+                  Du hast alle Fragen richtig beantwortet!
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="text-6xl mb-4">✅</div>
+                <h2 className="text-2xl font-bold mb-2">Thema abgeschlossen!</h2>
+                <p className="text-muted-foreground mb-6">
+                  Du hast {stats.correct} von {stats.total} Fragen richtig beantwortet ({stats.percentage}%)
+                </p>
+              </>
+            )}
+            <Button onClick={() => setLocation(`/course/${cId}`)}>
+              Zurück zur Kursübersicht
+            </Button>
+          </div>
+        )}
       </div>
-
-      {/* Question Detail Dialog */}
-      <QuestionDetailDialog
-        question={selectedQuestion}
-        topicId={tId}
-        onClose={closeQuestion}
-      />
     </DashboardLayout>
   );
 }

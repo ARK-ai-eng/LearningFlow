@@ -373,3 +373,14 @@
 - [x] Tests durchgeführt: 61 Tests bestanden
 - [x] Dokumentation erstellt: Bug-Fix-Question-Dialog.md
 - [ ] Checkpoint erstellen
+
+### UX-Verbesserung: Lineare Quiz-Ansicht statt Dialog (29.01.2026)
+- [x] Problem: User muss auf jede Frage klicken um Antworten zu sehen (umständlich)
+- [x] Lösung: Fragen mit Antworten direkt inline anzeigen
+- [x] TopicView komplett umgebaut: Lineare Quiz-Ansicht
+- [x] Erste unbeantwortete Frage automatisch fokussieren
+- [x] Nach Antwort automatisch zur nächsten Frage scrollen
+- [x] QuestionDetailDialog und RepeatIncorrectDialog entfernt
+- [x] Tests durchgeführt: 61 Tests bestanden
+- [x] Dokumentation erstellt: UX-Improvement-Linear-Quiz.md
+- [ ] Checkpoint erstellen
