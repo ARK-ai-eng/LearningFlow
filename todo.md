@@ -384,3 +384,15 @@
 - [x] Tests durchgeführt: 61 Tests bestanden
 - [x] Dokumentation erstellt: UX-Improvement-Linear-Quiz.md
 - [ ] Checkpoint erstellen
+
+### Sprint 8 Korrekte Implementierung (29.01.2026)
+- [x] Problem: Falsche Implementierung (alle Fragen gleichzeitig, Auto-Scroll)
+- [x] Lösung: Sprint-8-Dokumentation befolgen
+- [x] TopicView umgebaut: Eine Frage nach der anderen
+- [x] "Nächste Frage" Button nach Feedback
+- [x] Dialog "Fehlerhafte Fragen wiederholen?" nach letzter Frage
+- [x] KEINE Progress Bar während Quiz
+- [x] KEINE Icons/Nummern über Fragen
+- [x] Tests durchgeführt: 61 Tests bestanden
+- [x] Lessons Learned dokumentiert: Sprint-8-Correct-Implementation.md
+- [ ] Checkpoint erstellen

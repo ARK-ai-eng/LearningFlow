@@ -1,10 +1,18 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useParams, useLocation } from "wouter";
-import { ArrowLeft, CheckCircle, XCircle, Circle, Pause } from "lucide-react";
+import { ArrowLeft, Pause } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Fisher-Yates Shuffle
 function shuffleArray<T>(array: T[]): T[] {
@@ -77,6 +85,15 @@ export default function TopicView() {
     });
   }, [questionsWithStatus]);
 
+  // Current question index
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [hasAnswered, setHasAnswered] = useState(false);
+  const [showRepeatDialog, setShowRepeatDialog] = useState(false);
+
+  const currentQuestion = questionsWithShuffledAnswers[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === questionsWithShuffledAnswers.length - 1;
+
   // Calculate stats
   const stats = useMemo(() => {
     const total = questionsWithStatus.length;
@@ -93,10 +110,6 @@ export default function TopicView() {
     };
   }, [questionsWithStatus]);
 
-  // Track selected answers and answered state per question
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
-  const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
-
   const submitMutation = trpc.question.submitAnswer.useMutation({
     onSuccess: () => {
       utils.question.getProgress.invalidate({ topicId: tId });
@@ -107,45 +120,53 @@ export default function TopicView() {
     },
   });
 
-  const handleAnswerClick = (questionId: number, answer: string, correctAnswer: string) => {
-    if (answeredQuestions.has(questionId)) return;
+  const handleAnswerClick = (answer: string) => {
+    if (hasAnswered || !currentQuestion) return;
 
-    setSelectedAnswers(prev => ({ ...prev, [questionId]: answer }));
-    setAnsweredQuestions(prev => new Set(prev).add(questionId));
+    setSelectedAnswer(answer);
+    setHasAnswered(true);
 
     // Submit answer
     submitMutation.mutate({
-      questionId,
+      questionId: currentQuestion.id,
       topicId: tId,
-      isCorrect: answer === correctAnswer,
+      isCorrect: answer === currentQuestion.correctAnswer,
     });
-
-    // Scroll to next question after short delay
-    setTimeout(() => {
-      const nextQuestion = questionsWithShuffledAnswers.find(
-        q => q.id > questionId && !answeredQuestions.has(q.id)
-      );
-      if (nextQuestion) {
-        const element = document.getElementById(`question-${nextQuestion.id}`);
-        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 1000);
   };
 
-  // Auto-scroll to first unanswered question on load
-  const hasScrolled = useRef(false);
-  useEffect(() => {
-    if (!hasScrolled.current && questionsWithShuffledAnswers.length > 0) {
-      const firstUnanswered = questionsWithShuffledAnswers.find(q => q.status === 'unanswered');
-      if (firstUnanswered) {
-        setTimeout(() => {
-          const element = document.getElementById(`question-${firstUnanswered.id}`);
-          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+  const handleNextQuestion = () => {
+    if (isLastQuestion) {
+      // Show repeat dialog if there are incorrect answers
+      if (stats.incorrect > 0) {
+        setShowRepeatDialog(true);
+      } else {
+        // All correct - go back to course
+        setLocation(`/course/${cId}`);
       }
-      hasScrolled.current = true;
+    } else {
+      // Go to next question
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setHasAnswered(false);
     }
-  }, [questionsWithShuffledAnswers]);
+  };
+
+  const handleRepeatIncorrect = () => {
+    // Reset to first incorrect question
+    const firstIncorrectIndex = questionsWithShuffledAnswers.findIndex(
+      q => q.status === 'incorrect'
+    );
+    if (firstIncorrectIndex !== -1) {
+      setCurrentQuestionIndex(firstIncorrectIndex);
+      setSelectedAnswer(null);
+      setHasAnswered(false);
+      setShowRepeatDialog(false);
+    }
+  };
+
+  const handleFinish = () => {
+    setLocation(`/course/${cId}`);
+  };
 
   if (isLoading) {
     return (
@@ -157,6 +178,21 @@ export default function TopicView() {
       </DashboardLayout>
     );
   }
+
+  if (!currentQuestion) {
+    return (
+      <DashboardLayout>
+        <div className="glass-card p-12 text-center">
+          <p className="text-muted-foreground">Keine Fragen verfügbar</p>
+          <Button className="mt-4" onClick={() => setLocation(`/course/${cId}`)}>
+            Zurück zum Kurs
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
 
   return (
     <DashboardLayout>
@@ -175,7 +211,7 @@ export default function TopicView() {
             <div>
               <h1 className="text-2xl font-bold">{topic?.title || 'Thema'}</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                {stats.answered} von {stats.total} Fragen beantwortet
+                Frage {currentQuestionIndex + 1} von {questionsWithShuffledAnswers.length}
               </p>
             </div>
             <Button 
@@ -188,179 +224,115 @@ export default function TopicView() {
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="glass-card p-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium">Fortschritt</span>
-            <span className="text-sm text-muted-foreground">
-              {stats.percentage}% abgeschlossen
-            </span>
-          </div>
-          <div className="progress-bar">
-            <div 
-              className="progress-bar-fill" 
-              style={{ width: `${(stats.answered / stats.total) * 100}%` }}
-            />
-          </div>
-          <div className="flex items-center gap-6 mt-4 text-sm">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              <span>{stats.correct} richtig</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-red-400" />
-              <span>{stats.incorrect} falsch</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Circle className="w-4 h-4 text-muted-foreground" />
-              <span>{stats.total - stats.answered} offen</span>
-            </div>
-          </div>
-        </div>
+        {/* Question Card */}
+        <div className="glass-card p-8">
+          {/* Question */}
+          <h2 className="text-xl font-medium mb-8">
+            {currentQuestion.questionText}
+          </h2>
 
-        {/* Content */}
-        {topic?.content && (
-          <div className="glass-card p-6">
-            <div className="prose prose-invert max-w-none">
-              {topic.content}
-            </div>
-          </div>
-        )}
+          {/* Answers */}
+          <div className="space-y-4">
+            {currentQuestion.shuffledOptions.map((option, idx) => {
+              const displayLabel = ['A', 'B', 'C', 'D'][idx];
+              const isSelected = selectedAnswer === displayLabel;
+              const isCorrectOption = currentQuestion.correctAnswer === displayLabel;
 
-        {/* Questions */}
-        {questionsWithShuffledAnswers.length === 0 ? (
-          <div className="glass-card p-12 text-center">
-            <Circle className="w-12 h-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
-            <p className="text-muted-foreground">Keine Fragen verfügbar</p>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {questionsWithShuffledAnswers.map((q, qIdx) => {
-              const selectedAnswer = selectedAnswers[q.id];
-              const isAnswered = answeredQuestions.has(q.id) || q.status !== 'unanswered';
-              const isCorrect = selectedAnswer === q.correctAnswer;
+              let className = "quiz-option";
+              if (hasAnswered) {
+                if (isCorrectOption) {
+                  className += " correct";
+                } else if (isSelected && !isCorrectOption) {
+                  className += " incorrect";
+                }
+              } else if (isSelected) {
+                className += " selected";
+              }
 
               return (
                 <div
-                  key={q.id}
-                  id={`question-${q.id}`}
-                  className="glass-card p-6 scroll-mt-24"
+                  key={idx}
+                  className={`${className} ${hasAnswered ? 'pointer-events-none' : 'cursor-pointer'}`}
+                  onClick={() => handleAnswerClick(displayLabel)}
                 >
-                  {/* Question Header */}
-                  <div className="flex items-start gap-3 mb-6">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-medium">
-                      {qIdx + 1}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-medium mb-2">{q.questionText}</h3>
-                      {q.status !== 'unanswered' && (
-                        <div className="flex items-center gap-2 text-sm">
-                          {q.status === 'correct' ? (
-                            <>
-                              <CheckCircle className="w-4 h-4 text-emerald-400" />
-                              <span className="text-emerald-400">Richtig beantwortet</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="w-4 h-4 text-red-400" />
-                              <span className="text-red-400">Falsch beantwortet</span>
-                            </>
-                          )}
-                          {q.attemptCount > 1 && (
-                            <span className="text-muted-foreground">
-                              · {q.attemptCount} Versuche
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-medium">
+                      {displayLabel}
+                    </span>
+                    <span className="flex-1">{option.text}</span>
                   </div>
-
-                  {/* Answers */}
-                  <div className="space-y-3">
-                    {q.shuffledOptions.map((option, idx) => {
-                      const displayLabel = ['A', 'B', 'C', 'D'][idx];
-                      const isSelected = selectedAnswer === displayLabel;
-                      const isCorrectOption = q.correctAnswer === displayLabel;
-
-                      let className = "quiz-option";
-                      if (isAnswered) {
-                        if (isCorrectOption) {
-                          className += " correct";
-                        } else if (isSelected && !isCorrectOption) {
-                          className += " incorrect";
-                        }
-                      } else if (isSelected) {
-                        className += " selected";
-                      }
-
-                      return (
-                        <div
-                          key={idx}
-                          className={`${className} ${isAnswered ? 'pointer-events-none' : 'cursor-pointer'}`}
-                          onClick={() => handleAnswerClick(q.id, displayLabel, q.correctAnswer)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-medium">
-                              {displayLabel}
-                            </span>
-                            <span className="flex-1">{option.text}</span>
-                            {isAnswered && isCorrectOption && (
-                              <CheckCircle className="w-5 h-5 text-emerald-400" />
-                            )}
-                            {isAnswered && isSelected && !isCorrectOption && (
-                              <XCircle className="w-5 h-5 text-red-400" />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Explanation */}
-                  {isAnswered && q.explanation && (
-                    <div className={`mt-4 p-4 rounded-lg ${
-                      isCorrect
-                        ? 'bg-emerald-500/10 border border-emerald-500/30'
-                        : 'bg-red-500/10 border border-red-500/30'
-                    }`}>
-                      <p className="text-sm text-muted-foreground">
-                        {q.explanation}
-                      </p>
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
-        )}
 
-        {/* Completion Message */}
-        {stats.answered === stats.total && stats.total > 0 && (
-          <div className="glass-card p-8 text-center">
+          {/* Explanation (after answer) */}
+          {hasAnswered && currentQuestion.explanation && (
+            <div className={`mt-6 p-4 rounded-lg ${
+              isCorrect
+                ? 'bg-emerald-500/10 border border-emerald-500/30'
+                : 'bg-red-500/10 border border-red-500/30'
+            }`}>
+              <p className="text-sm">
+                {currentQuestion.explanation}
+              </p>
+            </div>
+          )}
+
+          {/* Next Question Button */}
+          {hasAnswered && (
+            <div className="mt-8 flex justify-end">
+              <Button onClick={handleNextQuestion} size="lg">
+                {isLastQuestion ? 'Abschließen' : 'Nächste Frage'}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Repeat Dialog */}
+      <Dialog open={showRepeatDialog} onOpenChange={setShowRepeatDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {stats.incorrect === 0 ? '🎉 Perfekt!' : 'Fehlerhafte Fragen wiederholen?'}
+            </DialogTitle>
+            <DialogDescription>
+              {stats.incorrect === 0 ? (
+                <>
+                  Du hast alle {stats.total} Fragen richtig beantwortet!
+                </>
+              ) : (
+                <>
+                  Du hast {stats.incorrect} von {stats.total} Fragen falsch beantwortet.
+                  Möchtest du nur die {stats.incorrect} fehlerhaften Fragen wiederholen,
+                  um dein Wissen zu vertiefen?
+                  <br /><br />
+                  <span className="text-xs text-muted-foreground">
+                    (Dein Score wird nicht geändert)
+                  </span>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
             {stats.incorrect === 0 ? (
-              <>
-                <div className="text-6xl mb-4">🎉</div>
-                <h2 className="text-2xl font-bold mb-2">Perfekt!</h2>
-                <p className="text-muted-foreground mb-6">
-                  Du hast alle Fragen richtig beantwortet!
-                </p>
-              </>
+              <Button onClick={handleFinish}>
+                Zurück zur Kursübersicht
+              </Button>
             ) : (
               <>
-                <div className="text-6xl mb-4">✅</div>
-                <h2 className="text-2xl font-bold mb-2">Thema abgeschlossen!</h2>
-                <p className="text-muted-foreground mb-6">
-                  Du hast {stats.correct} von {stats.total} Fragen richtig beantwortet ({stats.percentage}%)
-                </p>
+                <Button variant="outline" onClick={handleFinish}>
+                  Nein, fortfahren
+                </Button>
+                <Button onClick={handleRepeatIncorrect}>
+                  Ja, wiederholen
+                </Button>
               </>
             )}
-            <Button onClick={() => setLocation(`/course/${cId}`)}>
-              Zurück zur Kursübersicht
-            </Button>
-          </div>
-        )}
-      </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
