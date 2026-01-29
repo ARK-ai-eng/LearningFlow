@@ -15,6 +15,7 @@ import AcceptInvitation from "./pages/AcceptInvitation";
 import UserDashboard from "./pages/user/Dashboard";
 import CourseView from "./pages/user/CourseView";
 import TopicView from "./pages/user/TopicView";
+import QuizView from "./pages/user/QuizView";
 import ExamView from "./pages/user/ExamView";
 import Certificates from "./pages/user/Certificates";
 
@@ -44,6 +45,7 @@ function Router() {
       {/* User Routes */}
       <Route path="/dashboard" component={UserDashboard} />
       <Route path="/course/:id" component={CourseView} />
+      <Route path="/course/:id/quiz" component={QuizView} />
       <Route path="/course/:courseId/topic/:topicId" component={TopicView} />
       <Route path="/course/:id/exam" component={ExamView} />
       <Route path="/certificates" component={Certificates} />

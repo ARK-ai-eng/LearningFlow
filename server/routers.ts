@@ -636,6 +636,13 @@ export const appRouter = router({
         return db.getQuestionsByTopic(input.topicId);
       }),
 
+    // Holt alle Fragen eines Kurses (für Kurs-basiertes Quiz)
+    listByCourse: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getQuestionsByCourse(input.courseId);
+      }),
+
     create: adminProcedure
       .input(z.object({
         topicId: z.number(),
@@ -736,6 +743,28 @@ export const appRouter = router({
       .input(z.object({ topicId: z.number() }))
       .query(async ({ ctx, input }) => {
         return db.getIncorrectQuestionsByTopic(ctx.user.id, input.topicId);
+      }),
+
+    // Berechnet Fortschritt für einen Kurs (alle Fragen)
+    getProgressByCourse: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const questions = await db.getQuestionsByCourse(input.courseId);
+        const progress = await db.getQuestionProgressByCourse(ctx.user.id, input.courseId);
+        
+        const total = questions.length;
+        const answered = progress.length;
+        const correct = progress.filter(p => p.status === 'correct').length;
+        const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+        
+        return {
+          courseId: input.courseId,
+          total,
+          answered,
+          correct,
+          incorrect: answered - correct,
+          percentage,
+        };
       }),
 
     // Berechnet Fortschritt für ein Thema (% richtig beantwortet)

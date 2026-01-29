@@ -1,4 +1,4 @@
-import { eq, and, desc, gt, isNull, sql } from "drizzle-orm";
+import { eq, and, desc, gt, isNull, sql, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import { 
@@ -470,6 +470,29 @@ export async function getQuestionProgressByTopic(userId: number, topicId: number
     .where(and(
       eq(questionProgress.userId, userId),
       eq(questionProgress.topicId, topicId)
+    ));
+}
+
+// Holt Fortschritt für alle Fragen eines Kurses
+export async function getQuestionProgressByCourse(userId: number, courseId: number): Promise<QuestionProgress[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Hole alle Fragen des Kurses
+  const courseQuestions = await getQuestionsByCourse(courseId);
+  const questionIds = courseQuestions.map(q => q.id);
+  
+  if (questionIds.length === 0) {
+    return [];
+  }
+  
+  // Hole Fortschritt für diese Fragen
+  return await db
+    .select()
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      inArray(questionProgress.questionId, questionIds)
     ));
 }
 

@@ -125,29 +125,50 @@ export default function CourseView() {
           </div>
         </div>
 
-        {/* Topics List */}
+        {/* Quiz Start Button */}
+        <div className="glass-card p-8 text-center">
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-primary" />
+          <h2 className="text-2xl font-semibold mb-2">Quiz starten</h2>
+          <p className="text-muted-foreground mb-6">
+            {courseProgress?.total || 0} Fragen warten auf dich
+          </p>
+          <Button 
+            size="lg" 
+            onClick={() => setLocation(`/course/${courseId}/quiz`)}
+            className="min-w-[200px]"
+          >
+            <Play className="w-5 h-5 mr-2" />
+            {courseProgress && courseProgress.answered > 0 ? 'Fortsetzen' : 'Starten'}
+          </Button>
+          {courseProgress && courseProgress.answered > 0 && (
+            <p className="text-sm text-muted-foreground mt-4">
+              {courseProgress.answered} von {courseProgress.total} Fragen beantwortet
+            </p>
+          )}
+        </div>
+
+        {/* Topics (nur zur Info, nicht klickbar) */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Kursinhalt</h2>
+          <h2 className="text-xl font-semibold mb-4">Themen in diesem Kurs</h2>
           <div className="space-y-3">
             {course.topics && course.topics.length > 0 ? (
               course.topics.map((topic, index) => {
-                const status = getTopicStatus(topic.id);
+                const percentage = getTopicProgressPercentage(topic.id);
                 return (
                   <div 
                     key={topic.id}
-                    className="glass-card p-4 flex items-center gap-4 cursor-pointer hover:border-primary/50 transition-colors"
-                    onClick={() => setLocation(`/course/${courseId}/topic/${topic.id}`)}
+                    className="glass-card p-4 flex items-center gap-4"
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      status === 'completed' 
+                      percentage === 100
                         ? 'bg-emerald-500/10 text-emerald-400' 
-                        : status === 'in_progress'
+                        : percentage > 0
                         ? 'bg-amber-500/10 text-amber-400'
                         : 'bg-muted text-muted-foreground'
                     }`}>
-                      {status === 'completed' ? (
+                      {percentage === 100 ? (
                         <CheckCircle className="w-5 h-5" />
-                      ) : status === 'in_progress' ? (
+                      ) : percentage > 0 ? (
                         <Clock className="w-5 h-5" />
                       ) : (
                         <span className="font-medium">{index + 1}</span>
@@ -156,14 +177,12 @@ export default function CourseView() {
                     <div className="flex-1">
                       <h3 className="font-medium">{topic.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {getTopicProgressPercentage(topic.id)}% abgeschlossen
+                        {percentage}% abgeschlossen
                       </p>
                     </div>
-                    <Button variant="ghost" size="sm">
-                      {status === 'completed' ? 'Wiederholen' : 
-                       status === 'in_progress' ? 'Fortsetzen' : 'Starten'}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+                    <div className="text-sm text-muted-foreground">
+                      Thema {index + 1}
+                    </div>
                   </div>
                 );
               })

@@ -29,23 +29,20 @@ type ShuffledOption = {
   text: string;
 };
 
-export default function TopicView() {
-  const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
+export default function QuizView() {
+  const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
-  const cId = parseInt(courseId || "0");
-  const tId = parseInt(topicId || "0");
+  const courseId = parseInt(id || "0");
 
-  const { data: course } = trpc.course.get.useQuery({ id: cId }, { enabled: cId > 0 });
-  const { data: questions, isLoading: questionsLoading } = trpc.question.listByTopic.useQuery(
-    { topicId: tId },
-    { enabled: tId > 0 }
+  const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
+  const { data: questions, isLoading: questionsLoading } = trpc.question.listByCourse.useQuery(
+    { courseId },
+    { enabled: courseId > 0 }
   );
-  const { data: progress, isLoading: progressLoading } = trpc.question.getProgress.useQuery(
-    { topicId: tId },
-    { enabled: tId > 0 }
+  const { data: progress, isLoading: progressLoading } = trpc.question.getProgressByCourse.useQuery(
+    { courseId },
+    { enabled: courseId > 0 }
   );
-
-  const topic = course?.topics?.find(t => t.id === tId);
   const isLoading = questionsLoading || progressLoading;
   const utils = trpc.useUtils();
 
@@ -112,7 +109,7 @@ export default function TopicView() {
 
   const submitMutation = trpc.question.submitAnswer.useMutation({
     onSuccess: () => {
-      utils.question.getProgress.invalidate({ topicId: tId });
+      utils.question.getProgressByCourse.invalidate({ courseId });
       toast.success('Antwort gespeichert');
     },
     onError: (error) => {
@@ -129,7 +126,7 @@ export default function TopicView() {
     // Submit answer
     submitMutation.mutate({
       questionId: currentQuestion.id,
-      topicId: tId,
+      topicId: currentQuestion.topicId, // Keep topicId for DB schema compatibility
       isCorrect: answer === currentQuestion.correctAnswer,
     });
   };
@@ -141,7 +138,7 @@ export default function TopicView() {
         setShowRepeatDialog(true);
       } else {
         // All correct - go back to course
-        setLocation(`/course/${cId}`);
+        setLocation(`/course/${courseId}`);
       }
     } else {
       // Go to next question
@@ -165,7 +162,7 @@ export default function TopicView() {
   };
 
   const handleFinish = () => {
-    setLocation(`/course/${cId}`);
+    setLocation(`/course/${courseId}`);
   };
 
   if (isLoading) {
@@ -184,7 +181,7 @@ export default function TopicView() {
       <DashboardLayout>
         <div className="glass-card p-12 text-center">
           <p className="text-muted-foreground">Keine Fragen verfügbar</p>
-          <Button className="mt-4" onClick={() => setLocation(`/course/${cId}`)}>
+          <Button className="mt-4" onClick={() => setLocation(`/course/${courseId}`)}>
             Zurück zum Kurs
           </Button>
         </div>
@@ -202,14 +199,14 @@ export default function TopicView() {
           <Button 
             variant="ghost" 
             className="mb-4"
-            onClick={() => setLocation(`/course/${cId}`)}
+            onClick={() => setLocation(`/course/${courseId}`)}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zurück zum Kurs
           </Button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{topic?.title || 'Thema'}</h1>
+              <h1 className="text-2xl font-bold">{course?.title || 'Quiz'}</h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Frage {currentQuestionIndex + 1} von {questionsWithShuffledAnswers.length}
               </p>

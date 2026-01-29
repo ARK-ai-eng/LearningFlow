@@ -396,3 +396,38 @@
 - [x] Tests durchgeführt: 61 Tests bestanden
 - [x] Lessons Learned dokumentiert: Sprint-8-Correct-Implementation.md
 - [ ] Checkpoint erstellen
+
+### Sprint 8 Korrekturen - Schrittweise Umsetzung (29.01.2026)
+- [x] Schritt 1: Dialog-Timing korrigieren (Code war bereits korrekt!)
+- [x] Schritt 2: Button-Text dynamisch (Code war bereits korrekt!)
+- [x] Schritt 3: Pause Button ausblenden bei letzter Frage
+- [x] Schritt 4: Dialog-Varianten (Button-Text angepasst)
+- [ ] Schritt 5: Wiederholungs-Logik (nur fehlerhafte Fragen)
+- [ ] Schritt 6: Fortschritt-Anzeige auf Kurs-Card
+- [ ] Tests durchführen
+- [x] Dokumentation erstellt:
+  - [x] Lessons Learned: Sprint-8-Dialog-Timing-Misunderstanding.md
+  - [x] Sprint 8 Update: Alle 6 Szenarien hinzugefügt
+  - [ ] ADR-015: Quiz-Button-Logic (später)
+- [ ] Checkpoint erstellen
+
+### Kurs-basiertes Quiz (Option 2) - 29.01.2026
+Problem: Themen-basiertes Quiz unterbricht Lernfluss
+Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
+
+**Backend:**
+- [x] API: `question.listByCourse` - alle Fragen eines Kurses
+- [x] API: `question.getProgressByCourse` - Fortschritt pro Kurs
+- [x] DB-Funktion: `getQuestionProgressByCourse(userId, courseId)`
+
+**Frontend:**
+- [x] CourseView: Button "Quiz starten" + Themen nur zur Info
+- [x] Route: `/course/:id/quiz` (NEU)
+- [x] QuizView: Basierend auf TopicView, aber für ganzen Kurs
+- [x] Fortschritt: Pro Kurs (getProgressByCourse API)
+
+**Tests & Doku:**
+- [x] Tests: 61 Tests bestanden
+- [x] ADR-015: Entscheidung für Option 2 dokumentiert
+- [x] Lessons Learned: Course-Based-Quiz-Implementation.md
+- [ ] Checkpoint erstellen

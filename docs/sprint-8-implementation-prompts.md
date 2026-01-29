@@ -230,9 +230,12 @@ Implementiere Frontend für neue Lern-Flow Logik: "Nächste Frage" Button, Dialo
 
 ### Anforderungen
 
+⚠️ **HINWEIS**: Die ursprüngliche Beschreibung unten war mehrdeutig. Siehe **Update 29.01.2026** am Ende dieses Abschnitts für die vollständige Klarstellung mit allen 6 Szenarien.
+
 1. **"Nächste Frage" Button**:
    - Statt "Thema abschließen" → "Nächste Frage"
    - Nach letzter Frage: Dialog "Fehlerhafte Fragen wiederholen?"
+   - ⚠️ **Mehrdeutig**: "Nach letzter Frage" = nach Antwort ODER nach Button-Klick?
 
 2. **Dialog "Fehlerhafte Fragen wiederholen?"**:
    - Text: "Du hast X von Y Fragen falsch beantwortet. Möchtest du nur die X fehlerhaften Fragen wiederholen, um dein Wissen zu vertiefen? (Score wird nicht geändert)"
@@ -461,3 +464,283 @@ Referenzen:
 **Status**: ✅ Implementierungs-Prompts erstellt  
 **Nächster Schritt**: Wissensmanagement-System Checkpoint erstellen  
 **Dann**: Implementierung starten
+
+
+---
+
+## ✅ UPDATE 29.01.2026: Vollständige Klarstellung aller Szenarien
+
+**Kontext**: Die ursprüngliche Beschreibung in "Prompt 4: Lern-Flow Logik Frontend (Teil 2)" war mehrdeutig bezüglich:
+- Wann genau der Dialog erscheint (nach Antwort oder nach Button-Klick?)
+- Wann "Abschließen" Button statt "Nächste Frage" Button erscheint
+- Wann "Pause" Button verschwindet
+- Wie Wiederholungen funktionieren
+
+**Dieses Update ersetzt NICHT die ursprüngliche Beschreibung, sondern ergänzt sie mit detaillierten Szenarien.**
+
+---
+
+### Grundprinzipien
+
+1. **Jede Antwort wird SOFORT gespeichert** (nicht erst beim Seitenwechsel)
+2. **"Abschließen" Button erscheint NUR wenn keine Fragen mehr im Pool**
+3. **"Pause" Button verschwindet bei letzter Frage im Pool**
+4. **Dialog erscheint NACH "Abschließen" Button-Klick** (nicht sofort nach Antwort)
+5. **Shuffle bei JEDER Wiederholung** (neue Antworten-Reihenfolge)
+
+---
+
+### Szenario 1: Normaler Durchlauf (12 Fragen)
+
+```
+Frage 1 von 12:
+├── User wählt Antwort
+├── Grün/Rot Feedback + Erklärung anzeigen
+├── SOFORT in DB speichern (submitAnswer API)
+└── Buttons anzeigen: "Nächste Frage" | "Pause"
+
+Frage 2 von 12:
+├── User wählt Antwort
+├── Feedback + Erklärung
+├── SOFORT speichern
+└── Buttons: "Nächste Frage" | "Pause"
+
+...
+
+Frage 12 von 12 (LETZTE im Pool):
+├── User wählt Antwort
+├── Feedback + Erklärung
+├── SOFORT speichern
+└── Button anzeigen: "Abschließen" (KEIN "Pause"!)
+
+User klickt "Abschließen":
+├── Dialog öffnet sich
+├── Text: "Du hast 3 von 12 Fragen falsch beantwortet. 
+│         Möchtest du nur die 3 fehlerhaften Fragen wiederholen?"
+└── Buttons: "Ja, wiederholen" | "Nein, nicht jetzt"
+```
+
+**Wichtig:**
+- "Pause" Button verschwindet bei Frage 12 (letzte im Pool)
+- Dialog erscheint NACH Button-Klick, nicht sofort nach Antwort
+- User kann Feedback/Erklärung in Ruhe lesen
+
+---
+
+### Szenario 2: User pausiert bei Frage 5
+
+```
+Frage 5 von 12:
+├── User wählt Antwort
+├── Feedback + Erklärung
+├── SOFORT speichern (4 Fragen beantwortet)
+└── User klickt "Pause"
+
+Zurück zur Kursübersicht:
+├── Kurs-Card zeigt: "4 von 12 beantwortet (33%)"
+└── Button auf Card: "Fortsetzen" (nicht "Starten")
+
+Später - User klickt "Fortsetzen":
+└── Weiter bei Frage 6 (nicht von vorne!)
+```
+
+**Wichtig:**
+- Fortschritt bleibt erhalten
+- "Fortsetzen" Button statt "Starten"
+- Weiter bei nächster unbeantworteter Frage
+
+---
+
+### Szenario 3: User pausiert OHNE Antwort
+
+```
+Frage 5 von 12:
+├── User liest Frage (beantwortet NICHT)
+└── User klickt "Pause"
+
+Zurück zur Kursübersicht:
+├── Kurs-Card zeigt: "4 von 12 beantwortet (33%)"
+└── Button: "Fortsetzen"
+
+Später - User klickt "Fortsetzen":
+└── Weiter bei Frage 5 (gleiche Frage, noch nicht beantwortet)
+```
+
+**Wichtig:**
+- Fortschritt = Anzahl beantworteter Fragen (nicht aktuelle Frage)
+- User kehrt zur gleichen unbeantworteten Frage zurück
+
+---
+
+### Szenario 4: Alle richtig
+
+```
+Frage 12 von 12:
+├── User wählt Antwort (richtig!)
+├── SOFORT speichern (12 von 12 richtig = 100%)
+└── Button: "Abschließen"
+
+User klickt "Abschließen":
+├── Dialog öffnet sich
+├── Text: "🎉 Herzlichen Glückwunsch! Sie haben bestanden!
+│         Alle 12 Fragen richtig beantwortet!"
+└── Button: "Zurück zur Kursübersicht"
+
+Zurück zur Kursübersicht:
+└── Kurs-Card zeigt: "100% abgeschlossen" ✅
+```
+
+**Wichtig:**
+- Keine "Wiederholen?" Frage bei 100% richtig
+- Direkt Glückwunsch-Dialog
+- Kurs-Card zeigt 100%
+
+---
+
+### Szenario 5: Wiederholung (3 fehlerhafte Fragen)
+
+```
+User hat "Ja, wiederholen" geklickt
+
+Pool jetzt: NUR die 3 fehlerhaften Fragen (nicht alle 12!)
+
+Fehler-Frage 1 von 3:
+├── Antworten GESHUFFELT (neue Reihenfolge!)
+│   Beispiel: War "A, B, C, D" → Jetzt "C, A, D, B"
+├── User wählt Antwort
+├── SOFORT speichern
+└── Buttons: "Nächste Frage" | "Pause"
+
+Fehler-Frage 2 von 3:
+├── Antworten GESHUFFELT
+├── User wählt Antwort
+├── SOFORT speichern
+└── Buttons: "Nächste Frage" | "Pause"
+
+Fehler-Frage 3 von 3 (LETZTE im Pool):
+├── Antworten GESHUFFELT
+├── User wählt Antwort
+├── SOFORT speichern
+└── Button: "Abschließen" (KEIN "Pause"!)
+
+User klickt "Abschließen":
+├── Dialog öffnet sich
+├── Falls noch Fehler: "Wiederholen?" (erneut)
+└── Falls alle richtig: "🎉 Jetzt 100%!"
+```
+
+**Wichtig:**
+- Pool enthält NUR fehlerhafte Fragen (3 von 12)
+- Antworten werden NEU geshuffelt (Fisher-Yates)
+- "Pause" verschwindet bei letzter Frage im Pool (Frage 3 von 3)
+- Dialog kann erneut erscheinen (falls noch Fehler)
+
+---
+
+### Szenario 6: "Nein, nicht jetzt"
+
+```
+Dialog: "Du hast 3 von 12 Fragen falsch beantwortet. Wiederholen?"
+User klickt: "Nein, nicht jetzt"
+
+Zurück zur Kursübersicht:
+├── Fortschritt ist BEREITS gespeichert (9 von 12 = 75%)
+├── Kurs-Card zeigt: "75% abgeschlossen"
+└── Button: "Fortsetzen" (kann später weitermachen)
+
+Später - User klickt "Fortsetzen":
+└── Weiter bei ersten fehlerhaften Frage (Wiederholung)
+```
+
+**Wichtig:**
+- Fortschritt wird NICHT auf 100% gesetzt
+- User kann später wiederholen
+- Kurs gilt als "in Bearbeitung" (nicht abgeschlossen)
+
+---
+
+### Button-Logik Zusammenfassung
+
+| Situation | "Nächste Frage" | "Abschließen" | "Pause" |
+|-----------|----------------|---------------|---------|
+| Frage 1-11 von 12 | ✅ | ❌ | ✅ |
+| Frage 12 von 12 (letzte) | ❌ | ✅ | ❌ |
+| Wiederholung Frage 1-2 von 3 | ✅ | ❌ | ✅ |
+| Wiederholung Frage 3 von 3 (letzte) | ❌ | ✅ | ❌ |
+| Wiederholung Frage 1 von 1 (einzige) | ❌ | ✅ | ❌ |
+
+**Regel**: "Pause" Button verschwindet bei letzter Frage im aktuellen Pool!
+
+---
+
+### Dialog-Logik Zusammenfassung
+
+| Situation | Dialog-Text | Buttons |
+|-----------|-------------|---------|
+| Fehler vorhanden (z.B. 3 von 12) | "Du hast 3 von 12 falsch. Wiederholen?" | "Ja, wiederholen" \| "Nein, nicht jetzt" |
+| Alle richtig (12 von 12) | "🎉 Perfekt! Alle richtig!" | "Zurück zur Kursübersicht" |
+| Wiederholung mit Fehlern | "Du hast 1 von 3 falsch. Wiederholen?" | "Ja, wiederholen" \| "Nein, nicht jetzt" |
+| Wiederholung alle richtig | "🎉 Jetzt 100%!" | "Zurück zur Kursübersicht" |
+
+---
+
+### Speicher-Logik
+
+**SOFORT speichern bei:**
+- ✅ User wählt Antwort → `submitAnswer` API-Call
+- ✅ Nicht warten auf Navigation
+- ✅ Nicht warten auf Dialog
+- ✅ Nicht warten auf Seitenwechsel
+
+**Fortschritt-Berechnung:**
+- Anzahl richtig beantworteter Fragen / Gesamtanzahl Fragen
+- Beispiel: 9 von 12 richtig = 75%
+- Wiederholungen ändern Status, aber nicht Score (siehe ADR-013)
+
+---
+
+### Shuffle-Logik
+
+**Erste Durchlauf:**
+```
+Frage 3: Richtige Antwort = D
+Antworten: A, B, C, D (in dieser Reihenfolge)
+```
+
+**Wiederholung (Fisher-Yates Shuffle):**
+```
+Frage 3: Richtige Antwort = B (GESHUFFELT!)
+Antworten: C, B, A, D (neue zufällige Reihenfolge)
+```
+
+**Implementierung:**
+- Shuffle passiert bei `questionsWithShuffledAnswers` State
+- Jedes Mal wenn Pool neu geladen wird (Wiederholung)
+- Fisher-Yates Algorithmus (bereits implementiert)
+
+---
+
+### Implementierungs-Checkliste
+
+- [ ] Button-Text dynamisch: "Nächste Frage" vs "Abschließen"
+- [ ] "Pause" Button ausblenden bei letzter Frage im Pool
+- [ ] Dialog erscheint nach "Abschließen" Button-Klick
+- [ ] Dialog-Varianten: Fehler vs Alles richtig
+- [ ] Wiederholungs-Logik: Nur fehlerhafte Fragen im Pool
+- [ ] Shuffle bei Wiederholung: Neue Antworten-Reihenfolge
+- [ ] Fortschritt-Anzeige: Korrekte % auf Kurs-Card
+- [ ] "Fortsetzen" Button statt "Starten" bei Fortschritt > 0
+- [ ] Speichern SOFORT nach Antwort (nicht verzögert)
+
+---
+
+### Referenzen
+
+- **Lessons Learned**: `docs/lessons-learned/Sprint-8-Dialog-Timing-Misunderstanding.md`
+- **ADR-013**: Erste Antwort zählt bei Wiederholung
+- **ADR-014**: Fisher-Yates Shuffle für Antworten
+- **Pattern**: PATTERN-Lern-Flow (wird erstellt)
+
+---
+
+**Status**: ✅ Vollständig dokumentiert (29.01.2026)
