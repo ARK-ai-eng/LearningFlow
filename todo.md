@@ -350,3 +350,11 @@
 - [ ] Smoke Test: Pausieren und weitermachen
 - [ ] Todo.md aktualisieren
 - [ ] Checkpoint erstellen
+
+### Phase 4: Fortschritt-Berechnung (Schritt 2.4) - Abgeschlossen
+- [x] Backend: `question.getTopicProgress` API-Endpoint (% pro Thema)
+- [x] Backend: `question.getCourseProgress` API-Endpoint (% pro Kurs)
+- [x] Frontend: CourseView - Fortschritt pro Thema anzeigen (% statt Status)
+- [x] Frontend: Dashboard - Fortschritt pro Kurs anzeigen (% basiert auf richtigen Antworten)
+- [ ] Tests: Unit Tests für neue Endpoints
+- [ ] Checkpoint erstellen

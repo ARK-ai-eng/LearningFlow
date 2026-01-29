@@ -737,6 +737,89 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         return db.getIncorrectQuestionsByTopic(ctx.user.id, input.topicId);
       }),
+
+    // Berechnet Fortschritt für ein Thema (% richtig beantwortet)
+    getTopicProgress: protectedProcedure
+      .input(z.object({ topicId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const questions = await db.getQuestionsByTopic(input.topicId);
+        const progress = await db.getQuestionProgressByTopic(ctx.user.id, input.topicId);
+        
+        const total = questions.length;
+        const answered = progress.length;
+        const correct = progress.filter(p => p.status === 'correct').length;
+        const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+        
+        return {
+          topicId: input.topicId,
+          total,
+          answered,
+          correct,
+          incorrect: answered - correct,
+          percentage,
+        };
+      }),
+
+    // Berechnet Fortschritt für einen Kurs (% aller Fragen richtig)
+    getCourseProgress: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const course = await db.getCourseById(input.courseId);
+        if (!course) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Kurs nicht gefunden' });
+        }
+
+        // Alle Fragen des Kurses holen
+        const allQuestions = await db.getQuestionsByCourse(input.courseId);
+        const totalQuestions = allQuestions.length;
+        
+        if (totalQuestions === 0) {
+          return {
+            courseId: input.courseId,
+            totalQuestions: 0,
+            answeredQuestions: 0,
+            correctAnswers: 0,
+            percentage: 0,
+            topicProgress: [],
+          };
+        }
+
+        // Fortschritt für alle Topics holen
+        const topicProgress = await Promise.all(
+          course.topics.map(async (topic: any) => {
+            const questions = await db.getQuestionsByTopic(topic.id);
+            const progress = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
+            
+            const total = questions.length;
+            const answered = progress.length;
+            const correct = progress.filter(p => p.status === 'correct').length;
+            const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+            
+            return {
+              topicId: topic.id,
+              topicTitle: topic.title,
+              total,
+              answered,
+              correct,
+              percentage,
+            };
+          })
+        );
+
+        // Gesamt-Fortschritt berechnen
+        const answeredQuestions = topicProgress.reduce((sum, t) => sum + t.answered, 0);
+        const correctAnswers = topicProgress.reduce((sum, t) => sum + t.correct, 0);
+        const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+
+        return {
+          courseId: input.courseId,
+          totalQuestions,
+          answeredQuestions,
+          correctAnswers,
+          percentage,
+          topicProgress,
+        };
+      }),
   }),
 
   // ============================================

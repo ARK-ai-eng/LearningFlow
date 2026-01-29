@@ -14,11 +14,21 @@ export default function UserDashboard() {
   const { data: progress, isLoading: progressLoading } = trpc.progress.my.useQuery();
   const { data: certificates } = trpc.certificate.my.useQuery();
 
+  // Hole Fortschritt für alle Kurse
+  const courseProgressQueries = courses?.map(course => 
+    trpc.question.getCourseProgress.useQuery(
+      { courseId: course.id },
+      { enabled: !!course.id }
+    )
+  ) || [];
+
   const getCourseProgress = (courseId: number) => {
-    if (!progress) return 0;
-    const courseProgress = progress.filter(p => p.courseId === courseId);
-    const completed = courseProgress.filter(p => p.status === 'completed').length;
-    return courseProgress.length > 0 ? Math.round((completed / courseProgress.length) * 100) : 0;
+    // Finde den passenden Query für diesen Kurs
+    const courseIndex = courses?.findIndex(c => c.id === courseId) ?? -1;
+    if (courseIndex >= 0 && courseProgressQueries[courseIndex]?.data) {
+      return courseProgressQueries[courseIndex].data.percentage;
+    }
+    return 0;
   };
 
   const getCourseIcon = (type: string) => {

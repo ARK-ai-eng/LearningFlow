@@ -18,11 +18,21 @@ export default function CourseView() {
     { courseId },
     { enabled: courseId > 0 }
   );
+  const { data: courseProgress } = trpc.question.getCourseProgress.useQuery(
+    { courseId },
+    { enabled: courseId > 0 }
+  );
 
   const getTopicStatus = (topicId: number) => {
     if (!progress) return 'not_started';
     const topicProgress = progress.find(p => p.topicId === topicId);
     return topicProgress?.status || 'not_started';
+  };
+
+  const getTopicProgressPercentage = (topicId: number) => {
+    if (!courseProgress?.topicProgress) return 0;
+    const topicProg = courseProgress.topicProgress.find(t => t.topicId === topicId);
+    return topicProg?.percentage || 0;
   };
 
   if (isLoading) {
@@ -146,8 +156,7 @@ export default function CourseView() {
                     <div className="flex-1">
                       <h3 className="font-medium">{topic.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {status === 'completed' ? 'Abgeschlossen' : 
-                         status === 'in_progress' ? 'In Bearbeitung' : 'Nicht gestartet'}
+                        {getTopicProgressPercentage(topic.id)}% abgeschlossen
                       </p>
                     </div>
                     <Button variant="ghost" size="sm">
