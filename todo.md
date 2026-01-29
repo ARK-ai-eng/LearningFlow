@@ -275,3 +275,10 @@
 - [ ] Frontend: Fortschritt-Anzeige % statt "3/5 richtig"
 - [x] Frontend: Antworten-Shuffle bei jedem Laden integrieren
 - [ ] Tests: Manual Testing im Browser
+
+
+### Schritt 2: Dialog & Tracking (29.01.2026)
+- [x] "Thema abschließen" Button entfernen
+- [x] Dialog "Fehlerhafte Fragen wiederholen?" nach letzter Frage
+- [x] Tracking: Welche Fragen waren falsch? (State)
+- [x] Dialog-Buttons: "Ja" (Wiederholung) / "Nein" (Fortschritt speichern)

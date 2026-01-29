@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useParams, useLocation } from "wouter";
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -34,8 +42,10 @@ export default function TopicView() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
-  const [topicCompleted, setTopicCompleted] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState<ShuffledQuestion[]>([]);
+  const [incorrectQuestions, setIncorrectQuestions] = useState<number[]>([]); // Track incorrect question indices
+  const [showRepeatDialog, setShowRepeatDialog] = useState(false);
+  const [topicCompleted, setTopicCompleted] = useState(false);
 
   const { data: course } = trpc.course.get.useQuery({ id: cId }, { enabled: cId > 0 });
   const { data: questions, isLoading } = trpc.question.listByTopic.useQuery(
@@ -46,6 +56,7 @@ export default function TopicView() {
   const completeMutation = trpc.progress.completeTopic.useMutation({
     onSuccess: () => {
       toast.success("Thema abgeschlossen!");
+      setTopicCompleted(true);
     },
   });
 
@@ -92,9 +103,14 @@ export default function TopicView() {
     if (answered) return; // Bereits beantwortet
     setSelectedAnswer(answer);
     setAnswered(true);
+
+    // Track incorrect answers
+    if (answer !== question?.correctAnswer) {
+      setIncorrectQuestions(prev => [...prev, currentQuestion]);
+    }
   };
 
-  // Nächste Frage oder Thema abschließen
+  // Nächste Frage oder Dialog zeigen
   const handleNext = () => {
     if (currentQuestion < totalQuestions - 1) {
       // Nächste Frage
@@ -102,14 +118,48 @@ export default function TopicView() {
       setSelectedAnswer(null);
       setAnswered(false);
     } else {
-      // Alle Fragen bearbeitet - Thema abschließen
-      setTopicCompleted(true);
-      completeMutation.mutate({
-        courseId: cId,
-        topicId: tId,
-        score: 100, // Im Lernmodus immer 100% (es geht ums Lernen, nicht ums Bestehen)
-      });
+      // Alle Fragen bearbeitet - Dialog zeigen
+      if (incorrectQuestions.length > 0) {
+        setShowRepeatDialog(true);
+      } else {
+        // Keine falschen Antworten - direkt abschließen
+        handleCompleteWithoutRepeat();
+      }
     }
+  };
+
+  // Fehlerhafte Fragen wiederholen
+  const handleRepeatIncorrect = () => {
+    setShowRepeatDialog(false);
+    
+    // Filter nur falsche Fragen
+    const incorrectQuestionsData = shuffledQuestions.filter((_, idx) => 
+      incorrectQuestions.includes(idx)
+    );
+    
+    // Reshuffle incorrect questions
+    setShuffledQuestions(incorrectQuestionsData);
+    setIncorrectQuestions([]); // Reset tracking
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
+    setAnswered(false);
+    
+    toast.info(`${incorrectQuestionsData.length} fehlerhafte Fragen werden wiederholt`);
+  };
+
+  // Thema abschließen ohne Wiederholung
+  const handleCompleteWithoutRepeat = () => {
+    setShowRepeatDialog(false);
+    
+    // Calculate score: % of correct answers
+    const correctCount = totalQuestions - incorrectQuestions.length;
+    const score = Math.round((correctCount / totalQuestions) * 100);
+    
+    completeMutation.mutate({
+      courseId: cId,
+      topicId: tId,
+      score,
+    });
   };
 
   // Zum nächsten Thema navigieren
@@ -264,19 +314,34 @@ export default function TopicView() {
             <div className="flex justify-end">
               {answered && (
                 <Button onClick={handleNext}>
-                  {currentQuestion < totalQuestions - 1 ? (
-                    <>
-                      Nächste Frage
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  ) : (
-                    'Thema abschließen'
-                  )}
+                  Nächste Frage
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               )}
             </div>
           </div>
         )}
+
+        {/* Dialog: Fehlerhafte Fragen wiederholen? */}
+        <Dialog open={showRepeatDialog} onOpenChange={setShowRepeatDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Fehlerhafte Fragen wiederholen?</DialogTitle>
+              <DialogDescription>
+                Sie haben {incorrectQuestions.length} von {totalQuestions} Fragen falsch beantwortet.
+                Möchten Sie diese Fragen wiederholen?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={handleCompleteWithoutRepeat}>
+                Nein, Thema abschließen
+              </Button>
+              <Button onClick={handleRepeatIncorrect}>
+                Ja, Fragen wiederholen
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Thema abgeschlossen */}
         {topicCompleted && (
@@ -288,7 +353,7 @@ export default function TopicView() {
             <h2 className="text-2xl font-bold mb-2">Thema abgeschlossen!</h2>
             
             <p className="text-muted-foreground mb-6">
-              Sie haben alle {totalQuestions} Fragen zu diesem Thema bearbeitet.
+              Sie haben alle Fragen zu diesem Thema bearbeitet.
             </p>
 
             <div className="flex justify-center gap-3">
