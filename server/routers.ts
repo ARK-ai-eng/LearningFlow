@@ -749,12 +749,19 @@ export const appRouter = router({
     getProgressByCourse: protectedProcedure
       .input(z.object({ courseId: z.number() }))
       .query(async ({ ctx, input }) => {
+        return await db.getQuestionProgressByCourse(ctx.user.id, input.courseId);
+      }),
+
+    // Berechnet Statistik für einen Kurs
+    getCourseStats: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
         const questions = await db.getQuestionsByCourse(input.courseId);
         const progress = await db.getQuestionProgressByCourse(ctx.user.id, input.courseId);
         
         const total = questions.length;
         const answered = progress.length;
-        const correct = progress.filter(p => p.status === 'correct').length;
+        const correct = progress.filter((p: any) => p.status === 'correct').length;
         const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
         
         return {

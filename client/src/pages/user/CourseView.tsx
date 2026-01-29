@@ -18,7 +18,7 @@ export default function CourseView() {
     { courseId },
     { enabled: courseId > 0 }
   );
-  const { data: courseProgress } = trpc.question.getCourseProgress.useQuery(
+  const { data: courseProgress } = trpc.question.getCourseStats.useQuery(
     { courseId },
     { enabled: courseId > 0 }
   );
