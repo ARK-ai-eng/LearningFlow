@@ -358,3 +358,10 @@
 - [x] Frontend: Dashboard - Fortschritt pro Kurs anzeigen (% basiert auf richtigen Antworten)
 - [ ] Tests: Unit Tests für neue Endpoints
 - [ ] Checkpoint erstellen
+
+### Bug-Fix: React Hooks Fehler im Dashboard (29.01.2026)
+- [x] Problem identifiziert: Dynamisches useQuery Array verletzt React Hooks Regeln
+- [x] Lösung: Alte getCourseProgress Logik wiederherstellen (basiert auf userProgress)
+- [ ] Alternative: Batch-Endpoint für alle Kurse (später)
+- [ ] Tests durchführen
+- [ ] Checkpoint erstellen
