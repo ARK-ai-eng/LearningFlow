@@ -10,7 +10,7 @@ export default function AdminDashboard() {
   const [, setLocation] = useLocation();
 
   const { data: companies, isLoading: companiesLoading } = trpc.company.list.useQuery();
-  const { data: courses, isLoading: coursesLoading } = trpc.course.listAll.useQuery();
+  const { data: courses, isLoading: coursesLoading } = trpc.course.listActive.useQuery();
 
   const cleanupMutation = trpc.invitation.cleanupExpired.useMutation();
 

@@ -249,3 +249,9 @@
 - [ ] Adaptive Learning (Schwierigkeit anpassen)
 - [ ] Live-Chat Support
 - [ ] White-Label Option
+
+
+### Bug-Fix: Dashboard zeigt inaktive Kurse
+- [x] Dashboard.tsx: `listAll` → `listActive` ändern
+- [x] Anzahl nur aktive Kurse zählen (nicht alle 8)
+- [x] Nur aktive Kurse in Kurs-Vorschau anzeigen
