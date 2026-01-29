@@ -5,6 +5,7 @@ import { useParams, useLocation } from "wouter";
 import { ArrowLeft, CheckCircle, XCircle, Circle, Pause, ArrowRight } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import QuestionDetailDialog from "@/components/QuestionDetailDialog";
+import RepeatIncorrectDialog from "@/components/RepeatIncorrectDialog";
 
 export default function TopicView() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
@@ -25,6 +26,8 @@ export default function TopicView() {
   const topic = course?.topics?.find(t => t.id === tId);
   const isLoading = questionsLoading || progressLoading;
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
+  const [showRepeatDialog, setShowRepeatDialog] = useState(false);
+  const [repeatMode, setRepeatMode] = useState(false);
 
   // Merge questions with progress
   const questionsWithStatus = useMemo(() => {
@@ -76,6 +79,28 @@ export default function TopicView() {
   // Close question dialog
   const closeQuestion = () => {
     setSelectedQuestionId(null);
+    
+    // Check if all questions are answered (and not in repeat mode)
+    if (!repeatMode && stats.answered === stats.total && stats.total > 0) {
+      setShowRepeatDialog(true);
+    }
+  };
+
+  // Handle repeat incorrect questions
+  const handleRepeat = () => {
+    setShowRepeatDialog(false);
+    setRepeatMode(true);
+    // Open first incorrect question
+    const firstIncorrect = sortedQuestions.find(q => q.status === 'incorrect');
+    if (firstIncorrect) {
+      setSelectedQuestionId(firstIncorrect.id);
+    }
+  };
+
+  // Handle skip repeat
+  const handleSkipRepeat = () => {
+    setShowRepeatDialog(false);
+    setLocation(`/course/${cId}`);
   };
 
   if (isLoading) {
@@ -208,7 +233,13 @@ export default function TopicView() {
           )}
         </div>
 
-        {/* TODO: Dialog for repeat incorrect questions (Step 2.3) */}
+        {/* Repeat Incorrect Dialog */}
+        <RepeatIncorrectDialog
+          isOpen={showRepeatDialog}
+          incorrectCount={stats.incorrect}
+          onRepeat={handleRepeat}
+          onSkip={handleSkipRepeat}
+        />
       </div>
 
       {/* Question Detail Dialog */}

@@ -334,10 +334,11 @@
 - [ ] Fortschritt in Fragen-Liste aktualisieren
 
 ### Phase 3: Dialog für Wiederholung (1h)
-- [ ] Dialog nur nach letzter Frage anzeigen (alle beantwortet)
-- [ ] "Möchtest du fehlerhafte Fragen wiederholen?"
-- [ ] Ja: Nur falsche Fragen anzeigen (`trpc.question.getIncorrectQuestions`)
-- [ ] Nein: Fortschritt speichern, zum nächsten Thema
+- [x] Dialog nur nach letzter Frage anzeigen (alle beantwortet)
+- [x] "Möchtest du fehlerhafte Fragen wiederholen?"
+- [x] Ja: Nur falsche Fragen anzeigen (öffnet erste falsche Frage)
+- [x] Nein: Fortschritt speichern, zurück zur Kurs-Übersicht
+- [x] Spezialfall: Alle richtig → "Perfekt!" Meldung
 
 ### Phase 4: Fortschritt-Berechnung (1h)
 - [ ] Dashboard: Fortschritt = (richtige Antworten / Gesamtfragen) × 100%
