@@ -255,3 +255,11 @@
 - [x] Dashboard.tsx: `listAll` → `listActive` ändern
 - [x] Anzahl nur aktive Kurse zählen (nicht alle 8)
 - [x] Nur aktive Kurse in Kurs-Vorschau anzeigen
+
+
+### Micro-Prompt 2a: Backend-Vorbereitung (29.01.2026)
+- [x] Schema: courseType enum prüfen (learning/sensitization/certification)
+- [x] Frontend: Kurstyp-Dropdown Label ändern ("Sensitization (Lernmodus)" statt "3/5 richtig")
+- [x] Backend: Fisher-Yates Shuffle-Algorithmus implementieren
+- [x] Backend: `shuffleQuestionAnswers()` Helper-Funktion
+- [x] Tests: Shuffle-Algorithmus Unit Tests (12 Tests, alle bestanden)

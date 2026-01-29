@@ -183,7 +183,7 @@ export default function CourseEditor() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="learning">Learning (Optional)</SelectItem>
-                  <SelectItem value="sensitization">Sensitization (3/5 richtig)</SelectItem>
+                  <SelectItem value="sensitization">Sensitization (Lernmodus)</SelectItem>
                   <SelectItem value="certification">Certification (Jahresprüfung)</SelectItem>
                 </SelectContent>
               </Select>
