@@ -431,3 +431,16 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] ADR-015: Entscheidung für Option 2 dokumentiert
 - [x] Lessons Learned: Course-Based-Quiz-Implementation.md
 - [ ] Checkpoint erstellen
+## Shuffle-Bug Fix (30.01.2026)
+
+- [x] Schritt 1: shuffleTrigger State hinzufügen
+- [x] Schritt 2: useMemo() Dependency anpassen (questions + shuffleTrigger)
+- [x] Schritt 3: handleRepeatIncorrect() erweitern (setShuffleTrigger)
+- [x] Schritt 4: Filter für fehlerhafte Fragen implementieren
+- [x] Schritt 5: Browser-Tests durchführen (alle Tests bestanden)
+- [x] Schritt 6: Dokumentation aktualisieren und Checkpoint erstellen
+
+**Problem:** Antworten änderten Position während Quiz (nach jedem Klick)
+**Root Cause:** useMemo() Dependency [questionsWithStatus] triggerte Shuffle nach jeder Antwort
+**Lösung:** shuffleTrigger State + useMemo() Dependency [questions, shuffleTrigger]
+**Resultat:** Antworten bleiben stabil während Quiz, Shuffle nur bei Wiederholung

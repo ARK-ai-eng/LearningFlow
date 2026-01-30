@@ -46,23 +46,17 @@ export default function QuizView() {
   const isLoading = questionsLoading || progressLoading;
   const utils = trpc.useUtils();
 
-  // Merge questions with progress
-  const questionsWithStatus = useMemo(() => {
-    if (!questions || !progress) return [];
-    
-    return questions.map(q => {
-      const p = progress.find(pr => pr.questionId === q.id);
-      return {
-        ...q,
-        status: p?.status || 'unanswered' as 'correct' | 'incorrect' | 'unanswered',
-        attemptCount: p?.attemptCount || 0,
-      };
-    });
-  }, [questions, progress]);
+  // Shuffle trigger: Increments on repeat to trigger new shuffle
+  // Only changes when user clicks "Ja, wiederholen" button
+  const [shuffleTrigger, setShuffleTrigger] = useState(0);
 
   // Shuffle answers for each question (memoized per question)
+  // Dependency: [questions, shuffleTrigger] - NOT questionsWithStatus
+  // This ensures shuffle only happens on load and repeat, NOT after every answer
   const questionsWithShuffledAnswers = useMemo(() => {
-    return questionsWithStatus.map(q => {
+    if (!questions) return [];
+    
+    return questions.map(q => {
       const options: ShuffledOption[] = [
         { label: 'A', text: q.optionA },
         { label: 'B', text: q.optionB },
@@ -80,16 +74,42 @@ export default function QuizView() {
         correctAnswer: newCorrectAnswer,
       };
     });
-  }, [questionsWithStatus]);
+  }, [questions, shuffleTrigger]);
+
+  // Merge shuffled questions with progress status
+  // This updates status without triggering shuffle
+  const questionsWithStatus = useMemo(() => {
+    if (!progress) return questionsWithShuffledAnswers;
+    
+    return questionsWithShuffledAnswers.map(q => {
+      const p = progress.find(pr => pr.questionId === q.id);
+      return {
+        ...q,
+        status: p?.status || 'unanswered' as 'correct' | 'incorrect' | 'unanswered',
+        attemptCount: p?.attemptCount || 0,
+      };
+    });
+  }, [questionsWithShuffledAnswers, progress]);
 
   // Current question index
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showRepeatDialog, setShowRepeatDialog] = useState(false);
+  const [isRepeatMode, setIsRepeatMode] = useState(false);
 
-  const currentQuestion = questionsWithShuffledAnswers[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questionsWithShuffledAnswers.length - 1;
+  // Filter questions based on mode: all questions or only incorrect ones
+  const activeQuestions = useMemo(() => {
+    if (isRepeatMode) {
+      // Repeat mode: only show incorrect questions
+      return questionsWithStatus.filter(q => q.status === 'incorrect');
+    }
+    // Normal mode: show all questions
+    return questionsWithStatus;
+  }, [isRepeatMode, questionsWithStatus]);
+
+  const currentQuestion = activeQuestions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -149,16 +169,17 @@ export default function QuizView() {
   };
 
   const handleRepeatIncorrect = () => {
-    // Reset to first incorrect question
-    const firstIncorrectIndex = questionsWithShuffledAnswers.findIndex(
-      q => q.status === 'incorrect'
-    );
-    if (firstIncorrectIndex !== -1) {
-      setCurrentQuestionIndex(firstIncorrectIndex);
-      setSelectedAnswer(null);
-      setHasAnswered(false);
-      setShowRepeatDialog(false);
-    }
+    // Trigger shuffle for repeat mode
+    setShuffleTrigger(prev => prev + 1);
+    
+    // Enter repeat mode: filter to show only incorrect questions
+    setIsRepeatMode(true);
+    
+    // Reset to first question (will be first incorrect question due to filter)
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setHasAnswered(false);
+    setShowRepeatDialog(false);
   };
 
   const handleFinish = () => {
@@ -208,7 +229,8 @@ export default function QuizView() {
             <div>
               <h1 className="text-2xl font-bold">{course?.title || 'Quiz'}</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Frage {currentQuestionIndex + 1} von {questionsWithShuffledAnswers.length}
+                Frage {currentQuestionIndex + 1} von {activeQuestions.length}
+                {isRepeatMode && <span className="ml-2 text-orange-500">(Wiederholung)</span>}
               </p>
             </div>
             {!isLastQuestion && (
