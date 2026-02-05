@@ -146,7 +146,8 @@ export default function QuizView() {
     // Submit answer
     submitMutation.mutate({
       questionId: currentQuestion.id,
-      topicId: currentQuestion.topicId, // Keep topicId for DB schema compatibility
+      topicId: currentQuestion.topicId,
+      courseId: courseId,
       isCorrect: answer === currentQuestion.correctAnswer,
     });
   };

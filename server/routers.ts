@@ -726,15 +726,40 @@ export const appRouter = router({
       .input(z.object({
         questionId: z.number(),
         topicId: z.number(),
+        courseId: z.number(),
         isCorrect: z.boolean(),
       }))
       .mutation(async ({ ctx, input }) => {
+        // 1. Speichere Fragen-Fortschritt
         await db.upsertQuestionProgress({
           userId: ctx.user.id,
           questionId: input.questionId,
           topicId: input.topicId,
           status: input.isCorrect ? 'correct' : 'incorrect',
         });
+
+        // 2. Prüfe ob alle Fragen des Topics beantwortet wurden
+        const topicQuestions = await db.getQuestionsByTopic(input.topicId);
+        const topicProgress = await db.getQuestionProgressByTopic(ctx.user.id, input.topicId);
+        
+        const allAnswered = topicQuestions.length > 0 && topicProgress.length === topicQuestions.length;
+        
+        if (allAnswered) {
+          // Berechne Score (Prozent korrekt)
+          const correctCount = topicProgress.filter(p => p.status === 'correct').length;
+          const score = Math.round((correctCount / topicQuestions.length) * 100);
+          
+          // Aktualisiere user_progress für dieses Topic
+          await db.upsertProgress({
+            userId: ctx.user.id,
+            courseId: input.courseId,
+            topicId: input.topicId,
+            status: 'completed',
+            score,
+            completedAt: new Date(),
+          });
+        }
+
         return { success: true };
       }),
 

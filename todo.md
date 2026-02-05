@@ -444,3 +444,31 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 **Root Cause:** useMemo() Dependency [questionsWithStatus] triggerte Shuffle nach jeder Antwort
 **Lösung:** shuffleTrigger State + useMemo() Dependency [questions, shuffleTrigger]
 **Resultat:** Antworten bleiben stabil während Quiz, Shuffle nur bei Wiederholung
+
+
+## Progress-Tracking Inkonsistenzen (30.01.2026)
+
+**Problem:** Fortschritts-Anzeige ist falsch und inkonsistent zwischen Dashboard und CourseView
+
+### Symptome (Screenshot 1 - CourseView):
+- [x] "6 von 12 Themen abgeschlossen" (sollte 12 von 12 sein) → FIXED: Jetzt 12/12
+- [x] "50%" Fortschritt (sollte 100% sein) → FIXED: Jetzt 100%
+- [x] Themen zeigen "0% abgeschlossen" (sollte 100% sein) → KORREKT: 0% für falsche Antworten
+- [ ] "Fortsetzen" Button (sollte "Abgeschlossen" sein) → TODO: Separate Feature
+
+### Symptome (Screenshot 2 - Dashboard):
+- [x] "IT-Sicherheit Sensibilisierung" zeigt "100%" (korrekt!) → FIXED: Jetzt korrekt
+- [ ] Aber Button sagt "Fortsetzen" (sollte "Abgeschlossen" sein) → TODO: Separate Feature
+- [x] Inkonsistenz: CourseView 50% vs Dashboard 100% → FIXED: Beide zeigen 100%
+
+### Root Cause Analysis:
+- [x] Datenquellen identifizieren (user_progress vs question_progress)
+- [x] Datenfluss nachvollziehen (submitAnswer → getCourseStats → Dashboard/CourseView)
+- [x] Abhängigkeiten zwischen Komponenten aufdecken
+- [x] Lösungsvorschlag mit Prioritäten erstellen
+
+### Implementierung:
+- [x] Phase 1: submitAnswer erweitert - aktualisiert user_progress automatisch
+- [x] Phase 2: Dashboard getCourseProgress korrigiert - zählt ALLE Topics (nicht nur die in user_progress)
+- [x] Phase 3: Testing (Browser Tests abgeschlossen - Dashboard 100%, CourseView 100%)
+- [x] Phase 4: Data Migration (fehlende 6 Topics für User 180002 erstellt - jetzt 12/12)

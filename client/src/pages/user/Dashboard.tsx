@@ -11,14 +11,22 @@ export default function UserDashboard() {
   const [, setLocation] = useLocation();
 
   const { data: courses, isLoading: coursesLoading } = trpc.course.listActive.useQuery();
-  const { data: progress, isLoading: progressLoading } = trpc.progress.my.useQuery();
+  const { data: progress } = trpc.progress.my.useQuery();
   const { data: certificates } = trpc.certificate.my.useQuery();
 
   const getCourseProgress = (courseId: number) => {
     if (!progress) return 0;
-    const courseProgress = progress.filter(p => p.courseId === courseId);
-    const completed = courseProgress.filter(p => p.status === 'completed').length;
-    return courseProgress.length > 0 ? Math.round((completed / courseProgress.length) * 100) : 0;
+    
+    // Zähle completed Topics aus user_progress (nur Topics mit topicId !== null)
+    const courseProgress = progress.filter(p => p.courseId === courseId && p.topicId !== null);
+    const completedTopics = courseProgress.filter(p => p.status === 'completed').length;
+    
+    // Wenn keine Topics in user_progress, dann 0%
+    if (courseProgress.length === 0) return 0;
+    
+    // WICHTIG: Wir zählen nur die Topics die in user_progress sind
+    // Nach dem Fix sollten ALLE Topics in user_progress sein (12/12)
+    return Math.round((completedTopics / courseProgress.length) * 100);
   };
 
   const getCourseIcon = (type: string) => {

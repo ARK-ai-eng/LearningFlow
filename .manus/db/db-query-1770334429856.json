@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, userId, courseId, topicId, status, score, completedAt, createdAt FROM user_progress WHERE courseId = 2 ORDER BY topicId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, userId, courseId, topicId, status, score, completedAt, createdAt FROM user_progress WHERE courseId = 2 ORDER BY topicId;",
+  "rows": [
+    {
+      "id": "90001",
+      "userId": "180002",
+      "courseId": "2",
+      "topicId": "4",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-01-28 17:03:06",
+      "createdAt": "2026-01-28 17:03:05"
+    },
+    {
+      "id": "90002",
+      "userId": "180002",
+      "courseId": "2",
+      "topicId": "5",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-01-28 17:03:43",
+      "createdAt": "2026-01-28 17:03:43"
+    },
+    {
+      "id": "120001",
+      "userId": "180002",
+      "courseId": "2",
+      "topicId": "6",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-01-28 20:48:02",
+      "createdAt": "2026-01-28 20:48:01"
+    },
+    {
+      "id": "60001",
+      "userId": "180002",
+      "courseId": "2",
+      "topicId": "30001",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-01-28 15:13:06",
+      "createdAt": "2026-01-28 15:13:05"
+    },
+    {
+      "id": "150002",
+      "userId": "180002",
+      "courseId": "2",
+      "topicId": "30002",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-01-29 11:22:47",
+      "createdAt": "2026-01-29 11:22:46"
+    },
+    {
+      "id": "150001",
+      "userId": "180002",
+      "courseId": "2",
+      "topicId": "30005",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-01-29 11:22:23",
+      "createdAt": "2026-01-29 11:22:22"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tcourseId\ttopicId\tstatus\tscore\tcompletedAt\tcreatedAt\n90001\t180002\t2\t4\tcompleted\t100\t2026-01-28 17:03:06\t2026-01-28 17:03:05\n90002\t180002\t2\t5\tcompleted\t100\t2026-01-28 17:03:43\t2026-01-28 17:03:43\n120001\t180002\t2\t6\tcompleted\t100\t2026-01-28 20:48:02\t2026-01-28 20:48:01\n60001\t180002\t2\t30001\tcompleted\t100\t2026-01-28 15:13:06\t2026-01-28 15:13:05\n150002\t180002\t2\t30002\tcompleted\t100\t2026-01-29 11:22:47\t2026-01-29 11:22:46\n150001\t180002\t2\t30005\tcompleted\t100\t2026-01-29 11:22:23\t2026-01-29 11:22:22\n",
+  "stderr": "",
+  "execution_time_ms": 202
+}
