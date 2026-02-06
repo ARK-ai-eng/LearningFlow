@@ -237,7 +237,7 @@ export default function QuizView() {
             {!isLastQuestion && (
               <Button 
                 variant="outline"
-                onClick={() => setLocation(`/course/${cId}`)}
+                onClick={() => setLocation(`/course/${courseId}`)}
               >
                 <Pause className="w-4 h-4 mr-2" />
                 Pause

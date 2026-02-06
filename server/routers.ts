@@ -789,6 +789,23 @@ export const appRouter = router({
         const correct = progress.filter((p: any) => p.status === 'correct').length;
         const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
         
+        // Topic-Fortschritt berechnen
+        const topics = await db.getTopicsByCourse(input.courseId);
+        const topicProgress = await Promise.all(
+          topics.map(async (topic: any) => {
+            const topicQuestions = await db.getQuestionsByTopic(topic.id);
+            const topicProg = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
+            return {
+              topicId: topic.id,
+              topicTitle: topic.title,
+              total: topicQuestions.length,
+              answered: topicProg.length,
+              correct: topicProg.filter((p: any) => p.status === 'correct').length,
+              percentage: topicQuestions.length > 0 ? Math.round((topicProg.filter((p: any) => p.status === 'correct').length / topicQuestions.length) * 100) : 0,
+            };
+          })
+        );
+        
         return {
           courseId: input.courseId,
           total,
@@ -796,6 +813,7 @@ export const appRouter = router({
           correct,
           incorrect: answered - correct,
           percentage,
+          topicProgress,
         };
       }),
 
@@ -829,6 +847,11 @@ export const appRouter = router({
         if (!course) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Kurs nicht gefunden' });
         }
+        
+        // Topics laden
+        const topics = await db.getTopicsByCourse(input.courseId);
+        console.log('[getCourseProgress] Topics loaded:', topics.length);
+        const courseWithTopics = { ...course, topics };
 
         // Alle Fragen des Kurses holen
         const allQuestions = await db.getQuestionsByCourse(input.courseId);
@@ -847,7 +870,7 @@ export const appRouter = router({
 
         // Fortschritt für alle Topics holen
         const topicProgress = await Promise.all(
-          course.topics.map(async (topic: any) => {
+          courseWithTopics.topics.map(async (topic: any) => {
             const questions = await db.getQuestionsByTopic(topic.id);
             const progress = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
             
@@ -855,6 +878,8 @@ export const appRouter = router({
             const answered = progress.length;
             const correct = progress.filter(p => p.status === 'correct').length;
             const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+            
+            console.log(`[getCourseProgress] Topic ${topic.id} (${topic.title}): ${total} questions, ${answered} answered, ${correct} correct`);
             
             return {
               topicId: topic.id,

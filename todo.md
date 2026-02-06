@@ -472,3 +472,49 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Phase 2: Dashboard getCourseProgress korrigiert - zählt ALLE Topics (nicht nur die in user_progress)
 - [x] Phase 3: Testing (Browser Tests abgeschlossen - Dashboard 100%, CourseView 100%)
 - [x] Phase 4: Data Migration (fehlende 6 Topics für User 180002 erstellt - jetzt 12/12)
+
+
+## KRITISCHER BUG: Pause-Button verhindert Quiz-Antworten (30.01.2026)
+
+**Problem:** ReferenceError: cId is not defined (QuizView.tsx Zeile 248)
+**Symptom:** Antworten werden nicht gespeichert, keine Fehlermeldung für User
+**Root Cause:** Typo im Pause-Button onClick Handler (`cId` statt `courseId`)
+**Impact:** Quiz ist komplett unbrauchbar - keine Antworten werden gespeichert
+
+- [x] Fix: Pause-Button onClick Handler korrigiert (`cId` → `courseId`)
+- [ ] Verify: Quiz-Antworten werden korrekt gespeichert
+- [ ] Test: Browser-Test mit neuem Quiz-Durchlauf
+
+
+## UI-Verbesserung: Themen-Fortschritt klarer darstellen (06.02.2026)
+
+**Problem:** Themen zeigen "0% abgeschlossen" obwohl alle Fragen beantwortet wurden
+**Root Cause:** Prozent-Anzeige basiert auf **richtigen** Antworten, nicht **beantworteten** Fragen
+**Verwirrung:** User sieht "100%" oben (alle Fragen beantwortet) aber "0%" unten (keine Fragen richtig)
+
+**Lösung:** Themen-Anzeige ändern von "0% abgeschlossen" zu "0 von 1 Fragen richtig"
+
+- [x] CourseView: Themen-Anzeige geändert zu "X von Y Fragen richtig"
+- [ ] Test: Browser-Test mit verschiedenen Szenarien (0/1, 1/1, 5/10)
+
+
+## BUG: Themen zeigen "0 von 0 Fragen richtig" (06.02.2026)
+
+**Problem:** getCourseStats gibt `total: 0` für alle Topics zurück
+**Symptom:** Themen-Liste zeigt "0 von 0 Fragen richtig" statt "0 von 1" oder "1 von 1"
+**Root Cause:** TBD (zu untersuchen)
+
+- [x] Debug: Root Cause gefunden - getCourseStats gibt kein topicProgress zurück
+- [x] Fix: topicProgress zu getCourseStats hinzugefügt
+- [x] Test: Browser-Test erfolgreich - zeigt "X von Y Fragen richtig"
+
+
+## DRINGEND: Debug "0 von 0 Fragen richtig" (06.02.2026)
+
+**Problem:** Themen-Liste zeigt "0 von 0 Fragen richtig" obwohl DB 12 Topics + 12 Questions hat
+**Symptom:** getCourseProgress gibt leere Topic-Daten zurück
+**Hypothese:** courseWithTopics.topics ist leer ODER getQuestionsByTopic() findet nichts
+
+- [x] Root Cause identifiziert: getCourseStats gab kein topicProgress zurück
+- [x] Fix implementiert: topicProgress zu getCourseStats hinzugefügt
+- [x] Browser-Test erfolgreich

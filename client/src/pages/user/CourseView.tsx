@@ -35,6 +35,13 @@ export default function CourseView() {
     return topicProg?.percentage || 0;
   };
 
+  const getTopicProgressText = (topicId: number) => {
+    if (!courseProgress?.topicProgress) return '0 von 0 Fragen richtig';
+    const topicProg = courseProgress.topicProgress.find(t => t.topicId === topicId);
+    if (!topicProg) return '0 von 0 Fragen richtig';
+    return `${topicProg.correct} von ${topicProg.total} Fragen richtig`;
+  };
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -177,7 +184,7 @@ export default function CourseView() {
                     <div className="flex-1">
                       <h3 className="font-medium">{topic.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {percentage}% abgeschlossen
+                        {getTopicProgressText(topic.id)}
                       </p>
                     </div>
                     <div className="text-sm text-muted-foreground">
