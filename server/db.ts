@@ -321,16 +321,38 @@ export async function getQuestionById(id: number) {
   return result[0] || null;
 }
 
-export async function getQuestionsByTopic(topicId: number) {
+export async function getQuestionsByTopic(
+  topicId: number,
+  options?: { isExamQuestion?: boolean }
+) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(questions).where(eq(questions.topicId, topicId));
+  
+  let query = db.select().from(questions).where(eq(questions.topicId, topicId));
+  
+  // Optional: Nur Lern- oder Prüfungsfragen
+  if (options?.isExamQuestion !== undefined) {
+    query = query.where(eq(questions.isExamQuestion, options.isExamQuestion));
+  }
+  
+  return query;
 }
 
-export async function getQuestionsByCourse(courseId: number) {
+export async function getQuestionsByCourse(
+  courseId: number,
+  options?: { isExamQuestion?: boolean }
+) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(questions).where(eq(questions.courseId, courseId));
+  
+  let query = db.select().from(questions).where(eq(questions.courseId, courseId));
+  
+  // Optional: Nur Lern- oder Prüfungsfragen
+  if (options?.isExamQuestion !== undefined) {
+    query = query.where(eq(questions.isExamQuestion, options.isExamQuestion));
+  }
+  
+  return query;
 }
 
 export async function updateQuestion(id: number, data: Partial<InsertQuestion>) {

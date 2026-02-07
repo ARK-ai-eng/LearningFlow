@@ -377,9 +377,16 @@ function TopicItem({
           {questions?.map((q, qIdx) => (
             <div key={q.id} className="p-3 rounded-lg bg-muted/50 flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium mb-1">
-                  {qIdx + 1}. {q.questionText}
-                </p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-medium">
+                    {qIdx + 1}. {q.questionText}
+                  </p>
+                  {q.isExamQuestion && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
+                      🎯 Prüfung
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Richtig: {q.correctAnswer}
                 </p>
@@ -422,6 +429,7 @@ function QuestionEditor({
     optionD: "",
     correctAnswer: "A" as "A" | "B" | "C" | "D",
     explanation: "",
+    isExamQuestion: false, // Default: Lernfrage
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -484,6 +492,19 @@ function QuestionEditor({
               onChange={(e) => setData(prev => ({ ...prev, explanation: e.target.value }))}
               placeholder="Erklärung zur richtigen Antwort..."
             />
+          </div>
+
+          <div className="flex items-center space-x-2 p-3 rounded-lg bg-muted/30">
+            <input
+              type="checkbox"
+              id="isExamQuestion"
+              checked={data.isExamQuestion}
+              onChange={(e) => setData(prev => ({ ...prev, isExamQuestion: e.target.checked }))}
+              className="w-4 h-4 rounded border-border"
+            />
+            <Label htmlFor="isExamQuestion" className="cursor-pointer">
+              🎯 Prüfungsfrage (nur für Certification-Kurse)
+            </Label>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

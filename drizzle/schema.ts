@@ -111,6 +111,7 @@ export const questions = mysqlTable("questions", {
   optionD: varchar("optionD", { length: 500 }).notNull(),
   correctAnswer: mysqlEnum("correctAnswer", ["A", "B", "C", "D"]).notNull(),
   explanation: text("explanation"),
+  isExamQuestion: boolean("isExamQuestion").default(false).notNull(), // Trennung: Lernfragen vs Prüfungsfragen
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

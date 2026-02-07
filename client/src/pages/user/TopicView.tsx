@@ -37,7 +37,10 @@ export default function TopicView() {
 
   const { data: course } = trpc.course.get.useQuery({ id: cId }, { enabled: cId > 0 });
   const { data: questions, isLoading: questionsLoading } = trpc.question.listByTopic.useQuery(
-    { topicId: tId },
+    { 
+      topicId: tId,
+      isExamQuestion: false // Nur Lernfragen (keine Prüfungsfragen)
+    },
     { enabled: tId > 0 }
   );
   const { data: progress, isLoading: progressLoading } = trpc.question.getProgress.useQuery(

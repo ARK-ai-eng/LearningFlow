@@ -1,0 +1,1 @@
+ALTER TABLE `questions` ADD `isExamQuestion` boolean DEFAULT false NOT NULL;

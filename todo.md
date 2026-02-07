@@ -562,3 +562,49 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Testing: Pause-Funktion durchgespielt (4 Fragen beantwortet, zeigt "4 von 14")
 - [ ] Resume-Funktionalität: "Fortsetzen" Button startet bei erster unbeantworteter Frage (nicht bei Frage 1)
 - [ ] Wiederholungs-Modus: Progress nur während Wiederholung anzeigen (nicht nach Abschluss)
+
+
+## Course 3 (Certification) - Lern- und Prüfungsfragen (07.02.2026)
+
+### Phase 1: Schema & Migration
+- [x] drizzle/schema.ts: isExamQuestion Boolean Spalte hinzugefügt
+- [x] Migration ausgeführt: pnpm db:push (drizzle/0005_sparkling_orphan.sql)
+- [x] Verifiziert: Spalte in DB vorhanden (tinyint(1) NOT NULL DEFAULT 0)
+
+### Phase 2: Backend
+- [x] server/db.ts: getQuestionsByTopic mit optional isExamQuestion Filter
+- [x] server/db.ts: getQuestionsByCourse mit optional isExamQuestion Filter
+- [x] server/routers.ts: question.listByTopic mit optional isExamQuestion Parameter
+- [x] server/routers.ts: question.listByCourse mit optional isExamQuestion Parameter
+- [x] server/routers.ts: question.create mit isExamQuestion Parameter (DEFAULT false)
+- [x] server/routers.ts: question.update mit isExamQuestion Parameter
+
+### Phase 3: Frontend Course 1 & 2
+- [x] QuizView.tsx: isExamQuestion: false Filter hinzugefügt
+- [x] TopicView.tsx: isExamQuestion: false Filter hinzugefügt
+
+### Phase 4: Admin UI
+- [x] CourseEditor.tsx: Checkbox "🎯 Prüfungsfrage" hinzugefügt
+- [x] CourseEditor.tsx: Badge "🎯 Prüfung" für Prüfungsfragen
+
+### Phase 5: Testing
+- [x] Unit Tests ausgeführt: 61 Tests bestanden ✅
+- [x] Backward Compatible: Keine Breaking Changes
+- [x] Dev Server: Läuft (HMR Update für CourseEditor.tsx)
+
+### Phase 6: Course 3 Dialog
+- [ ] Dialog mit 3 Optionen (<80%): Fehlerhafte wiederholen, Alles nochmal, Später
+- [ ] Dialog mit 4 Optionen (≥80%): Prüfung ablegen, Fehlerhafte wiederholen, Alles nochmal, Später
+- [ ] "Alles nochmal" Button: Progress löschen + Shuffle
+
+### Phase 7: Course 3 Prüfung
+- [ ] ExamView.tsx: Neue Komponente für Prüfung
+- [ ] exam.getRandomQuestions API: 20 zufällige Prüfungsfragen
+- [ ] Timer: 15 Minuten Countdown
+- [ ] Prüfungs-Auswertung: 80% Mindestpunktzahl
+- [ ] Zertifikat-Generierung bei Bestehen
+
+### Phase 8: Final Testing
+- [ ] Browser Testing: Kompletter Course 3 Workflow
+- [ ] Checkpoint erstellen
+- [ ] Dokumentation aktualisieren

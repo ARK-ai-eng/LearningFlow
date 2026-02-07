@@ -631,16 +631,26 @@ export const appRouter = router({
   // ============================================
   question: router({
     listByTopic: protectedProcedure
-      .input(z.object({ topicId: z.number() }))
+      .input(z.object({ 
+        topicId: z.number(),
+        isExamQuestion: z.boolean().optional() // Optional: Filter für Lern- oder Prüfungsfragen
+      }))
       .query(async ({ input }) => {
-        return db.getQuestionsByTopic(input.topicId);
+        return db.getQuestionsByTopic(input.topicId, {
+          isExamQuestion: input.isExamQuestion
+        });
       }),
 
     // Holt alle Fragen eines Kurses (für Kurs-basiertes Quiz)
     listByCourse: protectedProcedure
-      .input(z.object({ courseId: z.number() }))
+      .input(z.object({ 
+        courseId: z.number(),
+        isExamQuestion: z.boolean().optional() // Optional: Filter für Lern- oder Prüfungsfragen
+      }))
       .query(async ({ input }) => {
-        return db.getQuestionsByCourse(input.courseId);
+        return db.getQuestionsByCourse(input.courseId, {
+          isExamQuestion: input.isExamQuestion
+        });
       }),
 
     create: adminProcedure
@@ -654,6 +664,7 @@ export const appRouter = router({
         optionD: z.string().min(1),
         correctAnswer: z.enum(['A', 'B', 'C', 'D']),
         explanation: z.string().optional(),
+        isExamQuestion: z.boolean().optional().default(false), // DEFAULT false für Lernfragen
       }))
       .mutation(async ({ input }) => {
         const id = await db.createQuestion(input);
@@ -670,6 +681,7 @@ export const appRouter = router({
         optionD: z.string().optional(),
         correctAnswer: z.enum(['A', 'B', 'C', 'D']).optional(),
         explanation: z.string().optional(),
+        isExamQuestion: z.boolean().optional(), // Admin kann Frage umwandeln (Lern → Prüfung)
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

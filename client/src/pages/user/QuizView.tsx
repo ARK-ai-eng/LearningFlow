@@ -36,7 +36,10 @@ export default function QuizView() {
 
   const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
   const { data: questions, isLoading: questionsLoading } = trpc.question.listByCourse.useQuery(
-    { courseId },
+    { 
+      courseId,
+      isExamQuestion: false // Nur Lernfragen (keine Prüfungsfragen)
+    },
     { enabled: courseId > 0 }
   );
   const { data: progress, isLoading: progressLoading } = trpc.question.getProgressByCourse.useQuery(
