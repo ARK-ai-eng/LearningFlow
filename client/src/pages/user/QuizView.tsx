@@ -117,6 +117,7 @@ export default function QuizView() {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showRepeatDialog, setShowRepeatDialog] = useState(false);
   const [isRepeatMode, setIsRepeatMode] = useState(false);
+  const [initialRepeatCount, setInitialRepeatCount] = useState<number | null>(null);
 
   // Filter questions based on mode: all questions or only incorrect ones
   const activeQuestions = useMemo(() => {
@@ -214,6 +215,10 @@ export default function QuizView() {
     // Trigger shuffle for repeat mode
     setShuffleTrigger(prev => prev + 1);
     
+    // Store initial count of incorrect questions for stable display
+    const incorrectCount = questionsWithStatus.filter(q => q.status === 'incorrect').length;
+    setInitialRepeatCount(incorrectCount);
+    
     // Enter repeat mode: filter to show only incorrect questions
     setIsRepeatMode(true);
     
@@ -300,7 +305,7 @@ export default function QuizView() {
             <div>
               <h1 className="text-2xl font-bold">{course?.title || 'Quiz'}</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Frage {currentQuestionIndex + 1} von {activeQuestions.length}
+                Frage {currentQuestionIndex + 1} von {isRepeatMode && initialRepeatCount !== null ? initialRepeatCount : activeQuestions.length}
                 {isRepeatMode && <span className="ml-2 text-orange-500">(Wiederholung)</span>}
               </p>
             </div>

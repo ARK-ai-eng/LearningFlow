@@ -756,3 +756,25 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
   - Symptom: Nach richtiger Antwort springt Nummer sofort (weil Frage aus Liste entfernt wird)
   - Root Cause: Gleich wie Bug 1 - invalidate() entfernt Frage aus Liste
   - Fix: Gleich wie Bug 1 - invalidate() erst nach "Nächste Frage" Klick
+
+## BUG - Inkonsistente Fragen-Anzahl im Wiederholungsmodus
+- [x] BUG: Fragen-Anzahl ändert sich während Wiederholungsmodus
+  - Symptom: Start "1 von 4" → nach falscher Antwort "2 von 5" → nach richtiger "3 von 5" → später "4 von 4"
+  - Root Cause: Mein "Stable Current Item Filter" fügt aktuelle Frage hinzu → activeQuestions.length ändert sich
+  - Fix: Speichere initiale Anzahl beim Start des Wiederholungsmodus (initialRepeatCount), verwende diese für Anzeige
+
+## FEATURE - Erfolgs-Dialog nach Wiederholungsmodus (alle korrekt)
+- [ ] FEATURE: Glückwunsch-Dialog wenn alle Wiederholungs-Fragen korrekt beantwortet
+  - Anforderung: Nach letzter Frage im Wiederholungsmodus → wenn alle korrekt → Dialog "Glückwunsch! Alle Fragen korrekt beantwortet"
+  - Dialog-Optionen:
+    1. "Abschließen" → Progress auf null setzen, zurück zu CourseView
+    2. "Später" → Zurück zu CourseView (Progress bleibt)
+    3. Optional: "Nochmal machen" → Quiz neu starten
+  - Hinweis: KEINE "Prüfung ablegen" Option (kommt später)
+
+## BUG - Wiederholungsmodus zeigt "4 von 3" nach allen Fragen
+- [ ] BUG: Nach 3 Wiederholungs-Fragen erscheint plötzlich "4 von 3"
+  - Symptom: User beantwortet 3 Fragen (einige falsch) → plötzlich erscheint eine 4. Frage "4 von 3"
+  - Erwartung: Nach letzter Frage → Dialog "Willst du wiederholen?" → wenn JA → nur falsche Fragen nochmal
+  - Root Cause: TBD - wahrscheinlich isLastQuestion Logik falsch oder Filter fügt Frage hinzu
+  - Fix: TBD - prüfen warum eine zusätzliche Frage erscheint
