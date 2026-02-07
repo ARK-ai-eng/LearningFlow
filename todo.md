@@ -735,3 +735,9 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
   - Symptom: URL ist `/course/1/quiz?questionId=6` statt `/course/1/topic/1?questionId=6`
   - Root Cause: Frontend prüfte course.type (undefined) statt course.courseType
   - Fix: Frontend prüft course.courseType === 'learning' für Topic-Navigation
+
+## BUG - Inkonsistente Fragen-Nummerierung
+- [x] BUG: Fragen-Nummer ändert sich bei jedem Reload
+  - Symptom: "Quiz starten" zeigt mal "Frage 1 von 14", mal "Frage 5 von 14" bei jedem Klick
+  - Root Cause: 1) getRandomUnanswered gab zufällige Frage zurück, 2) Frage 30003 hatte falsche courseId
+  - Fix: 1) Ändere zu getNextUnanswered (erste unbeantwortete), 2) Korrigiere Frage 30003 courseId auf 1

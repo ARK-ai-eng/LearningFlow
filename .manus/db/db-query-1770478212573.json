@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, courseId, topicId, questionText FROM questions WHERE courseId = 2 ORDER BY id LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, courseId, topicId, questionText FROM questions WHERE courseId = 2 ORDER BY id LIMIT 5;",
+  "rows": [
+    {
+      "id": "30003",
+      "courseId": "2",
+      "topicId": "30001",
+      "questionText": "Welcher Anhang ist besonders gefährlich?"
+    },
+    {
+      "id": "60001",
+      "courseId": "2",
+      "topicId": "4",
+      "questionText": "Du erhältst eine E-Mail mit dringender Zahlungsaufforderung und Link. Was ist korrekt?"
+    },
+    {
+      "id": "60002",
+      "courseId": "2",
+      "topicId": "5",
+      "questionText": "Welche Passwort-Praxis ist korrekt?"
+    },
+    {
+      "id": "60003",
+      "courseId": "2",
+      "topicId": "6",
+      "questionText": "Ein Anrufer gibt sich als IT aus und fordert Zugangsdaten. Was tun?"
+    },
+    {
+      "id": "60004",
+      "courseId": "2",
+      "topicId": "30002",
+      "questionText": "Was ist Pflicht beim Verlassen des Arbeitsplatzes?"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcourseId\ttopicId\tquestionText\n30003\t2\t30001\tWelcher Anhang ist besonders gefährlich?\n60001\t2\t4\tDu erhältst eine E-Mail mit dringender Zahlungsaufforderung und Link. Was ist korrekt?\n60002\t2\t5\tWelche Passwort-Praxis ist korrekt?\n60003\t2\t6\tEin Anrufer gibt sich als IT aus und fordert Zugangsdaten. Was tun?\n60004\t2\t30002\tWas ist Pflicht beim Verlassen des Arbeitsplatzes?\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

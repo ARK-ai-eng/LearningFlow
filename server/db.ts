@@ -663,8 +663,7 @@ export async function getRandomUnansweredQuestion(userId: number, courseId: numb
   const allQuestions = await db
     .select()
     .from(questions)
-    .leftJoin(topics, eq(questions.topicId, topics.id))
-    .where(eq(topics.courseId, courseId));
+    .where(eq(questions.courseId, courseId));
 
   if (allQuestions.length === 0) return null;
 
@@ -677,13 +676,11 @@ export async function getRandomUnansweredQuestion(userId: number, courseId: numb
   const answeredIds = new Set(answeredProgress.map(p => p.questionId));
 
   // Filter unanswered questions
-  const unansweredQuestions = allQuestions
-    .map(row => row.questions)
-    .filter(q => !answeredIds.has(q.id));
+  const unansweredQuestions = allQuestions.filter(q => !answeredIds.has(q.id));
 
   if (unansweredQuestions.length === 0) return null;
 
-  // Return random unanswered question
-  const randomIndex = Math.floor(Math.random() * unansweredQuestions.length);
-  return unansweredQuestions[randomIndex];
+  // Return first unanswered question (sorted by ID for consistent order)
+  const sortedUnanswered = unansweredQuestions.sort((a, b) => a.id - b.id);
+  return sortedUnanswered[0];
 }
