@@ -496,6 +496,28 @@ export async function getQuestionProgressByCourse(userId: number, courseId: numb
     ));
 }
 
+// Setzt Fortschritt für einen Kurs zurück (löscht alle question_progress Einträge)
+export async function resetQuestionProgressByCourse(userId: number, courseId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Hole alle Fragen des Kurses
+  const courseQuestions = await getQuestionsByCourse(courseId);
+  const questionIds = courseQuestions.map(q => q.id);
+  
+  if (questionIds.length === 0) {
+    return;
+  }
+  
+  // Lösche alle question_progress Einträge für diese Fragen
+  await db
+    .delete(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      inArray(questionProgress.questionId, questionIds)
+    ));
+}
+
 // Speichert oder aktualisiert Fortschritt für eine Frage
 export async function upsertQuestionProgress(data: {
   userId: number;

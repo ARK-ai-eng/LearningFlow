@@ -6,6 +6,7 @@ describe('Question Progress API', () => {
   let testUserId: number;
   let testQuestionId: number;
   let testTopicId: number;
+  let testCourseId: number;
 
   beforeAll(async () => {
     // Setup: Erstelle Test-User, Kurs, Thema, Frage
@@ -22,7 +23,7 @@ describe('Question Progress API', () => {
       status: 'active',
     });
 
-    const courseId = await db.createCourse({
+    testCourseId = await db.createCourse({
       title: 'Test Course Progress',
       description: 'Test',
       courseType: 'sensitization',
@@ -31,7 +32,7 @@ describe('Question Progress API', () => {
     });
 
     testTopicId = await db.createTopic({
-      courseId,
+      courseId: testCourseId,
       title: 'Test Topic Progress',
       description: 'Test',
       orderIndex: 1,
@@ -39,7 +40,7 @@ describe('Question Progress API', () => {
 
     testQuestionId = await db.createQuestion({
       topicId: testTopicId,
-      courseId,
+      courseId: testCourseId,
       questionText: 'Test Question?',
       optionA: 'A',
       optionB: 'B',
@@ -73,6 +74,7 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: testQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: true,
       });
 
@@ -94,12 +96,14 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: testQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: false,
       });
 
       await caller.question.submitAnswer({
         questionId: testQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: true,
       });
 
@@ -135,6 +139,7 @@ describe('Question Progress API', () => {
       const result = await caller.question.submitAnswer({
         questionId: newQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: true,
       });
 
@@ -167,6 +172,7 @@ describe('Question Progress API', () => {
       const result = await caller.question.submitAnswer({
         questionId: newQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: false,
       });
 
@@ -200,6 +206,7 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: newQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: false,
       });
 
@@ -207,6 +214,7 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: newQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: true,
       });
 
@@ -252,6 +260,7 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: correctQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: true,
       });
 
@@ -259,6 +268,7 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: incorrectQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: false,
       });
 
@@ -299,6 +309,7 @@ describe('Question Progress API', () => {
       await caller.question.submitAnswer({
         questionId: newQuestionId,
         topicId: testTopicId,
+        courseId: testCourseId,
         isCorrect: true,
       });
 

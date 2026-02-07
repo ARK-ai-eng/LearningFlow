@@ -785,7 +785,9 @@ export const appRouter = router({
         const progress = await db.getQuestionProgressByCourse(ctx.user.id, input.courseId);
         
         const total = questions.length;
-        const answered = progress.length;
+        // Zähle unique Fragen (nicht Versuche!)
+        const uniqueQuestions = new Set(progress.map((p: any) => p.questionId));
+        const answered = uniqueQuestions.size;
         const correct = progress.filter((p: any) => p.status === 'correct').length;
         const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
         
@@ -795,11 +797,13 @@ export const appRouter = router({
           topics.map(async (topic: any) => {
             const topicQuestions = await db.getQuestionsByTopic(topic.id);
             const topicProg = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
+            // Zähle unique Fragen pro Topic
+            const uniqueTopicQuestions = new Set(topicProg.map((p: any) => p.questionId));
             return {
               topicId: topic.id,
               topicTitle: topic.title,
               total: topicQuestions.length,
-              answered: topicProg.length,
+              answered: uniqueTopicQuestions.size,
               correct: topicProg.filter((p: any) => p.status === 'correct').length,
               percentage: topicQuestions.length > 0 ? Math.round((topicProg.filter((p: any) => p.status === 'correct').length / topicQuestions.length) * 100) : 0,
             };
@@ -815,6 +819,14 @@ export const appRouter = router({
           percentage,
           topicProgress,
         };
+      }),
+
+    // Setzt Fortschritt für einen Kurs zurück (löscht alle question_progress Einträge)
+    resetCourseProgress: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.resetQuestionProgressByCourse(ctx.user.id, input.courseId);
+        return { success: true };
       }),
 
     // Berechnet Fortschritt für ein Thema (% richtig beantwortet)

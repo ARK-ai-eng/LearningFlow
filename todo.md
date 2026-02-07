@@ -518,3 +518,47 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Root Cause identifiziert: getCourseStats gab kein topicProgress zurück
 - [x] Fix implementiert: topicProgress zu getCourseStats hinzugefügt
 - [x] Browser-Test erfolgreich
+
+
+## Folge-Features (Backlog)
+
+### Quiz-Pool-System
+- [ ] Zufällige Fragen-Auswahl: Statt alle Fragen zu zeigen, X Fragen pro Thema zufällig auswählen (z.B. 5 von 48)
+- [ ] Wiederholbare Jahresprüfungen: User kann Quiz 4x pro Jahr machen mit unterschiedlichen Fragen
+- [ ] Pool-Größe konfigurierbar: Admin kann festlegen wie viele Fragen pro Thema im Quiz erscheinen
+
+### Fortsetzen-Funktion
+- [ ] "Fortsetzen" Button führt zur letzten unbeantworteten Frage (nicht zu Frage 1)
+- [ ] Quiz-State persistieren: currentQuestionIndex speichern
+- [ ] Nach Pause: Direkt zur richtigen Frage springen
+
+### Zertifikat-System
+- [ ] Automatische Zertifikat-Generierung nach erfolgreichem Abschluss (z.B. 80% richtig)
+- [ ] Zertifikat mit Ablaufdatum (z.B. 1 Jahr gültig)
+- [ ] PDF-Download für User
+- [ ] Zertifikats-Historie im Dashboard
+
+---
+
+## AKTUELL: Fortschrittsanzeige + Pause (06.02.2026)
+
+**Probleme:**
+- [ ] Schritt 1: Fortschritts-Berechnung korrigieren (nur beantwortete Themen zählen, nicht alle)
+- [ ] Schritt 2: "Fortsetzen" Button führt zur letzten unbeantworteten Frage (nicht Frage 1)
+- [ ] Testing: Pause-Funktion durchspielen (2 Fragen beantworten, Pause, Fortsetzen)
+- [ ] Dokumentation: Lessons Learned aktualisieren
+
+
+## Kleinigkeiten (06.02.2026)
+
+- [x] Wording: "12 von 12 Themen abgeschlossen" → "12 von 12 Themen bearbeitet"
+
+
+## Pause-Funktionalität Fixes (06.02.2026)
+
+- [x] Progress Reset: question_progress löschen nach Quiz-Abschluss (wenn User "Nein" bei Wiederholung klickt)
+- [x] Progress Reset: question_progress löschen nach perfektem Quiz (alle richtig)
+- [x] Fix: Unique questionId zählen statt Versuche (getCourseStats)
+- [x] Testing: Pause-Funktion durchgespielt (4 Fragen beantwortet, zeigt "4 von 14")
+- [ ] Resume-Funktionalität: "Fortsetzen" Button startet bei erster unbeantworteter Frage (nicht bei Frage 1)
+- [ ] Wiederholungs-Modus: Progress nur während Wiederholung anzeigen (nicht nach Abschluss)

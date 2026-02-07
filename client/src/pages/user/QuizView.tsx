@@ -183,8 +183,22 @@ export default function QuizView() {
     setShowRepeatDialog(false);
   };
 
+  const resetMutation = trpc.question.resetCourseProgress.useMutation({
+    onSuccess: () => {
+      utils.question.getProgressByCourse.invalidate({ courseId });
+      utils.question.getCourseStats.invalidate({ courseId });
+      toast.success('Fortschritt zurückgesetzt');
+      setLocation(`/course/${courseId}`);
+    },
+    onError: (error) => {
+      toast.error(`Fehler: ${error.message}`);
+      setLocation(`/course/${courseId}`);
+    },
+  });
+
   const handleFinish = () => {
-    setLocation(`/course/${courseId}`);
+    // Reset progress when user finishes quiz (clicks "Nein" or all correct)
+    resetMutation.mutate({ courseId });
   };
 
   if (isLoading) {

@@ -119,7 +119,7 @@ export default function CourseView() {
             <div>
               <h3 className="font-semibold">Kursfortschritt</h3>
               <p className="text-sm text-muted-foreground">
-                {completedTopics} von {totalTopics} Themen abgeschlossen
+                {completedTopics} von {totalTopics} Themen bearbeitet
               </p>
             </div>
             <span className="text-2xl font-bold gradient-text">{progressPercent}%</span>
