@@ -741,3 +741,18 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
   - Symptom: "Quiz starten" zeigt mal "Frage 1 von 14", mal "Frage 5 von 14" bei jedem Klick
   - Root Cause: 1) getRandomUnanswered gab zufällige Frage zurück, 2) Frage 30003 hatte falsche courseId
   - Fix: 1) Ändere zu getNextUnanswered (erste unbeantwortete), 2) Korrigiere Frage 30003 courseId auf 1
+
+## KRITISCHE UX-BUGS - QuizView (07.02.2026)
+
+### Bug 1: Sofortiger Fragen-Wechsel nach Antwort (NUR Wiederholungsmodus!)
+- [x] BUG: Nach RICHTIGER Antwort springt sofort zur nächsten Frage
+  - Symptom: User klickt richtige Antwort A → sofort neue Frage → D wird automatisch markiert → "1 von 10" → "1 von 9"
+  - Nur bei RICHTIGER Antwort! Bei falscher Antwort: alles normal
+  - Root Cause: Richtige Antwort → status ändert zu 'correct' → invalidate() → Frage aus activeQuestions.filter(incorrect) entfernt → currentQuestion[0] zeigt nächste Frage → selectedAnswer bleibt gesetzt
+  - Fix: NICHT invalidate() in submitAnswer.onSuccess, sondern in handleNextQuestion() NACH Button-Klick
+
+### Bug 2: Fragen-Nummer springt ohne Button-Klick (NUR Wiederholungsmodus!)
+- [x] BUG: Fragen-Nummer springt von "1 von 10" auf "1 von 9" ohne Button-Klick
+  - Symptom: Nach richtiger Antwort springt Nummer sofort (weil Frage aus Liste entfernt wird)
+  - Root Cause: Gleich wie Bug 1 - invalidate() entfernt Frage aus Liste
+  - Fix: Gleich wie Bug 1 - invalidate() erst nach "Nächste Frage" Klick

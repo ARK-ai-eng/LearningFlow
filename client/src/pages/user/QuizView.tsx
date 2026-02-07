@@ -121,12 +121,31 @@ export default function QuizView() {
   // Filter questions based on mode: all questions or only incorrect ones
   const activeQuestions = useMemo(() => {
     if (isRepeatMode) {
-      // Repeat mode: only show incorrect questions (already sorted by ID)
-      return questionsWithStatus.filter(q => q.status === 'incorrect');
+      // Repeat mode: show incorrect questions + current question (even if just answered correctly)
+      // This prevents the list from changing while user is still viewing feedback
+      const incorrectQuestions = questionsWithStatus.filter(q => q.status === 'incorrect');
+      const currentQ = questionsWithStatus[currentQuestionIndex];
+      
+      // If current question is not in incorrect list (was just answered correctly),
+      // keep it in the list until user clicks "Nächste Frage"
+      if (currentQ && !incorrectQuestions.find(q => q.id === currentQ.id)) {
+        // Insert current question at its original position
+        const result = [...incorrectQuestions];
+        // Find where to insert based on ID order
+        const insertIndex = result.findIndex(q => q.id > currentQ.id);
+        if (insertIndex === -1) {
+          result.push(currentQ);
+        } else {
+          result.splice(insertIndex, 0, currentQ);
+        }
+        return result;
+      }
+      
+      return incorrectQuestions;
     }
     // Normal mode: show all questions (already sorted by ID)
     return questionsWithStatus;
-  }, [isRepeatMode, questionsWithStatus]);
+  }, [isRepeatMode, questionsWithStatus, currentQuestionIndex]);
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
@@ -149,7 +168,6 @@ export default function QuizView() {
 
   const submitMutation = trpc.question.submitAnswer.useMutation({
     onSuccess: () => {
-      utils.question.getProgressByCourse.invalidate({ courseId });
       toast.success('Antwort gespeichert');
     },
     onError: (error) => {
@@ -173,6 +191,9 @@ export default function QuizView() {
   };
 
   const handleNextQuestion = () => {
+    // Invalidate progress to refresh data (moved from submitAnswer.onSuccess)
+    utils.question.getProgressByCourse.invalidate({ courseId });
+
     if (isLastQuestion) {
       // Show repeat dialog if there are incorrect answers
       if (stats.incorrect > 0) {
