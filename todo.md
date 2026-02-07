@@ -702,3 +702,10 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - Repeat-Mode nicht persistiert (session-based only)
 - Button versteckt wenn alle Fragen beantwortet
 
+
+## KRITISCHER BUG - Resume-Funktionalität (07.02.2026)
+
+- [x] BUG: QuizView crashed mit "useEffect is not defined" - Import fehlt in QuizView.tsx
+- [x] BUG: TopicView möglicherweise gleicher Fehler - prüfen und fixen
+- [ ] Testing nach Fix: Browser-Test mit allen 3 Course-Types
+
