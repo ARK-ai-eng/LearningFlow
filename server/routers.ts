@@ -841,6 +841,18 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Holt zufällige unbeantwortete Frage für Resume-Funktionalität
+    getRandomUnanswered: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const question = await db.getRandomUnansweredQuestion(ctx.user.id, input.courseId);
+        if (!question) return null;
+        return {
+          id: question.id,
+          topicId: question.topicId,
+        };
+      }),
+
     // Berechnet Fortschritt für ein Thema (% richtig beantwortet)
     getTopicProgress: protectedProcedure
       .input(z.object({ topicId: z.number() }))

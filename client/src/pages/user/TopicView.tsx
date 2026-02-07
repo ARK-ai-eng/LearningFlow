@@ -31,9 +31,13 @@ type ShuffledOption = {
 
 export default function TopicView() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const cId = parseInt(courseId || "0");
   const tId = parseInt(topicId || "0");
+  
+  // Parse URL parameter ?questionId=X
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const startQuestionId = urlParams.get('questionId') ? parseInt(urlParams.get('questionId')!) : null;
 
   const { data: course } = trpc.course.get.useQuery({ id: cId }, { enabled: cId > 0 });
   const { data: questions, isLoading: questionsLoading } = trpc.question.listByTopic.useQuery(
@@ -90,6 +94,16 @@ export default function TopicView() {
 
   // Current question index
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  // Set initial question index from URL parameter
+  useEffect(() => {
+    if (startQuestionId && questionsWithShuffledAnswers.length > 0) {
+      const index = questionsWithShuffledAnswers.findIndex(q => q.id === startQuestionId);
+      if (index !== -1) {
+        setCurrentQuestionIndex(index);
+      }
+    }
+  }, [startQuestionId, questionsWithShuffledAnswers.length]);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showRepeatDialog, setShowRepeatDialog] = useState(false);

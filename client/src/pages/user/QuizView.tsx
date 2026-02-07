@@ -31,8 +31,12 @@ type ShuffledOption = {
 
 export default function QuizView() {
   const { id } = useParams<{ id: string }>();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const courseId = parseInt(id || "0");
+  
+  // Parse URL parameter ?questionId=X
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const startQuestionId = urlParams.get('questionId') ? parseInt(urlParams.get('questionId')!) : null;
 
   const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
   const { data: questions, isLoading: questionsLoading } = trpc.question.listByCourse.useQuery(
@@ -96,6 +100,16 @@ export default function QuizView() {
 
   // Current question index
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  // Set initial question index from URL parameter
+  useEffect(() => {
+    if (startQuestionId && questionsWithStatus.length > 0) {
+      const index = questionsWithStatus.findIndex(q => q.id === startQuestionId);
+      if (index !== -1) {
+        setCurrentQuestionIndex(index);
+      }
+    }
+  }, [startQuestionId, questionsWithStatus.length]);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showRepeatDialog, setShowRepeatDialog] = useState(false);

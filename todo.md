@@ -644,3 +644,61 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 ### Phase 2: Testing + Checkpoint
 - [ ] Browser Testing: Tabs durchklicken
 - [ ] Checkpoint erstellen
+
+
+## Resume-Funktionalität (07.02.2026)
+
+### Schritt 1: Backend API
+- [ ] server/db.ts: getRandomUnansweredQuestion(userId, courseId) Helper
+- [ ] server/routers.ts: question.getRandomUnanswered API-Endpoint
+- [ ] Unit Tests für getRandomUnanswered
+
+### Schritt 2: Frontend CourseView
+- [ ] CourseView.tsx: "Fortsetzen" Button hinzufügen
+- [ ] Button nur zeigen wenn unbeantwortete Fragen existieren
+- [ ] Navigation zu zufälliger Frage
+
+### Schritt 3: Frontend QuizView (Course 2 & 3)
+- [ ] QuizView.tsx: URL-Parameter ?questionId=X Support
+- [ ] Bei questionId: Starte bei dieser Frage
+- [ ] Ohne questionId: Starte bei Frage 1 (Shuffle)
+
+### Schritt 4: Frontend TopicView (Course 1)
+- [ ] TopicView.tsx: URL-Parameter ?questionId=X Support
+- [ ] Bei questionId: Öffne diese Frage direkt
+- [ ] Ohne questionId: Zeige Fragen-Liste
+
+### Schritt 5: Testing + Checkpoint
+- [ ] Unit Tests ausführen
+- [ ] Browser Testing: Alle 3 Kurse durchspielen
+- [ ] Checkpoint erstellen
+
+## Resume-Funktionalität (Fortsetzen) - 07.02.2026
+
+### Backend
+- [x] API-Endpoint: `question.getRandomUnanswered` (gibt zufällige unbeantwortete Frage zurück)
+- [x] DB-Funktion: `getRandomUnansweredQuestion(courseId, userId)` (filtert unbeantwortete Fragen)
+
+### Frontend
+- [x] CourseView: "Fortsetzen" Button mit conditional rendering (nur wenn unbeantwortete Fragen existieren)
+- [x] CourseView: Navigation zu TopicView (Course 1) oder QuizView (Course 2 & 3) mit `?questionId=X` Parameter
+- [x] QuizView: URL-Parameter Support (`?questionId=X` → findet Index und setzt `currentQuestionIndex`)
+- [x] TopicView: URL-Parameter Support (`?questionId=X` → findet Index und setzt `currentQuestionIndex`)
+
+### Testing
+- [x] Unit Tests: 61 Tests bestanden ✅
+- [ ] Browser Testing: Course 1 (Learning) - "Fortsetzen" navigiert zu TopicView
+- [ ] Browser Testing: Course 2 (Sensitization) - "Fortsetzen" navigiert zu QuizView
+- [ ] Browser Testing: Course 3 (Certification) - "Fortsetzen" navigiert zu QuizView (nur Lernfragen)
+- [ ] Browser Testing: Button versteckt wenn alle Fragen beantwortet
+- [ ] Browser Testing: Shuffle funktioniert weiterhin korrekt
+
+### Dokumentation
+- [x] docs/features/Resume-Functionality.md (vollständige Dokumentation)
+
+### Design-Entscheidungen
+- Zufällige unbeantwortete Frage (nicht sequentiell)
+- Button nur in CourseView (nicht in TopicView)
+- Repeat-Mode nicht persistiert (session-based only)
+- Button versteckt wenn alle Fragen beantwortet
+

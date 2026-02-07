@@ -645,3 +645,42 @@ export async function getLatestExamCompletion(userId: number, courseId: number) 
 
   return result;
 }
+
+
+// ============================================
+// RESUME FUNCTIONALITY
+// ============================================
+
+// Get random unanswered question for a course
+export async function getRandomUnansweredQuestion(userId: number, courseId: number): Promise<Question | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Get all questions for this course
+  const allQuestions = await db
+    .select()
+    .from(questions)
+    .leftJoin(topics, eq(questions.topicId, topics.id))
+    .where(eq(topics.courseId, courseId));
+
+  if (allQuestions.length === 0) return null;
+
+  // Get answered question IDs
+  const answeredProgress = await db
+    .select({ questionId: questionProgress.questionId })
+    .from(questionProgress)
+    .where(eq(questionProgress.userId, userId));
+
+  const answeredIds = new Set(answeredProgress.map(p => p.questionId));
+
+  // Filter unanswered questions
+  const unansweredQuestions = allQuestions
+    .map(row => row.questions)
+    .filter(q => !answeredIds.has(q.id));
+
+  if (unansweredQuestions.length === 0) return null;
+
+  // Return random unanswered question
+  const randomIndex = Math.floor(Math.random() * unansweredQuestions.length);
+  return unansweredQuestions[randomIndex];
+}

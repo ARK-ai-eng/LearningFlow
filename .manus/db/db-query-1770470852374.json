@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, email, role FROM users WHERE email LIKE '%test%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, email, role FROM users WHERE email LIKE '%test%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "180001",
+      "email": "test@me.com",
+      "role": "companyadmin"
+    },
+    {
+      "id": "180002",
+      "email": "testyou@me.com",
+      "role": "user"
+    },
+    {
+      "id": "210001",
+      "email": "test-progress-1769685368732@test.com",
+      "role": "user"
+    },
+    {
+      "id": "210002",
+      "email": "test-all-correct-1769685371036@test.com",
+      "role": "user"
+    },
+    {
+      "id": "240001",
+      "email": "test-progress-1769686709142@test.com",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trole\n180001\ttest@me.com\tcompanyadmin\n180002\ttestyou@me.com\tuser\n210001\ttest-progress-1769685368732@test.com\tuser\n210002\ttest-all-correct-1769685371036@test.com\tuser\n240001\ttest-progress-1769686709142@test.com\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}

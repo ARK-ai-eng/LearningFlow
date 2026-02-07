@@ -22,6 +22,10 @@ export default function CourseView() {
     { courseId },
     { enabled: courseId > 0 }
   );
+  const { data: randomUnanswered } = trpc.question.getRandomUnanswered.useQuery(
+    { courseId },
+    { enabled: courseId > 0 && (courseProgress?.answered || 0) < (courseProgress?.total || 0) }
+  );
 
   const getTopicStatus = (topicId: number) => {
     if (!progress) return 'not_started';
@@ -139,14 +143,25 @@ export default function CourseView() {
           <p className="text-muted-foreground mb-6">
             {courseProgress?.total || 0} Fragen warten auf dich
           </p>
-          <Button 
-            size="lg" 
-            onClick={() => setLocation(`/course/${courseId}/quiz`)}
-            className="min-w-[200px]"
-          >
-            <Play className="w-5 h-5 mr-2" />
-            {courseProgress && courseProgress.answered > 0 ? 'Fortsetzen' : 'Starten'}
-          </Button>
+          {randomUnanswered ? (
+            <Button 
+              size="lg" 
+              onClick={() => setLocation(`/course/${courseId}/quiz?questionId=${randomUnanswered.id}`)}
+              className="min-w-[200px]"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Fortsetzen
+            </Button>
+          ) : (
+            <Button 
+              size="lg" 
+              onClick={() => setLocation(`/course/${courseId}/quiz`)}
+              className="min-w-[200px]"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Starten
+            </Button>
+          )}
           {courseProgress && courseProgress.answered > 0 && (
             <p className="text-sm text-muted-foreground mt-4">
               {courseProgress.answered} von {courseProgress.total} Fragen beantwortet
