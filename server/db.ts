@@ -346,14 +346,16 @@ export async function getQuestionsByCourse(
   const db = await getDb();
   if (!db) return [];
   
-  let query = db.select().from(questions).where(eq(questions.courseId, courseId));
+  // Build WHERE conditions array
+  const conditions = [eq(questions.courseId, courseId)];
   
   // Optional: Nur Lern- oder Prüfungsfragen
   if (options?.isExamQuestion !== undefined) {
-    query = query.where(eq(questions.isExamQuestion, options.isExamQuestion));
+    conditions.push(eq(questions.isExamQuestion, options.isExamQuestion));
   }
   
-  return query;
+  // Combine all conditions with AND
+  return db.select().from(questions).where(and(...conditions));
 }
 
 export async function updateQuestion(id: number, data: Partial<InsertQuestion>) {
@@ -652,7 +654,8 @@ export async function getLatestExamCompletion(userId: number, courseId: number) 
 // ============================================
 
 // Get random unanswered question for a course
-export async function getRandomUnansweredQuestion(userId: number, courseId: number): Promise<Question | null> {
+// Returns question with topicId for Course 1 navigation
+export async function getRandomUnansweredQuestion(userId: number, courseId: number): Promise<(Question & { topicId: number | null }) | null> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 

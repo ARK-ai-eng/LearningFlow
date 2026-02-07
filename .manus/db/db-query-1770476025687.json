@@ -1,0 +1,30 @@
+{
+  "query": "SELECT qp.questionId, q.questionText, qp.status \nFROM question_progress qp \nJOIN questions q ON qp.questionId = q.id \nWHERE qp.userId = 180002 AND q.courseId = 2 \nORDER BY q.id ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT qp.questionId, q.questionText, qp.status \nFROM question_progress qp \nJOIN questions q ON qp.questionId = q.id \nWHERE qp.userId = 180002 AND q.courseId = 2 \nORDER BY q.id ASC;",
+  "rows": [
+    {
+      "questionId": "30003",
+      "questionText": "Welcher Anhang ist besonders gefährlich?",
+      "status": "incorrect"
+    },
+    {
+      "questionId": "60001",
+      "questionText": "Du erhältst eine E-Mail mit dringender Zahlungsaufforderung und Link. Was ist korrekt?",
+      "status": "correct"
+    },
+    {
+      "questionId": "60002",
+      "questionText": "Welche Passwort-Praxis ist korrekt?",
+      "status": "incorrect"
+    },
+    {
+      "questionId": "60003",
+      "questionText": "Ein Anrufer gibt sich als IT aus und fordert Zugangsdaten. Was tun?",
+      "status": "correct"
+    }
+  ],
+  "messages": [],
+  "stdout": "questionId\tquestionText\tstatus\n30003\tWelcher Anhang ist besonders gefährlich?\tincorrect\n60001\tDu erhältst eine E-Mail mit dringender Zahlungsaufforderung und Link. Was ist korrekt?\tcorrect\n60002\tWelche Passwort-Praxis ist korrekt?\tincorrect\n60003\tEin Anrufer gibt sich als IT aus und fordert Zugangsdaten. Was tun?\tcorrect\n",
+  "stderr": "",
+  "execution_time_ms": 196
+}

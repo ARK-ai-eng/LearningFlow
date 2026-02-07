@@ -36,7 +36,8 @@ export default function TopicView() {
   const tId = parseInt(topicId || "0");
   
   // Parse URL parameter ?questionId=X
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Note: wouter's useLocation() doesn't include query string, use window.location.search
+  const urlParams = new URLSearchParams(window.location.search);
   const startQuestionId = urlParams.get('questionId') ? parseInt(urlParams.get('questionId')!) : null;
 
   const { data: course } = trpc.course.get.useQuery({ id: cId }, { enabled: cId > 0 });
@@ -60,7 +61,7 @@ export default function TopicView() {
   const questionsWithStatus = useMemo(() => {
     if (!questions || !progress) return [];
     
-    return questions.map(q => {
+    const withStatus = questions.map(q => {
       const p = progress.find(pr => pr.questionId === q.id);
       return {
         ...q,
@@ -68,6 +69,8 @@ export default function TopicView() {
         attemptCount: p?.attemptCount || 0,
       };
     });
+    // Sort by ID for consistent order
+    return withStatus.sort((a, b) => a.id - b.id);
   }, [questions, progress]);
 
   // Shuffle answers for each question (memoized per question)

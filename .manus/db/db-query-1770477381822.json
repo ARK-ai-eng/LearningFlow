@@ -1,0 +1,250 @@
+{
+  "query": "SELECT c.id, c.title, c.courseType, COUNT(t.id) as topic_count FROM courses c LEFT JOIN topics t ON c.id = t.courseId GROUP BY c.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT c.id, c.title, c.courseType, COUNT(t.id) as topic_count FROM courses c LEFT JOIN topics t ON c.id = t.courseId GROUP BY c.id;",
+  "rows": [
+    {
+      "id": "120011",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "210002",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "210003",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "120010",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "150002",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "2",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "courseType": "sensitization",
+      "topic_count": "12"
+    },
+    {
+      "id": "30001",
+      "title": "(Muster)",
+      "courseType": "learning",
+      "topic_count": "3"
+    },
+    {
+      "id": "300001",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "90002",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "120006",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "30003",
+      "title": "(Muster)",
+      "courseType": "certification",
+      "topic_count": "4"
+    },
+    {
+      "id": "120002",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "120009",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "180001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "120008",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "270001",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "270005",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "210004",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "120012",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "1",
+      "title": "Freies Lernmodul",
+      "courseType": "learning",
+      "topic_count": "3"
+    },
+    {
+      "id": "270002",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "240001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "270006",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "60001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "120004",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "180002",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "90001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "60002",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "120001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "210001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "270003",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "3",
+      "title": "KI-Kompetenz Prüfung",
+      "courseType": "certification",
+      "topic_count": "4"
+    },
+    {
+      "id": "120003",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "270004",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "30002",
+      "title": "(Muster)",
+      "courseType": "sensitization",
+      "topic_count": "3"
+    },
+    {
+      "id": "120007",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "120005",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "240002",
+      "title": "Test Course Progress",
+      "courseType": "sensitization",
+      "topic_count": "1"
+    },
+    {
+      "id": "150001",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    },
+    {
+      "id": "300002",
+      "title": "Test Course for Status Management",
+      "courseType": "learning",
+      "topic_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tcourseType\ttopic_count\n120011\tTest Course for Status Management\tlearning\t0\n210002\tTest Course Progress\tsensitization\t1\n210003\tTest Course Progress\tsensitization\t1\n120010\tTest Course Progress\tsensitization\t1\n150002\tTest Course Progress\tsensitization\t1\n2\tIT-Sicherheit Sensibilisierung\tsensitization\t12\n30001\t(Muster)\tlearning\t3\n300001\tTest Course Progress\tsensitization\t1\n90002\tTest Course Progress\tsensitization\t1\n120006\tTest Course Progress\tsensitization\t1\n30003\t(Muster)\tcertification\t4\n120002\tTest Course Progress\tsensitization\t1\n120009\tTest Course for Status Management\tlearning\t0\n180001\tTest Course for Status Management\tlearning\t0\n120008\tTest Course Progress\tsensitization\t1\n270001\tTest Course Progress\tsensitization\t1\n270005\tTest Course for Status Management\tlearning\t0\n210004\tTest Course for Status Management\tlearning\t0\n120012\tTest Course Progress\tsensitization\t1\n1\tFreies Lernmodul\tlearning\t3\n270002\tTest Course for Status Management\tlearning\t0\n240001\tTest Course for Status Management\tlearning\t0\n270006\tTest Course Progress\tsensitization\t1\n60001\tTest Course for Status Management\tlearning\t0\n120004\tTest Course Progress\tsensitization\t1\n180002\tTest Course Progress\tsensitization\t1\n90001\tTest Course for Status Management\tlearning\t0\n60002\tTest Course for Status Management\tlearning\t0\n120001\tTest Course for Status Management\tlearning\t0\n210001\tTest Course for Status Management\tlearning\t0\n270003\tTest Course Progress\tsensitization\t1\n3\tKI-Kompetenz Prüfung\tcertification\t4\n120003\tTest Course for Status Management\tlearning\t0\n270004\tTest Course for Status Management\tlearning\t0\n30002\t(Muster)\tsensitization\t3\n120007\tTest Course for Status Management\tlearning\t0\n120005\tTest Course for Status Management\tlearning\t0\n240002\tTest Course Progress\tsensitization\t1\n150001\tTest Course for Status Management\tlearning\t0\n300002\tTest Course for Status Management\tlearning\t0\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

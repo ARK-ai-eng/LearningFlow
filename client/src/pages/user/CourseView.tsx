@@ -146,7 +146,15 @@ export default function CourseView() {
           {randomUnanswered ? (
             <Button 
               size="lg" 
-              onClick={() => setLocation(`/course/${courseId}/quiz?questionId=${randomUnanswered.id}`)}
+              onClick={() => {
+                // Course 1 (courseType='learning'): Navigate to /topic/{topicId}?questionId=X
+                // Course 2 & 3 (courseType='sensitization'/'certification'): Navigate to /quiz?questionId=X
+                if (course?.courseType === 'learning' && randomUnanswered.topicId) {
+                  setLocation(`/course/${courseId}/topic/${randomUnanswered.topicId}?questionId=${randomUnanswered.id}`);
+                } else {
+                  setLocation(`/course/${courseId}/quiz?questionId=${randomUnanswered.id}`);
+                }
+              }}
               className="min-w-[200px]"
             >
               <Play className="w-5 h-5 mr-2" />

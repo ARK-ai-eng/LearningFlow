@@ -1,0 +1,66 @@
+{
+  "query": "SELECT id, questionText FROM questions WHERE courseId = 2 AND isExamQuestion = 0 ORDER BY id ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, questionText FROM questions WHERE courseId = 2 AND isExamQuestion = 0 ORDER BY id ASC;",
+  "rows": [
+    {
+      "id": "30003",
+      "questionText": "Welcher Anhang ist besonders gefährlich?"
+    },
+    {
+      "id": "60001",
+      "questionText": "Du erhältst eine E-Mail mit dringender Zahlungsaufforderung und Link. Was ist korrekt?"
+    },
+    {
+      "id": "60002",
+      "questionText": "Welche Passwort-Praxis ist korrekt?"
+    },
+    {
+      "id": "60003",
+      "questionText": "Ein Anrufer gibt sich als IT aus und fordert Zugangsdaten. Was tun?"
+    },
+    {
+      "id": "60004",
+      "questionText": "Was ist Pflicht beim Verlassen des Arbeitsplatzes?"
+    },
+    {
+      "id": "60005",
+      "questionText": "Du erhältst eine MFA-Anfrage ohne eigenen Login. Was tun?"
+    },
+    {
+      "id": "60006",
+      "questionText": "Wie teilst du sensible Dateien korrekt?"
+    },
+    {
+      "id": "60008",
+      "questionText": "Woran erkennst du ein echtes Update?"
+    },
+    {
+      "id": "60009",
+      "questionText": "Warum sind QR-Codes ein Risiko?"
+    },
+    {
+      "id": "60010",
+      "questionText": "Welche Daten sind „vertraulich“?"
+    },
+    {
+      "id": "60011",
+      "questionText": "Personenbezogene Daten unterliegen gesetzlichen Schutzpflichten. Fehler hier haben rechtliche Folgen."
+    },
+    {
+      "id": "60012",
+      "questionText": "Wann muss ein Sicherheitsvorfall gemeldet werden?"
+    },
+    {
+      "id": "240001",
+      "questionText": "test"
+    },
+    {
+      "id": "240002",
+      "questionText": "test123"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tquestionText\n30003\tWelcher Anhang ist besonders gefährlich?\n60001\tDu erhältst eine E-Mail mit dringender Zahlungsaufforderung und Link. Was ist korrekt?\n60002\tWelche Passwort-Praxis ist korrekt?\n60003\tEin Anrufer gibt sich als IT aus und fordert Zugangsdaten. Was tun?\n60004\tWas ist Pflicht beim Verlassen des Arbeitsplatzes?\n60005\tDu erhältst eine MFA-Anfrage ohne eigenen Login. Was tun?\n60006\tWie teilst du sensible Dateien korrekt?\n60008\tWoran erkennst du ein echtes Update?\n60009\tWarum sind QR-Codes ein Risiko?\n60010\tWelche Daten sind „vertraulich“?\n60011\tPersonenbezogene Daten unterliegen gesetzlichen Schutzpflichten. Fehler hier haben rechtliche Folgen.\n60012\tWann muss ein Sicherheitsvorfall gemeldet werden?\n240001\ttest\n240002\ttest123\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}

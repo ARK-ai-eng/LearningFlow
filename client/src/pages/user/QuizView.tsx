@@ -35,7 +35,8 @@ export default function QuizView() {
   const courseId = parseInt(id || "0");
   
   // Parse URL parameter ?questionId=X
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Note: wouter's useLocation() doesn't include query string, use window.location.search
+  const urlParams = new URLSearchParams(window.location.search);
   const startQuestionId = urlParams.get('questionId') ? parseInt(urlParams.get('questionId')!) : null;
 
   const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
@@ -86,9 +87,9 @@ export default function QuizView() {
   // Merge shuffled questions with progress status
   // This updates status without triggering shuffle
   const questionsWithStatus = useMemo(() => {
-    if (!progress) return questionsWithShuffledAnswers;
+    if (!progress) return questionsWithShuffledAnswers.sort((a, b) => a.id - b.id);
     
-    return questionsWithShuffledAnswers.map(q => {
+    const withStatus = questionsWithShuffledAnswers.map(q => {
       const p = progress.find(pr => pr.questionId === q.id);
       return {
         ...q,
@@ -96,6 +97,8 @@ export default function QuizView() {
         attemptCount: p?.attemptCount || 0,
       };
     });
+    // Sort by ID for consistent order
+    return withStatus.sort((a, b) => a.id - b.id);
   }, [questionsWithShuffledAnswers, progress]);
 
   // Current question index
@@ -118,10 +121,10 @@ export default function QuizView() {
   // Filter questions based on mode: all questions or only incorrect ones
   const activeQuestions = useMemo(() => {
     if (isRepeatMode) {
-      // Repeat mode: only show incorrect questions
+      // Repeat mode: only show incorrect questions (already sorted by ID)
       return questionsWithStatus.filter(q => q.status === 'incorrect');
     }
-    // Normal mode: show all questions
+    // Normal mode: show all questions (already sorted by ID)
     return questionsWithStatus;
   }, [isRepeatMode, questionsWithStatus]);
 

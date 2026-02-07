@@ -709,3 +709,29 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] BUG: TopicView möglicherweise gleicher Fehler - prüfen und fixen
 - [ ] Testing nach Fix: Browser-Test mit allen 3 Course-Types
 
+
+## KRITISCHE BUGS - Resume-Funktionalität (07.02.2026 - User Testing)
+
+### Backend-Bug
+- [x] BUG: question.listByCourse gibt ALLE 194 Fragen zurück statt nur Course 2 Fragen (14)
+  - Symptom: QuizView zeigt "Frage 1 von 194" statt "Frage X von 14"
+  - Root Cause: Zweiter where() überschreibt ersten Filter (Drizzle ORM)
+  - Fix: Kombiniere WHERE-Bedingungen mit AND statt mehrere where() Call### Frontend-Bug
+- [x] BUG: "Frage 1 von 194" statt "Frage 12 von 14"
+  - Symptom: User hat 4 Fragen beantwortet, "Fortsetzen" zeigt "Frage 1" statt "Frage 12"
+  - Root Cause: 1) wouter's useLocation() gibt keinen Query-String zurück, 2) questionsWithStatus war unsortiert
+  - Fix: 1) Verwende window.location.search für URL-Parameter, 2) Sortiere questionsWithStatus nach ID-Checkliste (MUSS vor Checkpoint abgehakt werden)
+- [x] Backend-API Test: question.listByCourse mit courseId=2 gibt nur 14 Fragen zurück
+- [x] Frontend Test: "Frage X von Y" zeigt korrekte Nummer
+- [x] Browser Test Course 1: "Fortsetzen" navigiert zu TopicView mit korrekter Frage
+- [x] Browser Test Course 2: "Fortsetzen" navigiert zu QuizView mit korrekter Frage
+- [ ] Browser Test Course 3: "Fortsetzen" navigiert zu QuizView mit korrekter Frage
+- [ ] Shuffle funktioniert weiterhin korrekt
+- [ ] Progress-Tracking funktioniert korrekt
+
+
+## BUG - Course 1 Navigation
+- [x] BUG: Course 1 "Fortsetzen" navigiert zu `/quiz` statt `/topic/{topicId}`
+  - Symptom: URL ist `/course/1/quiz?questionId=6` statt `/course/1/topic/1?questionId=6`
+  - Root Cause: Frontend prüfte course.type (undefined) statt course.courseType
+  - Fix: Frontend prüft course.courseType === 'learning' für Topic-Navigation

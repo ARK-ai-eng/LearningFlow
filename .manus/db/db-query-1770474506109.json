@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as total_questions FROM questions WHERE courseId = 2 AND isExamQuestion = 0;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT COUNT(*) as total_questions FROM questions WHERE courseId = 2 AND isExamQuestion = 0;",
+  "rows": [
+    {
+      "total_questions": "14"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_questions\n14\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}
