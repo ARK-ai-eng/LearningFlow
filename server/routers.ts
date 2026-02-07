@@ -999,100 +999,6 @@ export const appRouter = router({
       }),
   }),
 
-  // ============================================
-  // EXAM ROUTES
-  // ============================================
-  exam: router({
-    // Prüfung starten
-    start: protectedProcedure
-      .input(z.object({ courseId: z.number() }))
-      .mutation(async ({ ctx, input }) => {
-        const course = await db.getCourseById(input.courseId);
-        if (!course || course.courseType !== 'certification') {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Zertifizierungsprüfung" });
-        }
-
-        // Zufällige 20 Fragen aus dem Kurs
-        const allQuestions = await db.getQuestionsByCourse(input.courseId);
-        const shuffled = allQuestions.sort(() => Math.random() - 0.5);
-        const examQuestions = shuffled.slice(0, 20);
-
-        const attemptId = await db.createExamAttempt({
-          userId: ctx.user.id,
-          courseId: input.courseId,
-          totalQuestions: 20,
-        });
-
-        return {
-          attemptId,
-          questions: examQuestions.map(q => ({
-            id: q.id,
-            questionText: q.questionText,
-            optionA: q.optionA,
-            optionB: q.optionB,
-            optionC: q.optionC,
-            optionD: q.optionD,
-          })),
-          timeLimit: course.timeLimit || 15,
-        };
-      }),
-
-    // Prüfung abschließen
-    submit: protectedProcedure
-      .input(z.object({
-        attemptId: z.number(),
-        answers: z.record(z.string(), z.enum(['A', 'B', 'C', 'D'])),
-      }))
-      .mutation(async ({ ctx, input }) => {
-        const attempt = await db.getExamAttempt(input.attemptId);
-        if (!attempt || attempt.userId !== ctx.user.id) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "Keine Berechtigung" });
-        }
-
-        const course = await db.getCourseById(attempt.courseId);
-        const questions = await db.getQuestionsByCourse(attempt.courseId);
-        
-        let correct = 0;
-        for (const [qId, answer] of Object.entries(input.answers)) {
-          const question = questions.find(q => q.id === parseInt(qId));
-          if (question && question.correctAnswer === answer) {
-            correct++;
-          }
-        }
-
-        const score = Math.round((correct / 20) * 100);
-        const passed = score >= (course?.passingScore || 80);
-
-        await db.updateExamAttempt(input.attemptId, {
-          completedAt: new Date(),
-          score,
-          correctAnswers: correct,
-          passed,
-          answers: input.answers,
-        });
-
-        // Bei Bestehen: Zertifikat erstellen
-        if (passed) {
-          const certNumber = `CERT-${Date.now()}-${ctx.user.id}`;
-          await db.createCertificate({
-            userId: ctx.user.id,
-            courseId: attempt.courseId,
-            examAttemptId: input.attemptId,
-            certificateNumber: certNumber,
-            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 Jahr
-          });
-        }
-
-        return { score, passed, correct, total: 20 };
-      }),
-
-    // Prüfungsversuche abrufen
-    attempts: protectedProcedure
-      .input(z.object({ courseId: z.number() }))
-      .query(async ({ ctx, input }) => {
-        return db.getUserExamAttempts(ctx.user.id, input.courseId);
-      }),
-  }),
 
   // ============================================
   // CERTIFICATE ROUTES
@@ -1165,6 +1071,35 @@ export const appRouter = router({
           issuedAt: cert.issuedAt,
           expiresAt: cert.expiresAt,
         };
+      }),
+  }),
+
+  // ============================================
+  // EXAM
+  // ============================================
+  exam: router({
+    // Record exam completion (DSGVO-konform: kein PDF gespeichert)
+    recordCompletion: protectedProcedure
+      .input(z.object({
+        courseId: z.number(),
+        score: z.number().min(0).max(100),
+        passed: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const completionId = await db.recordExamCompletion({
+          userId: ctx.user.id,
+          courseId: input.courseId,
+          score: input.score,
+          passed: input.passed,
+        });
+        return { completionId };
+      }),
+
+    // Get latest exam completion
+    getLatestCompletion: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getLatestExamCompletion(ctx.user.id, input.courseId);
       }),
   }),
 

@@ -593,18 +593,29 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Dev Server: Läuft (HMR Update für CourseEditor.tsx)
 
 ### Phase 6: Course 3 Dialog
-- [ ] Dialog mit 3 Optionen (<80%): Fehlerhafte wiederholen, Alles nochmal, Später
-- [ ] Dialog mit 4 Optionen (≥80%): Prüfung ablegen, Fehlerhafte wiederholen, Alles nochmal, Später
-- [ ] "Alles nochmal" Button: Progress löschen + Shuffle
+- [x] Dialog mit 3 Optionen (<80%): Fehlerhafte wiederholen, Alles nochmal, Später
+- [x] Dialog mit 4 Optionen (≥80%): Prüfung ablegen, Fehlerhafte wiederholen, Alles nochmal, Später
+- [x] "Alles nochmal" Button: Progress löschen + Shuffle
+- [x] QuizView.tsx: Score-Berechnung + conditional Dialog
 
 ### Phase 7: Course 3 Prüfung
-- [ ] ExamView.tsx: Neue Komponente für Prüfung
-- [ ] exam.getRandomQuestions API: 20 zufällige Prüfungsfragen
-- [ ] Timer: 15 Minuten Countdown
-- [ ] Prüfungs-Auswertung: 80% Mindestpunktzahl
-- [ ] Zertifikat-Generierung bei Bestehen
+- [x] ExamView.tsx: Neue Komponente für Prüfung (20 zufällige Fragen)
+- [x] Timer: 15 Minuten Countdown (rot bei <5 Min)
+- [x] Prüfungs-Auswertung: 80% Mindestpunktzahl
+- [x] exam.recordCompletion API: Speichert Bestehen-Datum + Score (DSGVO-konform)
+- [x] Route: /course/:id/exam
 
-### Phase 8: Final Testing
+### Phase 8: Zertifikat-Generierung
+- [x] exam_completions Tabelle: Speichert nur Datum + Score (kein PDF)
+- [x] CertificateView.tsx: Zeigt Ergebnis + Download-Button
+- [x] PDF-Generierung: On-the-fly (nicht gespeichert!)
+- [x] Route: /course/:id/certificate
+- [x] Zertifikat-Inhalt: "KI-Kompetenz nach EU AI Act" + Gültig 1 Jahr
+
+### Phase 9: Testing + Dokumentation
+- [x] Unit Tests: 61 Tests bestanden ✅
+- [x] Tests angepasst: exam.start/submit → exam.recordCompletion
+- [x] Alter exam Router gelöscht (duplicate key fix)
 - [ ] Browser Testing: Kompletter Course 3 Workflow
 - [ ] Checkpoint erstellen
-- [ ] Dokumentation aktualisieren
+- [ ] Lessons Learned Dokumentation

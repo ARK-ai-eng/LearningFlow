@@ -204,6 +204,21 @@ export default function QuizView() {
     resetMutation.mutate({ courseId });
   };
 
+  const handleRestartAll = () => {
+    // "Alles nochmal von vorne" - Reset progress + Shuffle
+    resetMutation.mutate({ courseId });
+  };
+
+  const handleContinueLater = () => {
+    // "Später fortsetzen" - Keep progress, go back to course
+    setLocation(`/course/${courseId}`);
+  };
+
+  const handleStartExam = () => {
+    // "Prüfung ablegen" - Navigate to ExamView
+    setLocation(`/course/${courseId}/exam`);
+  };
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -354,19 +369,60 @@ export default function QuizView() {
               )}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             {stats.incorrect === 0 ? (
-              <Button onClick={handleFinish}>
-                Zurück zur Kursübersicht
-              </Button>
-            ) : (
+              // Alle richtig (100%)
               <>
-                <Button variant="outline" onClick={handleFinish}>
-                  Nein, nicht jetzt
+                <Button variant="outline" onClick={handleRestartAll}>
+                  Alles nochmal von vorne
                 </Button>
-                <Button onClick={handleRepeatIncorrect}>
-                  Ja, wiederholen
+                <Button onClick={handleFinish}>
+                  Zurück zur Kursübersicht
                 </Button>
+              </>
+            ) : (
+              // Einige falsch - Check if Course 3 (Certification) und Score ≥80%
+              <>
+                {course?.type === 'certification' && ((stats.correct / stats.total) * 100) >= 80 ? (
+                  // Course 3 + ≥80% → 4 Optionen
+                  <>
+                    <Button onClick={handleStartExam} className="w-full sm:w-auto">
+                      🎯 Prüfung ablegen
+                    </Button>
+                    <Button variant="outline" onClick={handleRepeatIncorrect} className="w-full sm:w-auto">
+                      Fehlerhafte wiederholen
+                    </Button>
+                    <Button variant="outline" onClick={handleRestartAll} className="w-full sm:w-auto">
+                      Alles nochmal
+                    </Button>
+                    <Button variant="ghost" onClick={handleContinueLater} className="w-full sm:w-auto">
+                      Später
+                    </Button>
+                  </>
+                ) : course?.type === 'certification' ? (
+                  // Course 3 + <80% → 3 Optionen (kein "Prüfung ablegen")
+                  <>
+                    <Button variant="outline" onClick={handleRepeatIncorrect} className="w-full sm:w-auto">
+                      Fehlerhafte wiederholen
+                    </Button>
+                    <Button variant="outline" onClick={handleRestartAll} className="w-full sm:w-auto">
+                      Alles nochmal von vorne
+                    </Button>
+                    <Button variant="ghost" onClick={handleContinueLater} className="w-full sm:w-auto">
+                      Später fortsetzen
+                    </Button>
+                  </>
+                ) : (
+                  // Course 1 & 2 (Learning/Sensitization) → Original Logik
+                  <>
+                    <Button variant="outline" onClick={handleFinish}>
+                      Nein, nicht jetzt
+                    </Button>
+                    <Button onClick={handleRepeatIncorrect}>
+                      Ja, wiederholen
+                    </Button>
+                  </>
+                )}
               </>
             )}
           </DialogFooter>

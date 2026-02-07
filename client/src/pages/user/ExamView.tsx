@@ -1,307 +1,358 @@
-import { useState, useEffect } from "react";
-import { trpc } from "@/lib/trpc";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
-import { ArrowLeft, Clock, CheckCircle, XCircle, Award } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 import DashboardLayout from "@/components/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Clock, AlertCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// Toast functionality removed - using console.log for now
+
+// Shuffle helper
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 export default function ExamView() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
+  // const { toast } = useToast();
   const courseId = parseInt(id || "0");
 
-  const [examStarted, setExamStarted] = useState(false);
-  const [attemptId, setAttemptId] = useState<number | null>(null);
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, "A" | "B" | "C" | "D">>({});
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [result, setResult] = useState<{ score: number; passed: boolean; correct: number; total: number } | null>(null);
+  // Timer state (15 minutes = 900 seconds)
+  const [timeRemaining, setTimeRemaining] = useState(900);
+  const [timerActive, setTimerActive] = useState(true);
 
+  // Question state
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [hasAnswered, setHasAnswered] = useState(false);
+  const [examAnswers, setExamAnswers] = useState<Record<number, { answer: string; correct: boolean }>>({});
+
+  // Dialog state
+  const [showResultDialog, setShowResultDialog] = useState(false);
+  const [examScore, setExamScore] = useState(0);
+  const [examPassed, setExamPassed] = useState(false);
+
+  // Record completion mutation
+  const recordCompletionMutation = trpc.exam.recordCompletion.useMutation({
+    onSuccess: () => {
+      console.log("Exam completion recorded");
+    },
+  });
+
+  // Load course and exam questions
   const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
-  
-  const startMutation = trpc.exam.start.useMutation({
-    onSuccess: (data) => {
-      setAttemptId(data.attemptId);
-      setQuestions(data.questions);
-      setTimeLeft(data.timeLimit * 60);
-      setExamStarted(true);
+  const { data: allExamQuestions, isLoading: questionsLoading } = trpc.question.listByCourse.useQuery(
+    { 
+      courseId,
+      isExamQuestion: true // Nur Prüfungsfragen
     },
-  });
+    { enabled: courseId > 0 }
+  );
 
-  const submitMutation = trpc.exam.submit.useMutation({
-    onSuccess: (data) => {
-      setResult(data);
-    },
-  });
+  // Select 20 random questions from pool
+  const examQuestions = useMemo(() => {
+    if (!allExamQuestions || allExamQuestions.length === 0) return [];
+    
+    // Shuffle and take 20 questions
+    const shuffled = shuffleArray(allExamQuestions);
+    const selected = shuffled.slice(0, Math.min(20, shuffled.length));
+    
+    // Shuffle options for each question
+    return selected.map(q => ({
+      ...q,
+      shuffledOptions: shuffleArray([
+        { label: 'A', text: q.optionA },
+        { label: 'B', text: q.optionB },
+        { label: 'C', text: q.optionC },
+        { label: 'D', text: q.optionD },
+      ])
+    }));
+  }, [allExamQuestions]);
 
-  // Timer
+  // Timer countdown
   useEffect(() => {
-    if (!examStarted || timeLeft <= 0) return;
+    if (!timerActive || timeRemaining <= 0) return;
 
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
         if (prev <= 1) {
-          handleSubmit();
+          setTimerActive(false);
+          handleTimeUp();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [examStarted, timeLeft]);
+    return () => clearInterval(interval);
+  }, [timerActive, timeRemaining]);
 
+  // Format timer display
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleAnswerSelect = (questionId: number, answer: string) => {
-    setAnswers(prev => ({ ...prev, [questionId.toString()]: answer as "A" | "B" | "C" | "D" }));
+  const currentQuestion = examQuestions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === examQuestions.length - 1;
+
+  const handleAnswerSelect = (answer: string) => {
+    if (hasAnswered) return;
+    setSelectedAnswer(answer);
   };
 
-  const handleSubmit = () => {
-    if (!attemptId) return;
-    submitMutation.mutate({ attemptId, answers });
+  const handleSubmitAnswer = () => {
+    if (!selectedAnswer || !currentQuestion) return;
+
+    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+    
+    // Store answer
+    setExamAnswers(prev => ({
+      ...prev,
+      [currentQuestion.id]: {
+        answer: selectedAnswer,
+        correct: isCorrect
+      }
+    }));
+
+    setHasAnswered(true);
   };
 
-  const question = questions[currentQuestion];
+  const handleNextQuestion = () => {
+    if (isLastQuestion) {
+      // Exam finished
+      calculateAndShowResults();
+    } else {
+      // Next question
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setHasAnswered(false);
+    }
+  };
 
-  if (result) {
+  const handleTimeUp = () => {
+    console.log("Zeit abgelaufen! Die Prüfungszeit ist abgelaufen.");
+    calculateAndShowResults();
+  };
+
+  const calculateAndShowResults = () => {
+    setTimerActive(false);
+    
+    const correctCount = Object.values(examAnswers).filter(a => a.correct).length;
+    const totalQuestions = examQuestions.length;
+    const score = Math.round((correctCount / totalQuestions) * 100);
+    const passed = score >= 80;
+
+    setExamScore(score);
+    setExamPassed(passed);
+    setShowResultDialog(true);
+
+    // Record completion in DB (DSGVO-konform: kein PDF gespeichert)
+    recordCompletionMutation.mutate({
+      courseId,
+      score,
+      passed,
+    });
+  };
+
+  const handleReturnToCourse = () => {
+    setLocation(`/course/${courseId}`);
+  };
+
+  if (questionsLoading) {
     return (
       <DashboardLayout>
-        <div className="max-w-2xl mx-auto">
-          <div className="glass-card p-8 text-center">
-            <div className={`w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center ${
-              result.passed ? 'bg-emerald-500/10' : 'bg-red-500/10'
-            }`}>
-              {result.passed ? (
-                <Award className="w-12 h-12 text-emerald-400" />
-              ) : (
-                <XCircle className="w-12 h-12 text-red-400" />
-              )}
-            </div>
-            
-            <h1 className="text-3xl font-bold mb-2">
-              {result.passed ? 'Herzlichen Glückwunsch!' : 'Leider nicht bestanden'}
-            </h1>
-            
-            <p className="text-muted-foreground mb-6">
-              {result.passed 
-                ? 'Sie haben die Jahresprüfung erfolgreich bestanden.'
-                : 'Sie haben die erforderliche Punktzahl nicht erreicht.'}
-            </p>
-
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-3xl font-bold gradient-text">{result.score}%</p>
-                <p className="text-sm text-muted-foreground">Ergebnis</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-3xl font-bold">{result.correct}</p>
-                <p className="text-sm text-muted-foreground">Richtig</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-3xl font-bold">{result.total}</p>
-                <p className="text-sm text-muted-foreground">Gesamt</p>
-              </div>
-            </div>
-
-            {result.passed && (
-              <p className="text-emerald-400 mb-6">
-                Ihr Zertifikat wurde erstellt und ist unter "Zertifikate" verfügbar.
-              </p>
-            )}
-
-            <div className="flex justify-center gap-3">
-              {!result.passed && (
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setResult(null);
-                    setExamStarted(false);
-                    setAttemptId(null);
-                    setQuestions([]);
-                    setAnswers({});
-                    setCurrentQuestion(0);
-                  }}
-                >
-                  Erneut versuchen
-                </Button>
-              )}
-              <Button onClick={() => setLocation('/dashboard')}>
-                Zum Dashboard
-              </Button>
-              {result.passed && (
-                <Button variant="outline" onClick={() => setLocation('/certificates')}>
-                  Zertifikate anzeigen
-                </Button>
-              )}
-            </div>
-          </div>
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 w-48 bg-muted rounded" />
+          <div className="h-64 bg-muted rounded-lg" />
         </div>
       </DashboardLayout>
     );
   }
 
-  if (!examStarted) {
+  if (!examQuestions || examQuestions.length === 0) {
     return (
       <DashboardLayout>
-        <div className="max-w-2xl mx-auto">
-          <Button 
-            variant="ghost" 
-            className="mb-6"
-            onClick={() => setLocation(`/course/${courseId}`)}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+        <div className="glass-card p-12 text-center">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4 text-destructive" />
+          <h2 className="text-xl font-semibold mb-2">Keine Prüfungsfragen verfügbar</h2>
+          <p className="text-muted-foreground mb-6">
+            Für diesen Kurs sind noch keine Prüfungsfragen hinterlegt.
+          </p>
+          <Button onClick={handleReturnToCourse}>
             Zurück zum Kurs
           </Button>
-
-          <div className="glass-card p-8 text-center">
-            <div className="w-20 h-20 rounded-full bg-emerald-500/10 mx-auto mb-6 flex items-center justify-center">
-              <Award className="w-10 h-10 text-emerald-400" />
-            </div>
-            
-            <h1 className="text-2xl font-bold mb-2">Jahresprüfung</h1>
-            <p className="text-muted-foreground mb-6">
-              {course?.title}
-            </p>
-
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold">20</p>
-                <p className="text-sm text-muted-foreground">Fragen</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold">{course?.passingScore || 80}%</p>
-                <p className="text-sm text-muted-foreground">Bestehensgrenze</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold">{course?.timeLimit || 15}</p>
-                <p className="text-sm text-muted-foreground">Minuten</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-6 text-left">
-              <p className="text-sm text-amber-400">
-                <strong>Wichtig:</strong> Sobald Sie die Prüfung starten, läuft die Zeit. 
-                Stellen Sie sicher, dass Sie ungestört sind und eine stabile Internetverbindung haben.
-              </p>
-            </div>
-
-            <Button 
-              size="lg"
-              onClick={() => startMutation.mutate({ courseId })}
-              disabled={startMutation.isPending}
-            >
-              {startMutation.isPending ? 'Wird geladen...' : 'Prüfung starten'}
-            </Button>
-          </div>
         </div>
       </DashboardLayout>
     );
   }
+
+  if (!currentQuestion) {
+    return (
+      <DashboardLayout>
+        <div className="glass-card p-12 text-center">
+          <p className="text-muted-foreground">Frage nicht gefunden</p>
+          <Button className="mt-4" onClick={handleReturnToCourse}>
+            Zurück zum Kurs
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
 
   return (
     <DashboardLayout>
-      <div className="max-w-3xl mx-auto">
-        {/* Header with Timer */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-bold">Jahresprüfung</h1>
-            <p className="text-sm text-muted-foreground">
-              Frage {currentQuestion + 1} von {questions.length}
-            </p>
-          </div>
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-            timeLeft < 60 ? 'bg-red-500/10 text-red-400' : 'bg-muted'
-          }`}>
-            <Clock className="w-5 h-5" />
-            <span className="font-mono text-lg font-bold">{formatTime(timeLeft)}</span>
+      <div className="max-w-3xl mx-auto space-y-8">
+        {/* Header */}
+        <div>
+          <Button 
+            variant="ghost" 
+            className="mb-4"
+            onClick={handleReturnToCourse}
+            disabled={timerActive}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Prüfung abbrechen
+          </Button>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">🎯 Prüfung: {course?.title || 'KI-Kompetenz'}</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Frage {currentQuestionIndex + 1} von {examQuestions.length}
+              </p>
+            </div>
+            {/* Timer */}
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+              timeRemaining < 300 ? 'bg-destructive/20 text-destructive' : 'bg-primary/20 text-primary'
+            }`}>
+              <Clock className="w-5 h-5" />
+              <span className="font-mono text-lg font-semibold">
+                {formatTime(timeRemaining)}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Progress */}
-        <div className="progress-bar mb-6">
-          <div 
-            className="progress-bar-fill" 
-            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-          />
-        </div>
+        {/* Question Card */}
+        <div className="glass-card p-8">
+          {/* Question */}
+          <h2 className="text-xl font-medium mb-8">
+            {currentQuestion.questionText}
+          </h2>
 
-        {/* Question */}
-        <div className="glass-card p-6 mb-6">
-          <p className="text-lg font-medium mb-6">{question?.questionText}</p>
-          
-          <div className="space-y-3">
-            {['A', 'B', 'C', 'D'].map(option => {
-              const optionText = question?.[`option${option}`];
-              const isSelected = answers[question?.id?.toString()] === option;
-              
+          {/* Answers */}
+          <div className="space-y-4">
+            {currentQuestion.shuffledOptions.map((option) => {
+              const displayLabel = option.label;
+              const isSelected = selectedAnswer === displayLabel;
+              const isCorrectOption = currentQuestion.correctAnswer === displayLabel;
+
+              let className = "quiz-option";
+              if (hasAnswered) {
+                if (isCorrectOption) {
+                  className += " quiz-option-correct";
+                } else if (isSelected && !isCorrect) {
+                  className += " quiz-option-incorrect";
+                }
+              } else if (isSelected) {
+                className += " quiz-option-selected";
+              }
+
               return (
-                <div
-                  key={option}
-                  className={`quiz-option ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleAnswerSelect(question.id, option)}
+                <button
+                  key={displayLabel}
+                  onClick={() => handleAnswerSelect(displayLabel)}
+                  disabled={hasAnswered}
+                  className={className}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-medium">
-                      {option}
-                    </span>
-                    <span className="flex-1">{optionText}</span>
-                    {isSelected && <CheckCircle className="w-5 h-5 text-primary" />}
-                  </div>
-                </div>
+                  <span className="quiz-option-label">{displayLabel}</span>
+                  <span className="quiz-option-text">{option.text}</span>
+                </button>
               );
             })}
           </div>
-        </div>
 
-        {/* Question Navigation */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {questions.map((q, idx) => (
-            <button
-              key={q.id}
-              onClick={() => setCurrentQuestion(idx)}
-              className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                idx === currentQuestion
-                  ? 'bg-primary text-primary-foreground'
-                  : answers[q.id.toString()]
-                  ? 'bg-emerald-500/20 text-emerald-400'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              {idx + 1}
-            </button>
-          ))}
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-between">
-          <Button 
-            variant="outline"
-            onClick={() => setCurrentQuestion(prev => Math.max(0, prev - 1))}
-            disabled={currentQuestion === 0}
-          >
-            Zurück
-          </Button>
-          
-          {currentQuestion < questions.length - 1 ? (
-            <Button onClick={() => setCurrentQuestion(prev => prev + 1)}>
-              Weiter
-            </Button>
-          ) : (
-            <Button 
-              onClick={handleSubmit}
-              disabled={submitMutation.isPending}
-            >
-              {submitMutation.isPending ? 'Wird ausgewertet...' : 'Prüfung abgeben'}
-            </Button>
+          {/* Explanation */}
+          {hasAnswered && currentQuestion.explanation && (
+            <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border">
+              <p className="text-sm font-medium mb-2">Erklärung:</p>
+              <p className="text-sm text-muted-foreground">{currentQuestion.explanation}</p>
+            </div>
           )}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 mt-8">
+            {!hasAnswered ? (
+              <Button 
+                onClick={handleSubmitAnswer}
+                disabled={!selectedAnswer}
+              >
+                Antwort bestätigen
+              </Button>
+            ) : (
+              <Button onClick={handleNextQuestion}>
+                {isLastQuestion ? 'Prüfung abschließen' : 'Nächste Frage'}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Result Dialog */}
+      <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              {examPassed ? '🎉 Herzlichen Glückwunsch!' : '😔 Leider nicht bestanden'}
+            </DialogTitle>
+            <DialogDescription className="text-base pt-4">
+              {examPassed ? (
+                <>
+                  Du hast die Prüfung mit <strong>{examScore}%</strong> bestanden!
+                  <br /><br />
+                  Du kannst jetzt dein Zertifikat herunterladen.
+                </>
+              ) : (
+                <>
+                  Du hast <strong>{examScore}%</strong> erreicht.
+                  <br /><br />
+                  Für das Zertifikat benötigst du mindestens 80%.
+                  <br />
+                  Wiederhole die Lernfragen und versuche es erneut.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            {examPassed ? (
+              <>
+                <Button variant="outline" onClick={handleReturnToCourse}>
+                  Zurück zum Kurs
+                </Button>
+                <Button onClick={() => {
+                  // Phase 8: Certificate generation
+                  setLocation(`/course/${courseId}/certificate`);
+                }}>
+                  Zertifikat herunterladen
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleReturnToCourse}>
+                Zurück zum Kurs
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

@@ -192,3 +192,19 @@ export const certificates = mysqlTable("certificates", {
 
 export type Certificate = typeof certificates.$inferSelect;
 export type InsertCertificate = typeof certificates.$inferInsert;
+
+// ============================================
+// EXAM_COMPLETIONS - Prüfungsabschlüsse (DSGVO-konform)
+// Speichert nur Bestehen-Datum + Score, KEIN PDF
+// ============================================
+export const examCompletions = mysqlTable("exam_completions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  courseId: int("courseId").notNull(),
+  completedAt: timestamp("completedAt").defaultNow().notNull(),
+  score: int("score").notNull(), // 0-100
+  passed: boolean("passed").notNull(),
+});
+
+export type ExamCompletion = typeof examCompletions.$inferSelect;
+export type InsertExamCompletion = typeof examCompletions.$inferInsert;

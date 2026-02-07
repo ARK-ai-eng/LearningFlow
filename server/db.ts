@@ -11,7 +11,8 @@ import {
   userProgress, InsertUserProgress,
   questionProgress, InsertQuestionProgress, QuestionProgress,
   examAttempts, InsertExamAttempt,
-  certificates, InsertCertificate
+  certificates, InsertCertificate,
+  examCompletions, InsertExamCompletion
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -602,4 +603,45 @@ export async function getIncorrectQuestionsByTopic(userId: number, topicId: numb
     ));
   
   return results.map(r => r.questionId);
+}
+
+// ============================================
+// EXAM COMPLETIONS
+// ============================================
+
+export async function recordExamCompletion(data: {
+  userId: number;
+  courseId: number;
+  score: number;
+  passed: boolean;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [result] = await db.insert(examCompletions).values({
+    userId: data.userId,
+    courseId: data.courseId,
+    score: data.score,
+    passed: data.passed,
+    completedAt: new Date(),
+  });
+
+  return result.insertId;
+}
+
+export async function getLatestExamCompletion(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [result] = await db
+    .select()
+    .from(examCompletions)
+    .where(and(
+      eq(examCompletions.userId, userId),
+      eq(examCompletions.courseId, courseId)
+    ))
+    .orderBy(desc(examCompletions.completedAt))
+    .limit(1);
+
+  return result;
 }

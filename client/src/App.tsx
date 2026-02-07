@@ -17,6 +17,7 @@ import CourseView from "./pages/user/CourseView";
 import TopicView from "./pages/user/TopicView";
 import QuizView from "./pages/user/QuizView";
 import ExamView from "./pages/user/ExamView";
+import CertificateView from "./pages/user/CertificateView";
 import Certificates from "./pages/user/Certificates";
 
 // Company Admin Pages
@@ -48,6 +49,7 @@ function Router() {
       <Route path="/course/:id/quiz" component={QuizView} />
       <Route path="/course/:courseId/topic/:topicId" component={TopicView} />
       <Route path="/course/:id/exam" component={ExamView} />
+      <Route path="/course/:id/certificate" component={CertificateView} />
       <Route path="/certificates" component={Certificates} />
       
       {/* Company Admin Routes */}

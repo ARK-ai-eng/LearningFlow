@@ -60,6 +60,15 @@ vi.mock("./db", () => ({
   createCertificate: vi.fn().mockResolvedValue(1),
   upsertUser: vi.fn().mockResolvedValue(undefined),
   markInvitationUsed: vi.fn().mockResolvedValue(undefined),
+  recordExamCompletion: vi.fn().mockResolvedValue(1),
+  getLatestExamCompletion: vi.fn().mockResolvedValue({
+    id: 1,
+    userId: 2,
+    courseId: 1,
+    completedAt: new Date(),
+    score: 90,
+    passed: true,
+  }),
 }));
 
 function createSysAdminContext(): TrpcContext {
@@ -207,33 +216,35 @@ describe("Progress Router", () => {
 });
 
 describe("Exam Router", () => {
-  it("starts exam for certification course", async () => {
+  it("records exam completion", async () => {
     const ctx = createUserContext();
     const caller = appRouter.createCaller(ctx);
     
-    const result = await caller.exam.start({ courseId: 1 });
+    const result = await caller.exam.recordCompletion({
+      courseId: 1,
+      score: 85,
+      passed: true,
+    });
     
-    expect(result.attemptId).toBe(1);
-    expect(result.questions).toHaveLength(20);
-    expect(result.timeLimit).toBe(15);
+    expect(result.completionId).toBeGreaterThan(0);
   });
 
-  it("submits exam and calculates score", async () => {
+  it("retrieves latest exam completion", async () => {
     const ctx = createUserContext();
     const caller = appRouter.createCaller(ctx);
     
-    // All correct answers (A)
-    const answers: Record<string, "A" | "B" | "C" | "D"> = {};
-    for (let i = 1; i <= 20; i++) {
-      answers[i.toString()] = "A";
-    }
+    // Record completion first
+    await caller.exam.recordCompletion({
+      courseId: 1,
+      score: 90,
+      passed: true,
+    });
     
-    const result = await caller.exam.submit({ attemptId: 1, answers });
+    const result = await caller.exam.getLatestCompletion({ courseId: 1 });
     
-    expect(result.score).toBe(100);
-    expect(result.passed).toBe(true);
-    expect(result.correct).toBe(20);
-    expect(result.total).toBe(20);
+    expect(result).toBeDefined();
+    expect(result?.score).toBe(90);
+    expect(result?.passed).toBe(true);
   });
 });
 
