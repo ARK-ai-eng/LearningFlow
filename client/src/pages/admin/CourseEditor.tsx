@@ -33,6 +33,7 @@ export default function CourseEditor() {
     topicId: number;
     question?: any;
   } | null>(null);
+  const [questionFilter, setQuestionFilter] = useState<'all' | 'learning' | 'exam'>('all');
 
   const { data: course, refetch } = trpc.course.get.useQuery(
     { id: courseId },
@@ -282,6 +283,8 @@ export default function CourseEditor() {
                   onDelete={() => deleteTopicMutation.mutate({ id: topic.id })}
                   onAddQuestion={() => setEditingQuestion({ topicId: topic.id })}
                   onDeleteQuestion={(qId) => deleteQuestionMutation.mutate({ id: qId })}
+                  filter={questionFilter}
+                  onFilterChange={setQuestionFilter}
                 />
               ))}
               
@@ -309,16 +312,18 @@ export default function CourseEditor() {
   );
 }
 
-function TopicItem({ 
-  topic, 
+function TopicItem({
+  topic,
   courseId,
-  index, 
-  expanded, 
-  onToggle, 
+  index,
+  expanded,
+  onToggle,
   onDelete,
   onAddQuestion,
   onDeleteQuestion,
-}: { 
+  filter,
+  onFilterChange,
+}: {
   topic: any;
   courseId: number;
   index: number;
@@ -327,11 +332,22 @@ function TopicItem({
   onDelete: () => void;
   onAddQuestion: () => void;
   onDeleteQuestion: (id: number) => void;
+  filter: 'all' | 'learning' | 'exam';
+  onFilterChange: (filter: 'all' | 'learning' | 'exam') => void;
 }) {
+  // Load questions for this topic
   const { data: questions } = trpc.question.listByTopic.useQuery(
     { topicId: topic.id },
     { enabled: expanded }
   );
+
+  // Filter questions based on selected filter
+  const filteredQuestions = questions?.filter(q => {
+    if (filter === 'all') return true;
+    if (filter === 'learning') return !q.isExamQuestion;
+    if (filter === 'exam') return q.isExamQuestion;
+    return true;
+  });
 
   return (
     <div className="border border-border rounded-lg overflow-hidden">
@@ -364,6 +380,40 @@ function TopicItem({
 
       {expanded && (
         <div className="p-4 border-t border-border space-y-3">
+          {/* Filter Tabs */}
+          <div className="flex items-center gap-2 pb-3 border-b border-border">
+            <button
+              onClick={() => onFilterChange('all')}
+              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                filter === 'all'
+                  ? 'bg-primary text-primary-foreground font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              Alle Fragen
+            </button>
+            <button
+              onClick={() => onFilterChange('learning')}
+              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                filter === 'learning'
+                  ? 'bg-primary text-primary-foreground font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              Lernfragen
+            </button>
+            <button
+              onClick={() => onFilterChange('exam')}
+              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                filter === 'exam'
+                  ? 'bg-primary text-primary-foreground font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              🎯 Prüfungsfragen
+            </button>
+          </div>
+
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
               {questions?.length || 0} Fragen
@@ -374,7 +424,7 @@ function TopicItem({
             </Button>
           </div>
 
-          {questions?.map((q, qIdx) => (
+          {filteredQuestions?.map((q, qIdx) => (
             <div key={q.id} className="p-3 rounded-lg bg-muted/50 flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">

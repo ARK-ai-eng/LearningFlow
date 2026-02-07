@@ -617,5 +617,30 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Tests angepasst: exam.start/submit → exam.recordCompletion
 - [x] Alter exam Router gelöscht (duplicate key fix)
 - [ ] Browser Testing: Kompletter Course 3 Workflow
+- [x] Checkpoint erstellt: 7da20deb
+- [x] Lessons Learned Dokumentation: Course3-Certification-Implementation.md
+
+
+## Admin UI Erweiterung: Filter-Ansicht (07.02.2026)
+
+### Phase 1: Filter-Ansicht
+- [ ] CourseEditor: Tabs "Alle Fragen" | "Lernfragen" | "Prüfungsfragen"
+- [ ] Filter-Logik: Fragen nach isExamQuestion filtern
+- [ ] Badge "🎯 Prüfung" in Fragen-Liste (bereits vorhanden)
+
+### Phase 2: Testing + Checkpoint
+- [ ] Browser Testing: Tabs durchklicken
 - [ ] Checkpoint erstellen
-- [ ] Lessons Learned Dokumentation
+
+
+## Admin UI Erweiterung: Filter-Ansicht (07.02.2026)
+
+### Phase 1: Filter-Ansicht
+- [x] CourseEditor: Tabs "Alle Fragen" | "Lernfragen" | "Prüfungsfragen"
+- [x] Filter-Logik: Fragen nach isExamQuestion filtern
+- [x] Badge "🎯 Prüfung" in Fragen-Liste (bereits vorhanden)
+- [x] TopicItem Komponente erweitert mit filter Props
+
+### Phase 2: Testing + Checkpoint
+- [ ] Browser Testing: Tabs durchklicken
+- [ ] Checkpoint erstellen
