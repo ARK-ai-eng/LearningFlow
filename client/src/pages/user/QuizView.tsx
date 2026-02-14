@@ -149,7 +149,12 @@ export default function QuizView() {
   }, [isRepeatMode, questionsWithStatus, currentQuestionIndex]);
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
+  
+  // isLastQuestion: In repeat mode, use initialRepeatCount to determine if we're at the last question
+  // This prevents "4 von 3" bug where activeQuestions.length temporarily includes just-answered question
+  const isLastQuestion = isRepeatMode && initialRepeatCount !== null
+    ? currentQuestionIndex === initialRepeatCount - 1
+    : currentQuestionIndex === activeQuestions.length - 1;
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -196,12 +201,26 @@ export default function QuizView() {
     utils.question.getProgressByCourse.invalidate({ courseId });
 
     if (isLastQuestion) {
-      // Show repeat dialog if there are incorrect answers
-      if (stats.incorrect > 0) {
-        setShowRepeatDialog(true);
+      // In repeat mode: Check if all repeat questions are now correct
+      if (isRepeatMode) {
+        // Refresh stats to check current state
+        const currentIncorrect = questionsWithStatus.filter(q => q.status === 'incorrect').length;
+        
+        if (currentIncorrect === 0) {
+          // All repeat questions answered correctly! Show success dialog
+          setShowRepeatDialog(true);
+        } else {
+          // Still some incorrect - ask if user wants to repeat again
+          setShowRepeatDialog(true);
+        }
       } else {
-        // All correct - go back to course
-        setLocation(`/course/${courseId}`);
+        // Normal mode: Show repeat dialog if there are incorrect answers
+        if (stats.incorrect > 0) {
+          setShowRepeatDialog(true);
+        } else {
+          // All correct - go back to course
+          setLocation(`/course/${courseId}`);
+        }
       }
     } else {
       // Go to next question
@@ -392,10 +411,26 @@ export default function QuizView() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {stats.incorrect === 0 ? '🎉 Perfekt!' : 'Fehlerhafte Fragen wiederholen?'}
+              {isRepeatMode && stats.incorrect === 0
+                ? '🎉 Glückwunsch! Alle Fragen korrekt beantwortet!'
+                : isRepeatMode && stats.incorrect > 0
+                ? '🔄 Nochmal wiederholen?'
+                : stats.incorrect === 0
+                ? '🎉 Perfekt!'
+                : 'Fehlerhafte Fragen wiederholen?'}
             </DialogTitle>
             <DialogDescription>
-              {stats.incorrect === 0 ? (
+              {isRepeatMode && stats.incorrect === 0 ? (
+                <>
+                  Super! Du hast alle Wiederholungs-Fragen korrekt beantwortet.
+                  Was möchtest du jetzt tun?
+                </>
+              ) : isRepeatMode && stats.incorrect > 0 ? (
+                <>
+                  Du hast noch {stats.incorrect} fehlerhafte Frage{stats.incorrect > 1 ? 'n' : ''}.
+                  Möchtest du diese nochmal wiederholen?
+                </>
+              ) : stats.incorrect === 0 ? (
                 <>
                   Du hast alle {stats.total} Fragen richtig beantwortet!
                 </>
@@ -413,7 +448,30 @@ export default function QuizView() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            {stats.incorrect === 0 ? (
+            {isRepeatMode && stats.incorrect === 0 ? (
+              // Repeat mode completed successfully - all correct!
+              <>
+                <Button onClick={handleFinish} className="w-full sm:w-auto">
+                  ✅ Abschließen
+                </Button>
+                <Button variant="outline" onClick={handleRestartAll} className="w-full sm:w-auto">
+                  🔄 Nochmal machen
+                </Button>
+                <Button variant="ghost" onClick={handleContinueLater} className="w-full sm:w-auto">
+                  ⏸️ Später
+                </Button>
+              </>
+            ) : isRepeatMode && stats.incorrect > 0 ? (
+              // Repeat mode but still some incorrect - ask to repeat again
+              <>
+                <Button onClick={handleRepeatIncorrect} className="w-full sm:w-auto">
+                  🔄 Ja, nochmal wiederholen
+                </Button>
+                <Button variant="outline" onClick={handleContinueLater} className="w-full sm:w-auto">
+                  ⏸️ Später fortsetzen
+                </Button>
+              </>
+            ) : stats.incorrect === 0 ? (
               // Alle richtig (100%)
               <>
                 <Button variant="outline" onClick={handleRestartAll}>
