@@ -672,6 +672,34 @@ export async function getIncorrectQuestionsByCourse(userId: number, courseId: nu
   return courseQuestions.filter((q: any) => incorrectQuestionIds.includes(q.id));
 }
 
+// Holt alle UNBEANTWORTETEN Fragen für einen Kurs (für ersten Durchlauf)
+export async function getUnansweredQuestionsByCourse(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Hole alle Fragen des Kurses
+  const courseQuestions = await getQuestionsByCourse(courseId);
+  const questionIds = courseQuestions.map((q: any) => q.id);
+  
+  if (questionIds.length === 0) {
+    return [];
+  }
+  
+  // Hole alle beantworteten Fragen (egal ob richtig oder falsch)
+  const answeredProgress = await db
+    .select({ questionId: questionProgress.questionId })
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      inArray(questionProgress.questionId, questionIds)
+    ));
+  
+  const answeredQuestionIds = answeredProgress.map((p: any) => p.questionId);
+  
+  // Filtere nur die UNBEANTWORTETEN Fragen (keine in questionProgress)
+  return courseQuestions.filter((q: any) => !answeredQuestionIds.includes(q.id));
+}
+
 // ============================================
 // EXAM COMPLETIONS
 // ============================================

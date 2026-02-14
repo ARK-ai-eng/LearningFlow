@@ -1050,3 +1050,15 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] courseId-Bug gefixed (alle Fragen haben jetzt courseId)
 - [ ] Login-System debuggen (schlägt fehl trotz korrekter Passwort-Hashes)
 - [ ] Kurs-Wiederholungs-Feature implementieren (lastCompletedAt + Reset-Button)
+
+## ✅ GELÖST: QuizView-Bug (15.02.2026)
+
+- [x] QuizView-Bug: "Keine Fragen verfügbar" obwohl 12 Fragen existieren
+  - **Problem:** QuizView verwendete `getIncorrectQuestionsByCourse` (nur falsche Fragen)
+  - **Für neuen User:** 0 falsche Fragen = "Keine Fragen verfügbar"
+  - **Lösung:** Neue API `getUnansweredQuestionsByCourse` erstellt (alle unbeantworteten Fragen)
+  - **Änderungen:**
+    - Backend: `getUnansweredQuestionsByCourse()` Funktion in db.ts (Zeile 675-701)
+    - Backend: API-Endpoint in routers.ts (Zeile 958-963)
+    - Frontend: QuizView.tsx verwendet neue API (Zeile 35)
+  - **Ergebnis:** Neue User sehen jetzt alle 12 Fragen ✅

@@ -954,6 +954,13 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         return db.getIncorrectQuestionsByCourse(ctx.user.id, input.courseId);
       }),
+
+    // Get unanswered questions for a course (for first time)
+    getUnansweredQuestionsByCourse: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getUnansweredQuestionsByCourse(ctx.user.id, input.courseId);
+      }),
   }),
 
   // ============================================

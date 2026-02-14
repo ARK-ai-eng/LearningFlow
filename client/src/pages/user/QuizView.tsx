@@ -31,8 +31,8 @@ export default function QuizView() {
   const startQuestionId = urlParams.get('questionId') ? parseInt(urlParams.get('questionId')!) : null;
 
   const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
-  // Load only incorrect questions for repeat mode
-  const { data: questions, isLoading: questionsLoading } = trpc.question.getIncorrectQuestionsByCourse.useQuery(
+  // Load unanswered questions (first time) OR incorrect questions (repeat mode)
+  const { data: questions, isLoading: questionsLoading } = trpc.question.getUnansweredQuestionsByCourse.useQuery(
     { courseId },
     { enabled: courseId > 0 }
   );
