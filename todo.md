@@ -974,3 +974,29 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - ❌ Bug gefunden: Score fällt NICHT wenn Frage falsch beantwortet wird
   - Root Cause: Zeile 595 in db.ts - firstAttemptStatus wird nur auf 'correct' gesetzt, nie auf 'incorrect'
   - Pending: User-Klarstellung notwendig - welches Verhalten ist korrekt?
+
+- [ ] BUG: Wiederholungs-Modus zeigt ALLE Fragen statt nur falsch beantwortete
+  - Root Cause: QuizView lädt alle Fragen mit `question.listByCourse` statt nur falsche mit `question.getIncorrectQuestions`
+  - Fix: QuizView soll nur Fragen mit `firstAttemptStatus = 'incorrect'` laden
+
+
+## Sprint 11 - Wiederholungs-Modus & TypeScript Bugfixes (14.02.2026)
+
+- [x] BUG: Wiederholungs-Modus zeigt ALLE Fragen statt nur falsche
+  - Root Cause 1: QuizView.tsx verwendete `listByCourse` statt `getIncorrectQuestionsByCourse`
+  - Root Cause 2: Alte DB-Daten hatten `firstAttemptStatus != status` (vor Migration)
+  - Fix 1: Neuer Backend-Endpoint `getIncorrectQuestionsByCourse` erstellt
+  - Fix 2: QuizView.tsx verwendet jetzt `getIncorrectQuestionsByCourse`
+  - Fix 3: DB-Migration: `UPDATE question_progress SET firstAttemptStatus = status`
+  - Ergebnis: Wiederholungs-Modus zeigt nur falsch beantwortete Fragen
+
+- [x] Fix: TypeScript-Fehler beheben (76 Fehler → 0 Fehler)
+  - Root Cause: Implizite 'any' Typen in routers.ts, db.ts, Frontend-Dateien
+  - Fix: Explizite Typen hinzugefügt (u: any, cert: any, etc.)
+  - Ergebnis: 76 → 0 TypeScript-Fehler
+
+- [x] TEST: Wiederholungs-Modus vollständig validiert
+  - ✅ Zeigt nur falsch beantwortete Fragen (9 statt 14)
+  - ✅ Score steigt bei korrekter Wiederholung (36% → 43%)
+  - ✅ Thema-Fortschritt aktualisiert sich korrekt
+  - ✅ Seeded Shuffle funktioniert (Antworten bleiben gleich)

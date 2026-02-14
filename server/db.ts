@@ -643,6 +643,35 @@ export async function getIncorrectQuestionsByTopic(userId: number, topicId: numb
   return results.map((r: any) => r.questionId);
 }
 
+// Holt nur Fragen mit firstAttemptStatus = 'incorrect' für einen Kurs
+export async function getIncorrectQuestionsByCourse(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Hole alle Fragen des Kurses
+  const courseQuestions = await getQuestionsByCourse(courseId);
+  const questionIds = courseQuestions.map((q: any) => q.id);
+  
+  if (questionIds.length === 0) {
+    return [];
+  }
+  
+  // Hole nur Fragen mit firstAttemptStatus = 'incorrect'
+  const incorrectProgress = await db
+    .select({ questionId: questionProgress.questionId })
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      inArray(questionProgress.questionId, questionIds),
+      eq(questionProgress.firstAttemptStatus, 'incorrect')
+    ));
+  
+  const incorrectQuestionIds = incorrectProgress.map((p: any) => p.questionId);
+  
+  // Filtere nur die falschen Fragen aus allen Kurs-Fragen
+  return courseQuestions.filter((q: any) => incorrectQuestionIds.includes(q.id));
+}
+
 // ============================================
 // EXAM COMPLETIONS
 // ============================================

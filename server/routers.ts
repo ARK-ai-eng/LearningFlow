@@ -946,6 +946,13 @@ export const appRouter = router({
           topicProgress,
         };
       }),
+
+    // Get incorrect questions for a course (for repeat mode)
+    getIncorrectQuestionsByCourse: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getIncorrectQuestionsByCourse(ctx.user.id, input.courseId);
+      }),
   }),
 
   // ============================================
@@ -1013,6 +1020,7 @@ export const appRouter = router({
         // For now, return empty array (to be implemented with answer tracking)
         return [];
       }),
+
   }),
 
 

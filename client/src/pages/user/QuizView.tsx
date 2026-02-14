@@ -31,11 +31,9 @@ export default function QuizView() {
   const startQuestionId = urlParams.get('questionId') ? parseInt(urlParams.get('questionId')!) : null;
 
   const { data: course } = trpc.course.get.useQuery({ id: courseId }, { enabled: courseId > 0 });
-  const { data: questions, isLoading: questionsLoading } = trpc.question.listByCourse.useQuery(
-    { 
-      courseId,
-      isExamQuestion: false // Nur Lernfragen (keine Prüfungsfragen)
-    },
+  // Load only incorrect questions for repeat mode
+  const { data: questions, isLoading: questionsLoading } = trpc.question.getIncorrectQuestionsByCourse.useQuery(
+    { courseId },
     { enabled: courseId > 0 }
   );
   const { data: progress, isLoading: progressLoading } = trpc.question.getProgressByCourse.useQuery(
