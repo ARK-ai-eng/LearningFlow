@@ -1016,3 +1016,29 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Unten: "Gesamtanzahl: Y Fragen" (alle Fragen im Kurs) ✅
   - Vorher: "14 von 14 Fragen beantwortet" (verwirrend!)
   - Nachher: "Gesamtanzahl: 14 Fragen" (klar!)
+
+
+## 🚨 KRITISCHER VORFALL: Datenverlust durch db:push (14.02.2026)
+
+### Was ist passiert
+- [x] Schema-Änderung mit `pnpm db:push` durchgeführt
+- [x] **ALLE USER-DATEN GELÖSCHT** (38 User → 0)
+- [x] Drizzle Kit fragte "Truncate?" → "Nein" → **Daten trotzdem gelöscht**
+- [x] User manuell wiederhergestellt (3 User: SysAdmin, FirmenAdmin, User)
+
+### Dokumentation erstellt
+- [x] CRITICAL-DATABASE-MIGRATION-RULES.md (Pflichtlektüre!)
+- [x] ADR-016: Datenbank-Migrations-Vorfall
+- [x] Neue Migrations-Prozess definiert
+
+### Neue Regeln (AB SOFORT PFLICHT!)
+- [x] ❌ NIEMALS `pnpm db:push` auf Produktion
+- [x] ✅ IMMER Backup vor Schema-Änderung
+- [x] ✅ NUR manuelle SQL-Migrations (ALTER TABLE)
+- [x] ✅ Migrations-Checkliste verwenden
+
+### Offene Aufgaben
+- [ ] Automatisches Backup-Script einrichten (täglich)
+- [ ] Staging-Datenbank aufsetzen
+- [ ] Monitoring für Daten-Counts
+- [ ] Backup-Restore-Prozess testen

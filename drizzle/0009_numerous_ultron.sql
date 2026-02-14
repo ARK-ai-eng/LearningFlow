@@ -1,0 +1,1 @@
+ALTER TABLE `question_progress` DROP COLUMN `lastCompletedAt`;

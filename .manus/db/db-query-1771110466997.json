@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, email, role FROM users;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, email, role FROM users;",
+  "rows": [
+    {
+      "id": "2",
+      "email": "arton.ritter@aismarterflow.de",
+      "role": "sysadmin"
+    },
+    {
+      "id": "3",
+      "email": "test@me.com",
+      "role": "companyadmin"
+    },
+    {
+      "id": "4",
+      "email": "testyou@me.com",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trole\n2\tarton.ritter@aismarterflow.de\tsysadmin\n3\ttest@me.com\tcompanyadmin\n4\ttestyou@me.com\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
