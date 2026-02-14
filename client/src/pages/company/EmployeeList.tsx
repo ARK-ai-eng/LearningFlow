@@ -35,7 +35,7 @@ export default function EmployeeList() {
     },
   });
 
-  const filteredEmployees = employees?.filter(emp => {
+  const filteredEmployees = employees?.filter((emp: any) => {
     const searchLower = search.toLowerCase();
     return (
       emp.firstName?.toLowerCase().includes(searchLower) ||
@@ -87,7 +87,7 @@ export default function EmployeeList() {
         {isLoading ? (
           <div className="glass-card p-6 animate-pulse">
             <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map(i => (
+              {[1, 2, 3, 4, 5].map((i: any) => (
                 <div key={i} className="h-16 bg-muted rounded" />
               ))}
             </div>
@@ -105,7 +105,7 @@ export default function EmployeeList() {
                 </tr>
               </thead>
               <tbody>
-                {filteredEmployees.map(emp => (
+                {filteredEmployees.map((emp: any) => (
                   <tr key={emp.id} className="border-b border-border last:border-0 hover:bg-muted/50">
                     <td className="p-4">
                       <div className="flex items-center gap-3">

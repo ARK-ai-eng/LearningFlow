@@ -58,7 +58,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {companies?.reduce((acc, c) => acc + 0, 0) || 0}
+                  {companies?.reduce((acc: any, c: any) => acc + 0, 0) || 0}
                 </p>
                 <p className="text-sm text-muted-foreground">Benutzer gesamt</p>
               </div>
@@ -141,14 +141,14 @@ export default function AdminDashboard() {
           {companiesLoading ? (
             <div className="glass-card p-6 animate-pulse">
               <div className="space-y-4">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3].map((i: any) => (
                   <div key={i} className="h-16 bg-muted rounded" />
                 ))}
               </div>
             </div>
           ) : companies && companies.length > 0 ? (
             <div className="glass-card divide-y divide-border">
-              {companies.slice(0, 5).map(company => (
+              {companies.slice(0, 5).map((company: any) => (
                 <div 
                   key={company.id} 
                   className="p-4 flex items-center justify-between hover:bg-muted/50 cursor-pointer"
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
           
           {coursesLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i: any) => (
                 <div key={i} className="glass-card p-6 animate-pulse">
                   <div className="h-6 w-3/4 bg-muted rounded mb-2" />
                   <div className="h-4 w-1/2 bg-muted rounded" />
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
             </div>
           ) : courses && courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {courses.slice(0, 3).map(course => (
+              {courses.slice(0, 3).map((course: any) => (
                 <div 
                   key={course.id} 
                   className="course-card cursor-pointer"

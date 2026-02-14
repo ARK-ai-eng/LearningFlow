@@ -22,14 +22,14 @@ export default function CompanyDashboard() {
   const { data: progress } = trpc.progress.my.useQuery();
   const { data: certificates } = trpc.certificate.my.useQuery();
 
-  const activeEmployees = employees?.filter(e => e.role === 'user') || [];
+  const activeEmployees = employees?.filter((e: any) => e.role === 'user') || [];
   const completedCount = 0; // TODO: Calculate from progress
 
   // Kurs-Hilfsfunktionen
   const getCourseProgress = (courseId: number) => {
     if (!progress) return 0;
-    const courseProgress = progress.filter(p => p.courseId === courseId);
-    const completed = courseProgress.filter(p => p.status === 'completed').length;
+    const courseProgress = progress.filter((p: any) => p.courseId === courseId);
+    const completed = courseProgress.filter((p: any) => p.status === 'completed').length;
     return courseProgress.length > 0 ? Math.round((completed / courseProgress.length) * 100) : 0;
   };
 
@@ -192,7 +192,7 @@ export default function CompanyDashboard() {
           <div>
             <h2 className="text-xl font-semibold mb-4">Ausstehende Einladungen</h2>
             <div className="glass-card divide-y divide-border">
-              {pendingInvitations.map(inv => (
+              {pendingInvitations.map((inv: any) => (
                 <div key={inv.id} className="p-4 flex items-center justify-between">
                   <div>
                     <p className="font-medium">
@@ -219,7 +219,7 @@ export default function CompanyDashboard() {
           <h2 className="text-xl font-semibold mb-4">Meine Schulungen</h2>
           {coursesLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i: any) => (
                 <div key={i} className="course-card animate-pulse">
                   <div className="h-14 w-14 rounded-2xl bg-muted mb-6" />
                   <div className="h-4 w-20 bg-muted rounded mb-4" />
@@ -231,7 +231,7 @@ export default function CompanyDashboard() {
             </div>
           ) : courses && courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map(course => {
+              {courses.map((course: any) => {
                 const progressPercent = getCourseProgress(course.id);
                 return (
                   <div key={course.id} className="course-card">
@@ -292,7 +292,7 @@ export default function CompanyDashboard() {
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {certificates.slice(0, 3).map(cert => (
+              {certificates.slice(0, 3).map((cert: any) => (
                 <div key={cert.id} className="glass-card p-4 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                     <Award className="w-6 h-6 text-emerald-400" />

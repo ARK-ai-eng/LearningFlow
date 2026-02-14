@@ -55,7 +55,7 @@ export default function QuizView() {
   const questionsWithShuffledAnswers = useMemo(() => {
     if (!questions) return [];
     
-    return questions.map(q => {
+    return questions.map((q: any) => {
       const options: ShuffledOption[] = [
         { label: 'A', text: q.optionA },
         { label: 'B', text: q.optionB },
@@ -80,10 +80,10 @@ export default function QuizView() {
   // Merge shuffled questions with progress status
   // This updates status without triggering shuffle
   const questionsWithStatus = useMemo(() => {
-    if (!progress) return questionsWithShuffledAnswers.sort((a, b) => a.id - b.id);
+    if (!progress) return questionsWithShuffledAnswers.sort((a: any, b: any) => a.id - b.id);
     
-    const withStatus = questionsWithShuffledAnswers.map(q => {
-      const p = progress.find(pr => pr.questionId === q.id);
+    const withStatus = questionsWithShuffledAnswers.map((q: any) => {
+      const p = progress.find((pr: any) => pr.questionId === q.id);
       return {
         ...q,
         status: p?.status || 'unanswered' as 'correct' | 'incorrect' | 'unanswered',
@@ -93,7 +93,7 @@ export default function QuizView() {
       };
     });
     // Sort by ID for consistent order
-    return withStatus.sort((a, b) => a.id - b.id);
+    return withStatus.sort((a: any, b: any) => a.id - b.id);
   }, [questionsWithShuffledAnswers, progress]);
 
   // Current question index
@@ -102,7 +102,7 @@ export default function QuizView() {
   // Set initial question index from URL parameter
   useEffect(() => {
     if (startQuestionId && questionsWithStatus.length > 0) {
-      const index = questionsWithStatus.findIndex(q => q.id === startQuestionId);
+      const index = questionsWithStatus.findIndex((q: any) => q.id === startQuestionId);
       if (index !== -1) {
         setCurrentQuestionIndex(index);
       }
@@ -120,12 +120,12 @@ export default function QuizView() {
       // Repeat mode: show incorrect questions + current question (even if just answered correctly)
       // This prevents the list from changing while user is still viewing feedback
       // WICHTIG: Filter auf firstAttemptStatus, nicht status! (ADR-013)
-      const incorrectQuestions = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect');
+      const incorrectQuestions = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'incorrect');
       const currentQ = questionsWithStatus[currentQuestionIndex];
       
       // If current question is not in incorrect list (was just answered correctly),
       // keep it in the list until user clicks "Nächste Frage"
-      if (currentQ && !incorrectQuestions.find(q => q.id === currentQ.id)) {
+      if (currentQ && !incorrectQuestions.find((q: any) => q.id === currentQ.id)) {
         // Insert current question at its original position
         const result = [...incorrectQuestions];
         // Find where to insert based on ID order
@@ -156,9 +156,9 @@ export default function QuizView() {
   // WICHTIG: Stats basieren auf firstAttemptStatus, nicht status! (ADR-013)
   const stats = useMemo(() => {
     const total = questionsWithStatus.length;
-    const answered = questionsWithStatus.filter(q => q.firstAttemptStatus !== 'unanswered').length;
-    const correct = questionsWithStatus.filter(q => q.firstAttemptStatus === 'correct').length;
-    const incorrect = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
+    const answered = questionsWithStatus.filter((q: any) => q.firstAttemptStatus !== 'unanswered').length;
+    const correct = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'correct').length;
+    const incorrect = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'incorrect').length;
     
     return {
       total,
@@ -202,7 +202,7 @@ export default function QuizView() {
       if (isRepeatMode) {
         // Refresh stats to check current state
         // WICHTIG: Filter auf firstAttemptStatus! (ADR-013)
-        const currentIncorrect = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
+        const currentIncorrect = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'incorrect').length;
         
         // Show dialog immediately (before invalidate clears currentQuestion)
         setShowRepeatDialog(true);
@@ -232,7 +232,7 @@ export default function QuizView() {
     
     // Store initial count of incorrect questions for stable display
     // WICHTIG: Filter auf firstAttemptStatus! (ADR-013)
-    const incorrectCount = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
+    const incorrectCount = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'incorrect').length;
     setInitialRepeatCount(incorrectCount);
     
     // Enter repeat mode: filter to show only incorrect questions
@@ -346,7 +346,7 @@ export default function QuizView() {
 
           {/* Answers */}
           <div className="space-y-4">
-            {currentQuestion.shuffledOptions.map((option, idx) => {
+            {currentQuestion.shuffledOptions.map((option: any, idx: any) => {
               const displayLabel = ['A', 'B', 'C', 'D'][idx];
               const isSelected = selectedAnswer === displayLabel;
               const isCorrectOption = currentQuestion.correctAnswer === displayLabel;

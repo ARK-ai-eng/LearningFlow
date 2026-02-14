@@ -104,7 +104,7 @@ export default function CourseList() {
         {/* Course List */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i: any) => (
               <div key={i} className="glass-card p-6 animate-pulse">
                 <div className="h-6 w-20 bg-muted rounded mb-4" />
                 <div className="h-6 w-3/4 bg-muted rounded mb-2" />
@@ -114,7 +114,7 @@ export default function CourseList() {
           </div>
         ) : courses && courses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map(course => (
+            {courses.map((course: any) => (
               <div 
                 key={course.id} 
                 className={`course-card relative group ${!course.isActive ? 'opacity-50' : ''}`}

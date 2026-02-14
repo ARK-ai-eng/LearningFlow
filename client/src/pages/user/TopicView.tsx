@@ -44,7 +44,7 @@ export default function TopicView() {
     { enabled: tId > 0 }
   );
 
-  const topic = course?.topics?.find(t => t.id === tId);
+  const topic = course?.topics?.find((t: any) => t.id === tId);
   const isLoading = questionsLoading || progressLoading;
   const utils = trpc.useUtils();
 
@@ -52,8 +52,8 @@ export default function TopicView() {
   const questionsWithStatus = useMemo(() => {
     if (!questions || !progress) return [];
     
-    const withStatus = questions.map(q => {
-      const p = progress.find(pr => pr.questionId === q.id);
+    const withStatus = questions.map((q: any) => {
+      const p = progress.find((pr: any) => pr.questionId === q.id);
       return {
         ...q,
         status: p?.status || 'unanswered' as 'correct' | 'incorrect' | 'unanswered',
@@ -63,12 +63,12 @@ export default function TopicView() {
       };
     });
     // Sort by ID for consistent order
-    return withStatus.sort((a, b) => a.id - b.id);
+    return withStatus.sort((a: any, b: any) => a.id - b.id);
   }, [questions, progress]);
 
   // Shuffle answers for each question (memoized per question)
   const questionsWithShuffledAnswers = useMemo(() => {
-    return questionsWithStatus.map(q => {
+    return questionsWithStatus.map((q: any) => {
       const options: ShuffledOption[] = [
         { label: 'A', text: q.optionA },
         { label: 'B', text: q.optionB },
@@ -96,7 +96,7 @@ export default function TopicView() {
   // Set initial question index from URL parameter
   useEffect(() => {
     if (startQuestionId && questionsWithShuffledAnswers.length > 0) {
-      const index = questionsWithShuffledAnswers.findIndex(q => q.id === startQuestionId);
+      const index = questionsWithShuffledAnswers.findIndex((q: any) => q.id === startQuestionId);
       if (index !== -1) {
         setCurrentQuestionIndex(index);
       }
@@ -113,9 +113,9 @@ export default function TopicView() {
   // WICHTIG: Stats basieren auf firstAttemptStatus, nicht status! (ADR-013)
   const stats = useMemo(() => {
     const total = questionsWithStatus.length;
-    const answered = questionsWithStatus.filter(q => q.firstAttemptStatus !== 'unanswered').length;
-    const correct = questionsWithStatus.filter(q => q.firstAttemptStatus === 'correct').length;
-    const incorrect = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
+    const answered = questionsWithStatus.filter((q: any) => q.firstAttemptStatus !== 'unanswered').length;
+    const correct = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'correct').length;
+    const incorrect = questionsWithStatus.filter((q: any) => q.firstAttemptStatus === 'incorrect').length;
     
     return {
       total,
@@ -146,6 +146,7 @@ export default function TopicView() {
     submitMutation.mutate({
       questionId: currentQuestion.id,
       topicId: tId,
+      courseId: cId,
       isCorrect: answer === currentQuestion.correctAnswer,
     });
   };
@@ -170,7 +171,7 @@ export default function TopicView() {
   const handleRepeatIncorrect = () => {
     // Reset to first incorrect question
     const firstIncorrectIndex = questionsWithShuffledAnswers.findIndex(
-      q => q.status === 'incorrect'
+      (q: any) => q.status === 'incorrect'
     );
     if (firstIncorrectIndex !== -1) {
       setCurrentQuestionIndex(firstIncorrectIndex);
@@ -251,7 +252,7 @@ export default function TopicView() {
 
           {/* Answers */}
           <div className="space-y-4">
-            {currentQuestion.shuffledOptions.map((option, idx) => {
+            {currentQuestion.shuffledOptions.map((option: any, idx: any) => {
               const displayLabel = ['A', 'B', 'C', 'D'][idx];
               const isSelected = selectedAnswer === displayLabel;
               const isCorrectOption = currentQuestion.correctAnswer === displayLabel;

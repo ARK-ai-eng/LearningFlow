@@ -203,7 +203,7 @@ export default function CompanyEdit() {
 
           {admins && admins.length > 0 ? (
             <div className="divide-y divide-border">
-              {admins.map(admin => (
+              {admins.map((admin: any) => (
                 <div key={admin.id} className="py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -239,7 +239,7 @@ export default function CompanyEdit() {
 
           {employees && employees.length > 0 ? (
             <div className="divide-y divide-border max-h-96 overflow-auto">
-              {employees.map(emp => (
+              {employees.map((emp: any) => (
                 <div key={emp.id} className="py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">

@@ -35,7 +35,7 @@ export default function CompanyList() {
     },
   });
 
-  const filteredCompanies = companies?.filter(c => 
+  const filteredCompanies = companies?.filter((c: any) => 
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -81,14 +81,14 @@ export default function CompanyList() {
         {isLoading ? (
           <div className="glass-card p-6 animate-pulse">
             <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map(i => (
+              {[1, 2, 3, 4, 5].map((i: any) => (
                 <div key={i} className="h-20 bg-muted rounded" />
               ))}
             </div>
           </div>
         ) : filteredCompanies && filteredCompanies.length > 0 ? (
           <div className="glass-card divide-y divide-border">
-            {filteredCompanies.map(company => (
+            {filteredCompanies.map((company: any) => (
               <div 
                 key={company.id} 
                 className="p-4 flex items-center justify-between hover:bg-muted/50"

@@ -523,7 +523,7 @@ export async function getQuestionProgressByCourse(userId: number, courseId: numb
   
   // Hole alle Fragen des Kurses
   const courseQuestions = await getQuestionsByCourse(courseId);
-  const questionIds = courseQuestions.map(q => q.id);
+  const questionIds = courseQuestions.map((q: any) => q.id);
   
   if (questionIds.length === 0) {
     return [];
@@ -546,7 +546,7 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
   
   // Hole alle Fragen des Kurses
   const courseQuestions = await getQuestionsByCourse(courseId);
-  const questionIds = courseQuestions.map(q => q.id);
+  const questionIds = courseQuestions.map((q: any) => q.id);
   
   if (questionIds.length === 0) {
     return;
@@ -640,7 +640,7 @@ export async function getIncorrectQuestionsByTopic(userId: number, topicId: numb
       eq(questionProgress.firstAttemptStatus, 'incorrect')
     ));
   
-  return results.map(r => r.questionId);
+  return results.map((r: any) => r.questionId);
 }
 
 // ============================================
@@ -709,14 +709,14 @@ export async function getRandomUnansweredQuestion(userId: number, courseId: numb
     .from(questionProgress)
     .where(eq(questionProgress.userId, userId));
 
-  const answeredIds = new Set(answeredProgress.map(p => p.questionId));
+  const answeredIds = new Set(answeredProgress.map((p: any) => p.questionId));
 
   // Filter unanswered questions
-  const unansweredQuestions = allQuestions.filter(q => !answeredIds.has(q.id));
+  const unansweredQuestions = allQuestions.filter((q: any) => !answeredIds.has(q.id));
 
   if (unansweredQuestions.length === 0) return null;
 
   // Return first unanswered question (sorted by ID for consistent order)
-  const sortedUnanswered = unansweredQuestions.sort((a, b) => a.id - b.id);
+  const sortedUnanswered = unansweredQuestions.sort((a: any, b: any) => a.id - b.id);
   return sortedUnanswered[0];
 }

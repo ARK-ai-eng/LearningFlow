@@ -56,7 +56,7 @@ export default function ExamView() {
     const selected = shuffled.slice(0, Math.min(20, shuffled.length));
     
     // Shuffle options for each question using questionId as seed
-    return selected.map(q => ({
+    return selected.map((q: any) => ({
       ...q,
       shuffledOptions: seededShuffleArray([
         { label: 'A', text: q.optionA },
@@ -137,7 +137,7 @@ export default function ExamView() {
   const calculateAndShowResults = () => {
     setTimerActive(false);
     
-    const correctCount = Object.values(examAnswers).filter(a => a.correct).length;
+    const correctCount = Object.values(examAnswers).filter((a: any) => a.correct).length;
     const totalQuestions = examQuestions.length;
     const score = Math.round((correctCount / totalQuestions) * 100);
     const passed = score >= 80;
@@ -243,7 +243,7 @@ export default function ExamView() {
 
           {/* Answers */}
           <div className="space-y-4">
-            {currentQuestion.shuffledOptions.map((option) => {
+            {currentQuestion.shuffledOptions.map((option: any) => {
               const displayLabel = option.label;
               const isSelected = selectedAnswer === displayLabel;
               const isCorrectOption = currentQuestion.correctAnswer === displayLabel;

@@ -18,8 +18,8 @@ export default function UserDashboard() {
     if (!progress) return 0;
     
     // Zähle completed Topics aus user_progress (nur Topics mit topicId !== null)
-    const courseProgress = progress.filter(p => p.courseId === courseId && p.topicId !== null);
-    const completedTopics = courseProgress.filter(p => p.status === 'completed').length;
+    const courseProgress = progress.filter((p: any) => p.courseId === courseId && p.topicId !== null);
+    const completedTopics = courseProgress.filter((p: any) => p.status === 'completed').length;
     
     // Wenn keine Topics in user_progress, dann 0%
     if (courseProgress.length === 0) return 0;
@@ -98,7 +98,7 @@ export default function UserDashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {progress?.filter(p => p.status === 'in_progress').length || 0}
+                  {progress?.filter((p: any) => p.status === 'in_progress').length || 0}
                 </p>
                 <p className="text-sm text-muted-foreground">In Bearbeitung</p>
               </div>
@@ -122,7 +122,7 @@ export default function UserDashboard() {
           <h2 className="text-xl font-semibold mb-4">Ihre Kurse</h2>
           {coursesLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i: any) => (
                 <div key={i} className="course-card animate-pulse">
                   <div className="h-14 w-14 rounded-2xl bg-muted mb-6" />
                   <div className="h-4 w-20 bg-muted rounded mb-4" />
@@ -134,7 +134,7 @@ export default function UserDashboard() {
             </div>
           ) : courses && courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map(course => {
+              {courses.map((course: any) => {
                 const progressPercent = getCourseProgress(course.id);
                 return (
                   <div key={course.id} className="course-card">
@@ -195,7 +195,7 @@ export default function UserDashboard() {
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {certificates.slice(0, 3).map(cert => (
+              {certificates.slice(0, 3).map((cert: any) => (
                 <div key={cert.id} className="glass-card p-4 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                     <Award className="w-6 h-6 text-emerald-400" />

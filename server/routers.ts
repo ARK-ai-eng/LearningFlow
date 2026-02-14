@@ -313,7 +313,7 @@ export const appRouter = router({
       .input(z.object({ companyId: z.number() }))
       .query(async ({ input }) => {
         const users = await db.getUsersByCompany(input.companyId);
-        return users.filter(u => u.role === 'companyadmin');
+        return users.filter((u: any) => u.role === 'companyadmin');
       }),
   }),
 
@@ -329,14 +329,14 @@ export const appRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Firma zugeordnet" });
       }
       const users = await db.getUsersByCompany(ctx.user.companyId);
-      return users.filter(u => u.role === 'user');
+      return users.filter((u: any) => u.role === 'user');
     }),
 
     listByCompany: adminProcedure
       .input(z.object({ companyId: z.number() }))
       .query(async ({ input }) => {
         const users = await db.getUsersByCompany(input.companyId);
-        return users.filter(u => u.role === 'user');
+        return users.filter((u: any) => u.role === 'user');
       }),
 
     // Mitarbeiter direkt erstellen (ohne Einladung)
@@ -1024,7 +1024,7 @@ export const appRouter = router({
     my: protectedProcedure.query(async ({ ctx }) => {
       const certs = await db.getUserCertificates(ctx.user.id);
       // Kursnamen hinzufügen
-      const certsWithCourse = await Promise.all(certs.map(async (cert) => {
+      const certsWithCourse = await Promise.all(certs.map(async (cert: any) => {
         const course = await db.getCourseById(cert.courseId);
         return {
           ...cert,

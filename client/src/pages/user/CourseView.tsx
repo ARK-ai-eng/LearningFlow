@@ -29,19 +29,19 @@ export default function CourseView() {
 
   const getTopicStatus = (topicId: number) => {
     if (!progress) return 'not_started';
-    const topicProgress = progress.find(p => p.topicId === topicId);
+    const topicProgress = progress.find((p: any) => p.topicId === topicId);
     return topicProgress?.status || 'not_started';
   };
 
   const getTopicProgressPercentage = (topicId: number) => {
     if (!courseProgress?.topicProgress) return 0;
-    const topicProg = courseProgress.topicProgress.find(t => t.topicId === topicId);
+    const topicProg = courseProgress.topicProgress.find((t: any) => t.topicId === topicId);
     return topicProg?.percentage || 0;
   };
 
   const getTopicProgressText = (topicId: number) => {
     if (!courseProgress?.topicProgress) return '0 von 0 Fragen richtig';
-    const topicProg = courseProgress.topicProgress.find(t => t.topicId === topicId);
+    const topicProg = courseProgress.topicProgress.find((t: any) => t.topicId === topicId);
     if (!topicProg) return '0 von 0 Fragen richtig';
     return `${topicProg.correct} von ${topicProg.total} Fragen richtig`;
   };
@@ -53,7 +53,7 @@ export default function CourseView() {
           <div className="h-8 w-48 bg-muted rounded" />
           <div className="h-4 w-96 bg-muted rounded" />
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i: any) => (
               <div key={i} className="h-20 bg-muted rounded-lg" />
             ))}
           </div>
@@ -75,7 +75,7 @@ export default function CourseView() {
     );
   }
 
-  const completedTopics = course.topics?.filter(t => getTopicStatus(t.id) === 'completed').length || 0;
+  const completedTopics = course.topics?.filter((t: any) => getTopicStatus(t.id) === 'completed').length || 0;
   const totalTopics = course.topics?.length || 0;
   // WICHTIG: Fortschritt basiert auf korrekten Fragen, nicht abgeschlossenen Themen! (Option B)
   const progressPercent = courseProgress?.percentage || 0;
@@ -183,7 +183,7 @@ export default function CourseView() {
           <h2 className="text-xl font-semibold mb-4">Themen in diesem Kurs</h2>
           <div className="space-y-3">
             {course.topics && course.topics.length > 0 ? (
-              course.topics.map((topic, index) => {
+              course.topics.map((topic: any, index: any) => {
                 const percentage = getTopicProgressPercentage(topic.id);
                 return (
                   <div 

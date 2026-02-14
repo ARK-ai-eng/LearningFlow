@@ -1,0 +1,16 @@
+{
+  "query": "SELECT qp.questionId, qp.firstAttemptStatus, qp.lastAttemptCorrect, q.questionText\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.questionText LIKE '%Anhang%gefährlich%'\nLIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT qp.questionId, qp.firstAttemptStatus, qp.lastAttemptCorrect, q.questionText\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.questionText LIKE '%Anhang%gefährlich%'\nLIMIT 1;",
+  "rows": [
+    {
+      "questionId": "30003",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "questionText": "Welcher Anhang ist besonders gefährlich?"
+    }
+  ],
+  "messages": [],
+  "stdout": "questionId\tfirstAttemptStatus\tlastAttemptCorrect\tquestionText\n30003\tcorrect\t0\tWelcher Anhang ist besonders gefährlich?\n",
+  "stderr": "",
+  "execution_time_ms": 77
+}

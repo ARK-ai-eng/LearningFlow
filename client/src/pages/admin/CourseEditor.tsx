@@ -272,7 +272,7 @@ export default function CourseEditor() {
 
             {/* Topics List */}
             <div className="space-y-3">
-              {course?.topics?.map((topic, idx) => (
+              {course?.topics?.map((topic: any, idx: any) => (
                 <TopicItem
                   key={topic.id}
                   topic={topic}
@@ -342,7 +342,7 @@ function TopicItem({
   );
 
   // Filter questions based on selected filter
-  const filteredQuestions = questions?.filter(q => {
+  const filteredQuestions = questions?.filter((q: any) => {
     if (filter === 'all') return true;
     if (filter === 'learning') return !q.isExamQuestion;
     if (filter === 'exam') return q.isExamQuestion;
@@ -424,7 +424,7 @@ function TopicItem({
             </Button>
           </div>
 
-          {filteredQuestions?.map((q, qIdx) => (
+          {filteredQuestions?.map((q: any, qIdx: any) => (
             <div key={q.id} className="p-3 rounded-lg bg-muted/50 flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
@@ -504,7 +504,7 @@ function QuestionEditor({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {(['A', 'B', 'C', 'D'] as const).map(opt => (
+            {(['A', 'B', 'C', 'D'] as const).map((opt: any) => (
               <div key={opt} className="space-y-2">
                 <Label>Option {opt} *</Label>
                 <Input
