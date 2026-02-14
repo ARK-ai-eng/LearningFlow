@@ -66,6 +66,8 @@ export default function TopicView() {
       return {
         ...q,
         status: p?.status || 'unanswered' as 'correct' | 'incorrect' | 'unanswered',
+        firstAttemptStatus: p?.firstAttemptStatus || 'unanswered' as 'correct' | 'incorrect' | 'unanswered',
+        lastAttemptCorrect: p?.lastAttemptCorrect,
         attemptCount: p?.attemptCount || 0,
       };
     });

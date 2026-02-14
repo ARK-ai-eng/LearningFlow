@@ -806,3 +806,21 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - ADR-013 sagt: "Erste Antwort zählt bei Wiederholung"
 - Implementierung jetzt compliant: `firstAttemptStatus` wird NIEMALS überschrieben!
 - ✅ Gefixt
+
+## KRITISCH - Dialog "Fehlerhafte Fragen wiederholen?" erscheint nicht (14.02.2026) ✅ GEFIXT
+
+### Problem
+- User beendet Course 2 Quiz mit einigen falschen Antworten
+- Erwartung: Dialog "Fehlerhafte Fragen wiederholen?" erscheint
+- Realität: Kein Dialog, User wird direkt zurück zu CourseView navigiert
+
+### Root Cause
+- [x] questionsWithStatus mappte firstAttemptStatus und lastAttemptCorrect NICHT vom Backend-Response
+- [x] Deshalb war q.firstAttemptStatus undefined
+- [x] Deshalb war stats.incorrect = 0 (Filter fand nichts)
+- [x] Deshalb erschien kein Dialog
+
+### Lösung
+- [x] QuizView.tsx: Mappe firstAttemptStatus und lastAttemptCorrect in questionsWithStatus
+- [x] TopicView.tsx: Gleicher Fix
+- [x] Dialog erscheint jetzt korrekt
