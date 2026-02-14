@@ -1,0 +1,190 @@
+{
+  "query": "SELECT id, userId, questionId, status, firstAttemptStatus, lastAttemptCorrect, attemptCount FROM question_progress ORDER BY updatedAt DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, userId, questionId, status, firstAttemptStatus, lastAttemptCorrect, attemptCount FROM question_progress ORDER BY updatedAt DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "300020",
+      "userId": "180002",
+      "questionId": "240002",
+      "status": "incorrect",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "16"
+    },
+    {
+      "id": "300019",
+      "userId": "180002",
+      "questionId": "240001",
+      "status": "incorrect",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "13"
+    },
+    {
+      "id": "300018",
+      "userId": "180002",
+      "questionId": "60012",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "16"
+    },
+    {
+      "id": "300017",
+      "userId": "180002",
+      "questionId": "60011",
+      "status": "incorrect",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "13"
+    },
+    {
+      "id": "300016",
+      "userId": "180002",
+      "questionId": "60010",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "13"
+    },
+    {
+      "id": "300015",
+      "userId": "180002",
+      "questionId": "60009",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15"
+    },
+    {
+      "id": "300014",
+      "userId": "180002",
+      "questionId": "60008",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15"
+    },
+    {
+      "id": "300013",
+      "userId": "180002",
+      "questionId": "60006",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "16"
+    },
+    {
+      "id": "300012",
+      "userId": "180002",
+      "questionId": "60005",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "14"
+    },
+    {
+      "id": "300011",
+      "userId": "180002",
+      "questionId": "60004",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "14"
+    },
+    {
+      "id": "300010",
+      "userId": "180002",
+      "questionId": "60003",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15"
+    },
+    {
+      "id": "300009",
+      "userId": "180002",
+      "questionId": "60002",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "17"
+    },
+    {
+      "id": "300008",
+      "userId": "180002",
+      "questionId": "60001",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "24"
+    },
+    {
+      "id": "30001",
+      "userId": "240001",
+      "questionId": "150001",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "3"
+    },
+    {
+      "id": "30002",
+      "userId": "240001",
+      "questionId": "150002",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "1"
+    },
+    {
+      "id": "30010",
+      "userId": "240003",
+      "questionId": "150010",
+      "status": "incorrect",
+      "firstAttemptStatus": "incorrect",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "1"
+    },
+    {
+      "id": "4",
+      "userId": "210001",
+      "questionId": "120004",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "2"
+    },
+    {
+      "id": "30012",
+      "userId": "240003",
+      "questionId": "150012",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "1"
+    },
+    {
+      "id": "30009",
+      "userId": "240003",
+      "questionId": "150009",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "1"
+    },
+    {
+      "id": "30011",
+      "userId": "240003",
+      "questionId": "150011",
+      "status": "correct",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tquestionId\tstatus\tfirstAttemptStatus\tlastAttemptCorrect\tattemptCount\n300020\t180002\t240002\tincorrect\tcorrect\t0\t16\n300019\t180002\t240001\tincorrect\tcorrect\t0\t13\n300018\t180002\t60012\tcorrect\tcorrect\t1\t16\n300017\t180002\t60011\tincorrect\tcorrect\t0\t13\n300016\t180002\t60010\tcorrect\tcorrect\t1\t13\n300015\t180002\t60009\tcorrect\tcorrect\t1\t15\n300014\t180002\t60008\tcorrect\tcorrect\t1\t15\n300013\t180002\t60006\tcorrect\tcorrect\t1\t16\n300012\t180002\t60005\tcorrect\tcorrect\t1\t14\n300011\t180002\t60004\tcorrect\tcorrect\t1\t14\n300010\t180002\t60003\tcorrect\tcorrect\t1\t15\n300009\t180002\t60002\tcorrect\tcorrect\t1\t17\n300008\t180002\t60001\tcorrect\tcorrect\t1\t24\n30001\t240001\t150001\tcorrect\tcorrect\t1\t3\n30002\t240001\t150002\tcorrect\tcorrect\t1\t1\n30010\t240003\t150010\tincorrect\tincorrect\t0\t1\n4\t210001\t120004\tcorrect\tcorrect\t1\t2\n30012\t240003\t150012\tcorrect\tcorrect\t1\t1\n30009\t240003\t150009\tcorrect\tcorrect\t1\t1\n30011\t240003\t150011\tcorrect\tcorrect\t1\t2\n",
+  "stderr": "",
+  "execution_time_ms": 120
+}

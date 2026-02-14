@@ -842,3 +842,27 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Backend-Logik: firstAttemptStatus wird auf 'correct' gesetzt wenn Wiederholungs-Antwort korrekt
 - [x] Regel: Score steigt NUR wenn Antwort korrekt ist (egal ob erste oder Wiederholung)
 - [x] Wenn User bei Wiederholung wieder falsch → firstAttemptStatus bleibt 'incorrect'
+
+## KRITISCH - Dialog "Fehlerhafte Fragen wiederholen?" erscheint NICHT (14.02.2026 - REGRESSION!)
+
+### Problem
+- User beendet Quiz mit einigen falschen Antworten
+- Erwartung: Dialog "Fehlerhafte Fragen wiederholen?" erscheint
+- Realität: Kein Dialog, direkt zurück zu CourseView
+
+### Regression nach letztem Fix
+- Vorher: Dialog erschien nicht weil `firstAttemptStatus` nicht gemappt wurde → GEFIXT
+- Jetzt: Dialog erscheint wieder nicht nach Änderung der `firstAttemptStatus` Update-Logik
+- Vermutung: Frontend-Filter findet keine fehlerhaften Fragen mehr
+
+### Root Cause
+- [x] Race Condition: `invalidate()` wurde in `handleNextQuestion` aufgerufen, NACH Dialog-Check
+- [x] `stats.incorrect` basierte auf ALTEN Daten (vor `submitAnswer`)
+- [x] User klickt "Nächste Frage" → Dialog-Check mit alten Daten → `stats.incorrect` = 0 → kein Dialog
+- [x] Dann `invalidate()` → zu spät, User schon zurück zu CourseView
+
+### Lösung
+- [x] `invalidate()` in `submitMutation.onSuccess` statt in `handleNextQuestion`
+- [x] Dadurch werden Daten SOFORT nach Submit aktualisiert
+- [x] Dialog-Check hat jetzt FRISCHE Daten mit korrektem `stats.incorrect`
+- [ ] Teste im Browser

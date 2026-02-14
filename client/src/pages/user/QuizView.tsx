@@ -179,6 +179,8 @@ export default function QuizView() {
   const submitMutation = trpc.question.submitAnswer.useMutation({
     onSuccess: () => {
       toast.success('Antwort gespeichert');
+      // Invalidate progress IMMEDIATELY after submit to ensure fresh data for dialog check
+      utils.question.getProgressByCourse.invalidate({ courseId });
     },
     onError: (error) => {
       toast.error(`Fehler: ${error.message}`);
@@ -227,9 +229,8 @@ export default function QuizView() {
       setHasAnswered(false);
     }
     
-    // Invalidate AFTER dialog logic to prevent race condition
-    // This ensures dialog is shown before currentQuestion becomes undefined
-    utils.question.getProgressByCourse.invalidate({ courseId });
+    // Invalidate is now done in submitMutation.onSuccess to ensure fresh data
+    // No need to invalidate here anymore
   };
 
   const handleRepeatIncorrect = () => {
