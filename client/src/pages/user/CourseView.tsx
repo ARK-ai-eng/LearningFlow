@@ -173,7 +173,7 @@ export default function CourseView() {
           )}
           {courseProgress && courseProgress.answered > 0 && (
             <p className="text-sm text-muted-foreground mt-4">
-              {courseProgress.answered} von {courseProgress.total} Fragen beantwortet
+              Gesamtanzahl: {courseProgress.total} Fragen
             </p>
           )}
         </div>

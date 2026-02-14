@@ -1010,3 +1010,9 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Root Cause: CourseView.tsx Zeile 145 verwendete `courseProgress.total` statt `courseProgress.incorrect`
   - Fix: `{courseProgress?.total || 0}` → `{courseProgress?.incorrect || 0}`
   - Ergebnis: “8 Fragen warten auf dich” (korrekt!)
+
+- [x] UX: CourseView Text klarstellen
+  - Oben: "X Fragen warten auf dich" (falsche Fragen) ✅
+  - Unten: "Gesamtanzahl: Y Fragen" (alle Fragen im Kurs) ✅
+  - Vorher: "14 von 14 Fragen beantwortet" (verwirrend!)
+  - Nachher: "Gesamtanzahl: 14 Fragen" (klar!)
