@@ -1000,3 +1000,13 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - ✅ Score steigt bei korrekter Wiederholung (36% → 43%)
   - ✅ Thema-Fortschritt aktualisiert sich korrekt
   - ✅ Seeded Shuffle funktioniert (Antworten bleiben gleich)
+
+
+## Sprint 11.1 - CourseView Bug (14.02.2026)
+
+- [x] BUG: CourseView zeigt "14 Fragen warten" obwohl nur 8 falsche Fragen existieren (43% Fortschritt = 6/14 korrekt)
+  - Erwartetes Verhalten: "8 Fragen warten" (nur falsche Fragen zählen)
+  - Aktuelles Verhalten: "14 Fragen warten" (alle Fragen wurden gezählt)
+  - Root Cause: CourseView.tsx Zeile 145 verwendete `courseProgress.total` statt `courseProgress.incorrect`
+  - Fix: `{courseProgress?.total || 0}` → `{courseProgress?.incorrect || 0}`
+  - Ergebnis: “8 Fragen warten auf dich” (korrekt!)
