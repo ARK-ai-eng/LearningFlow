@@ -802,7 +802,8 @@ export const appRouter = router({
         // Zähle unique Fragen (nicht Versuche!)
         const uniqueQuestions = new Set(progress.map((p: any) => p.questionId));
         const answered = uniqueQuestions.size;
-        const correct = progress.filter((p: any) => p.status === 'correct').length;
+        // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
+        const correct = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
         const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
         
         // Topic-Fortschritt berechnen
@@ -818,8 +819,9 @@ export const appRouter = router({
               topicTitle: topic.title,
               total: topicQuestions.length,
               answered: uniqueTopicQuestions.size,
-              correct: topicProg.filter((p: any) => p.status === 'correct').length,
-              percentage: topicQuestions.length > 0 ? Math.round((topicProg.filter((p: any) => p.status === 'correct').length / topicQuestions.length) * 100) : 0,
+              // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
+              correct: topicProg.filter((p: any) => p.firstAttemptStatus === 'correct').length,
+              percentage: topicQuestions.length > 0 ? Math.round((topicProg.filter((p: any) => p.firstAttemptStatus === 'correct').length / topicQuestions.length) * 100) : 0,
             };
           })
         );

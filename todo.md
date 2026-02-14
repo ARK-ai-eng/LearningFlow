@@ -866,3 +866,23 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Dadurch werden Daten SOFORT nach Submit aktualisiert
 - [x] Dialog-Check hat jetzt FRISCHE Daten mit korrektem `stats.incorrect`
 - [ ] Teste im Browser
+
+## Fortschritts-Berechnung ändern (14.02.2026)
+
+### Problem
+- CourseView zeigt 100% Fortschritt wenn alle Fragen beantwortet (egal ob richtig oder falsch)
+- User erwartet: 100% nur wenn ALLE Fragen KORREKT beantwortet
+- Aktuell: Fortschritt = "Wie viele beantwortet?" (13/13 = 100%)
+- Gewünscht: Fortschritt = "Wie viele korrekt?" (10/13 = 77%)
+
+### Anforderung (Option B)
+- Fortschritt = 100% NUR wenn ALLE Fragen korrekt beantwortet
+- Solange fehlerhafte Fragen existieren → <100%
+- Erst wenn alle Fragen korrekt → 100%
+
+### Umsetzung
+- [x] Analysiere aktuelle Fortschritts-Berechnung in CourseView.tsx
+- [x] Root Cause: `getCourseStats` in server/routers.ts verwendet `p.status === 'correct'` statt `p.firstAttemptStatus === 'correct'`
+- [x] Ändere Logik: Fortschritt basiert auf `firstAttemptStatus === 'correct'` (Zeile 806 + 823-824)
+- [x] Kommentar hinzugefügt: "WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)"
+- [ ] Teste im Browser
