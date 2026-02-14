@@ -743,11 +743,12 @@ export const appRouter = router({
       }))
       .mutation(async ({ ctx, input }) => {
         // 1. Speichere Fragen-Fortschritt
+        // WICHTIG: firstAttemptStatus wird in upsertQuestionProgress korrekt gesetzt
         await db.upsertQuestionProgress({
           userId: ctx.user.id,
           questionId: input.questionId,
           topicId: input.topicId,
-          status: input.isCorrect ? 'correct' : 'incorrect',
+          isCorrect: input.isCorrect, // Changed from 'status' to 'isCorrect'
         });
 
         // 2. Prüfe ob alle Fragen des Topics beantwortet wurden
@@ -757,8 +758,9 @@ export const appRouter = router({
         const allAnswered = topicQuestions.length > 0 && topicProgress.length === topicQuestions.length;
         
         if (allAnswered) {
-          // Berechne Score (Prozent korrekt)
-          const correctCount = topicProgress.filter(p => p.status === 'correct').length;
+          // Berechne Score (Prozent korrekt) basierend auf FIRST ATTEMPT
+          // WICHTIG: Verwende firstAttemptStatus, nicht status! (ADR-013)
+          const correctCount = topicProgress.filter(p => p.firstAttemptStatus === 'correct').length;
           const score = Math.round((correctCount / topicQuestions.length) * 100);
           
           // Aktualisiere user_progress für dieses Topic

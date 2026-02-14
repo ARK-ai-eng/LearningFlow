@@ -544,11 +544,12 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
 }
 
 // Speichert oder aktualisiert Fortschritt für eine Frage
+// WICHTIG: firstAttemptStatus wird NIEMALS überschrieben (ADR-013)
 export async function upsertQuestionProgress(data: {
   userId: number;
   questionId: number;
   topicId: number;
-  status: 'unanswered' | 'correct' | 'incorrect';
+  isCorrect: boolean; // Changed from 'status' to 'isCorrect' for clarity
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -564,11 +565,17 @@ export async function upsertQuestionProgress(data: {
     .limit(1);
   
   if (existing.length > 0) {
-    // Update
+    // Update: Erhöhe attemptCount, update lastAttemptCorrect
+    // ABER: firstAttemptStatus bleibt unverändert! (ADR-013)
     await db
       .update(questionProgress)
       .set({
-        status: data.status,
+        // DEPRECATED: status kept for backward compatibility, but not used
+        status: data.isCorrect ? 'correct' : 'incorrect',
+        
+        // Update last attempt result (for UI feedback)
+        lastAttemptCorrect: data.isCorrect,
+        
         attemptCount: sql`${questionProgress.attemptCount} + 1`,
         lastAttemptAt: new Date(),
         updatedAt: new Date(),
@@ -578,19 +585,26 @@ export async function upsertQuestionProgress(data: {
         eq(questionProgress.questionId, data.questionId)
       ));
   } else {
-    // Insert
+    // Insert: Erste Antwort - setze firstAttemptStatus
+    const status = data.isCorrect ? 'correct' : 'incorrect';
     await db.insert(questionProgress).values({
       userId: data.userId,
       questionId: data.questionId,
       topicId: data.topicId,
-      status: data.status,
+      
+      // Set both status (deprecated) and firstAttemptStatus (new)
+      status: status,
+      firstAttemptStatus: status,
+      lastAttemptCorrect: data.isCorrect,
+      
       attemptCount: 1,
       lastAttemptAt: new Date(),
     });
   }
 }
 
-// Holt nur falsch beantwortete Fragen eines Themas
+// Holt nur falsch beantwortete Fragen eines Themas (basierend auf ERSTER Antwort)
+// WICHTIG: Verwendet firstAttemptStatus, nicht status! (ADR-013)
 export async function getIncorrectQuestionsByTopic(userId: number, topicId: number): Promise<number[]> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -601,7 +615,8 @@ export async function getIncorrectQuestionsByTopic(userId: number, topicId: numb
     .where(and(
       eq(questionProgress.userId, userId),
       eq(questionProgress.topicId, topicId),
-      eq(questionProgress.status, 'incorrect')
+      // Changed from 'status' to 'firstAttemptStatus' (ADR-013)
+      eq(questionProgress.firstAttemptStatus, 'incorrect')
     ));
   
   return results.map(r => r.questionId);

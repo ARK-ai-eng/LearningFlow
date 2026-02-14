@@ -778,3 +778,31 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
   - Erwartung: Nach letzter Frage → Dialog "Willst du wiederholen?" → wenn JA → nur falsche Fragen nochmal
   - Root Cause: TBD - wahrscheinlich isLastQuestion Logik falsch oder Filter fügt Frage hinzu
   - Fix: TBD - prüfen warum eine zusätzliche Frage erscheint
+
+## KRITISCH - Wiederholungsmodus fundamental kaputt (14.02.2026) ✅ GEFIXT
+
+### Root Cause Analyse
+- [x] **Problem 1: submitAnswer überschreibt Status** - Bei Wiederholung wird `status` von 'incorrect' auf 'correct' geändert, dadurch verschwindet Frage aus Wiederholungs-Liste
+- [x] **Problem 2: 100% Fortschritt obwohl Wiederholung** - Score basiert auf aktuellem `status`, nicht auf erster Antwort
+- [x] **Problem 3: Fragen werden übersprungen** - Filter `status === 'incorrect'` findet keine Fragen mehr nach Wiederholung
+- [x] **Problem 4: Pause-Button funktioniert nicht** - isLastQuestion Logik war kaputt, Button verschwand
+
+### Lösung: Schema-Änderung erforderlich
+- [x] `questionProgress` Tabelle erweitern:
+  - `firstAttemptStatus` ('correct' | 'incorrect') - zählt für Score
+  - `attemptCount` (number) - wie oft beantwortet
+  - `lastAttemptCorrect` (boolean) - für UI-Feedback
+- [x] `submitAnswer` Logik ändern:
+  - Erste Antwort: Setze `firstAttemptStatus` (NIEMALS überschreiben!)
+  - Wiederholung: Erhöhe `attemptCount`, update `lastAttemptCorrect`
+- [x] Frontend Filter ändern:
+  - Wiederholung: Filter auf `firstAttemptStatus === 'incorrect'`
+  - Progress: Berechne basierend auf `firstAttemptStatus`
+- [x] Pause-Button fixen:
+  - isLastQuestion Logik korrigiert
+  - Button erscheint jetzt korrekt
+
+### ADR-013 Compliance
+- ADR-013 sagt: "Erste Antwort zählt bei Wiederholung"
+- Implementierung jetzt compliant: `firstAttemptStatus` wird NIEMALS überschrieben!
+- ✅ Gefixt

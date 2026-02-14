@@ -115,11 +115,12 @@ export default function TopicView() {
   const isLastQuestion = currentQuestionIndex === questionsWithShuffledAnswers.length - 1;
 
   // Calculate stats
+  // WICHTIG: Stats basieren auf firstAttemptStatus, nicht status! (ADR-013)
   const stats = useMemo(() => {
     const total = questionsWithStatus.length;
-    const answered = questionsWithStatus.filter(q => q.status !== 'unanswered').length;
-    const correct = questionsWithStatus.filter(q => q.status === 'correct').length;
-    const incorrect = questionsWithStatus.filter(q => q.status === 'incorrect').length;
+    const answered = questionsWithStatus.filter(q => q.firstAttemptStatus !== 'unanswered').length;
+    const correct = questionsWithStatus.filter(q => q.firstAttemptStatus === 'correct').length;
+    const incorrect = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
     
     return {
       total,

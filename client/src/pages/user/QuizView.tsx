@@ -124,7 +124,8 @@ export default function QuizView() {
     if (isRepeatMode) {
       // Repeat mode: show incorrect questions + current question (even if just answered correctly)
       // This prevents the list from changing while user is still viewing feedback
-      const incorrectQuestions = questionsWithStatus.filter(q => q.status === 'incorrect');
+      // WICHTIG: Filter auf firstAttemptStatus, nicht status! (ADR-013)
+      const incorrectQuestions = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect');
       const currentQ = questionsWithStatus[currentQuestionIndex];
       
       // If current question is not in incorrect list (was just answered correctly),
@@ -157,11 +158,12 @@ export default function QuizView() {
     : currentQuestionIndex === activeQuestions.length - 1;
 
   // Calculate stats
+  // WICHTIG: Stats basieren auf firstAttemptStatus, nicht status! (ADR-013)
   const stats = useMemo(() => {
     const total = questionsWithStatus.length;
-    const answered = questionsWithStatus.filter(q => q.status !== 'unanswered').length;
-    const correct = questionsWithStatus.filter(q => q.status === 'correct').length;
-    const incorrect = questionsWithStatus.filter(q => q.status === 'incorrect').length;
+    const answered = questionsWithStatus.filter(q => q.firstAttemptStatus !== 'unanswered').length;
+    const correct = questionsWithStatus.filter(q => q.firstAttemptStatus === 'correct').length;
+    const incorrect = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
     
     return {
       total,
@@ -202,7 +204,8 @@ export default function QuizView() {
       // In repeat mode: Check if all repeat questions are now correct
       if (isRepeatMode) {
         // Refresh stats to check current state
-        const currentIncorrect = questionsWithStatus.filter(q => q.status === 'incorrect').length;
+        // WICHTIG: Filter auf firstAttemptStatus! (ADR-013)
+        const currentIncorrect = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
         
         // Show dialog immediately (before invalidate clears currentQuestion)
         setShowRepeatDialog(true);
@@ -232,7 +235,8 @@ export default function QuizView() {
     setShuffleTrigger(prev => prev + 1);
     
     // Store initial count of incorrect questions for stable display
-    const incorrectCount = questionsWithStatus.filter(q => q.status === 'incorrect').length;
+    // WICHTIG: Filter auf firstAttemptStatus! (ADR-013)
+    const incorrectCount = questionsWithStatus.filter(q => q.firstAttemptStatus === 'incorrect').length;
     setInitialRepeatCount(incorrectCount);
     
     // Enter repeat mode: filter to show only incorrect questions

@@ -144,14 +144,26 @@ export const questionProgress = mysqlTable("question_progress", {
   userId: int("userId").notNull(),
   questionId: int("questionId").notNull(),
   topicId: int("topicId").notNull(),
+  
+  // DEPRECATED: 'status' kept for backward compatibility, use firstAttemptStatus instead
   status: mysqlEnum("status", ["unanswered", "correct", "incorrect"]).default("unanswered").notNull(),
+  
+  // NEW: First attempt status (NEVER changes after first answer)
+  // This is used for score calculation and repeat mode filtering
+  firstAttemptStatus: mysqlEnum("firstAttemptStatus", ["unanswered", "correct", "incorrect"]).default("unanswered").notNull(),
+  
+  // NEW: Last attempt result (updates on every answer)
+  // This is used for UI feedback during repeat mode
+  lastAttemptCorrect: boolean("lastAttemptCorrect"),
+  
   attemptCount: int("attemptCount").default(0).notNull(),
   lastAttemptAt: timestamp("lastAttemptAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({
   uniqueUserQuestion: uniqueIndex("unique_user_question").on(table.userId, table.questionId),
-  idxUserTopicStatus: index("idx_user_topic_status").on(table.userId, table.topicId, table.status),
+  // Updated index to use firstAttemptStatus instead of status
+  idxUserTopicFirstAttempt: index("idx_user_topic_first_attempt").on(table.userId, table.topicId, table.firstAttemptStatus),
 }));
 
 export type QuestionProgress = typeof questionProgress.$inferSelect;
