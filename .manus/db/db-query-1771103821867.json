@@ -1,0 +1,70 @@
+{
+  "query": "SELECT \n  t.id as topicId,\n  t.title,\n  COUNT(q.id) as questionCount\nFROM topics t\nLEFT JOIN questions q ON t.id = q.topicId\nWHERE t.courseId = 2\nGROUP BY t.id, t.title\nORDER BY t.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  t.id as topicId,\n  t.title,\n  COUNT(q.id) as questionCount\nFROM topics t\nLEFT JOIN questions q ON t.id = q.topicId\nWHERE t.courseId = 2\nGROUP BY t.id, t.title\nORDER BY t.id;",
+  "rows": [
+    {
+      "topicId": "4",
+      "title": "Phishing erkennen",
+      "questionCount": "3"
+    },
+    {
+      "topicId": "5",
+      "title": "Sichere Passwörter",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "6",
+      "title": "Social Engineering",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30001",
+      "title": "E-Mail & Dateianhänge",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30002",
+      "title": "Geräte & Arbeitsplatzsicherheit",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30003",
+      "title": "MFA & Login-Missbrauch",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30004",
+      "title": "Cloud & Datenaustausch",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30005",
+      "title": "Updates & Fake-Updates",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30006",
+      "title": "Mobile Security",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30007",
+      "title": "Datenklassifizierung & Datenschutz",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30008",
+      "title": "USB & Fremdgeräte",
+      "questionCount": "1"
+    },
+    {
+      "topicId": "30009",
+      "title": "Incident Reporting",
+      "questionCount": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "topicId\ttitle\tquestionCount\n4\tPhishing erkennen\t3\n5\tSichere Passwörter\t1\n6\tSocial Engineering\t1\n30001\tE-Mail & Dateianhänge\t1\n30002\tGeräte & Arbeitsplatzsicherheit\t1\n30003\tMFA & Login-Missbrauch\t1\n30004\tCloud & Datenaustausch\t1\n30005\tUpdates & Fake-Updates\t1\n30006\tMobile Security\t1\n30007\tDatenklassifizierung & Datenschutz\t1\n30008\tUSB & Fremdgeräte\t1\n30009\tIncident Reporting\t1\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

@@ -1,0 +1,9 @@
+{
+  "query": "SELECT \n  qp.questionId,\n  qp.firstAttemptStatus,\n  'ORPHANED - Question deleted' as status\nFROM question_progress qp\nLEFT JOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.id IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  qp.questionId,\n  qp.firstAttemptStatus,\n  'ORPHANED - Question deleted' as status\nFROM question_progress qp\nLEFT JOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.id IS NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 59
+}

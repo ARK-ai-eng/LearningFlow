@@ -311,6 +311,15 @@ export async function deleteTopic(id: number) {
 export async function createQuestion(question: InsertQuestion): Promise<number> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  
+  // Auto-sync courseId from topic (prevents courseId mismatch bug)
+  if (question.topicId) {
+    const topic = await db.select().from(topics).where(eq(topics.id, question.topicId)).limit(1);
+    if (topic[0]) {
+      question.courseId = topic[0].courseId;
+    }
+  }
+  
   const result = await db.insert(questions).values(question);
   return result[0].insertId;
 }
@@ -361,6 +370,15 @@ export async function getQuestionsByCourse(
 export async function updateQuestion(id: number, data: Partial<InsertQuestion>) {
   const db = await getDb();
   if (!db) return;
+  
+  // Auto-sync courseId from topic if topicId changed (prevents courseId mismatch bug)
+  if (data.topicId) {
+    const topic = await db.select().from(topics).where(eq(topics.id, data.topicId)).limit(1);
+    if (topic[0]) {
+      data.courseId = topic[0].courseId;
+    }
+  }
+  
   await db.update(questions).set(data).where(eq(questions.id, id));
 }
 

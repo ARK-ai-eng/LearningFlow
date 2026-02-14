@@ -1,0 +1,8 @@
+{
+  "query": "-- Trigger for INSERT: Set courseId from topic\nDROP TRIGGER IF EXISTS questions_insert_sync_courseId;\nCREATE TRIGGER questions_insert_sync_courseId\nBEFORE INSERT ON questions\nFOR EACH ROW\nBEGIN\n  SET NEW.courseId = (SELECT courseId FROM topics WHERE id = NEW.topicId);\nEND;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute -- Trigger for INSERT: Set courseId from topic\nDROP TRIGGER IF EXISTS questions_insert_sync_courseId;\nCREATE TRIGGER questions_insert_sync_courseId\nBEFORE INSERT ON questions\nFOR EACH ROW\nBEGIN\n  SET NEW.courseId = (SELECT courseId FROM topics WHERE id = NEW.topicId);\nEND;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 1 column 12 near \"TRIGGER IF EXISTS questions_insert_sync_courseId\""
+  ]
+}

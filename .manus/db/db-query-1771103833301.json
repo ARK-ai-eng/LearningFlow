@@ -1,0 +1,114 @@
+{
+  "query": "SELECT \n  qp.questionId,\n  q.topicId,\n  t.title as topicTitle,\n  qp.firstAttemptStatus,\n  qp.lastAttemptCorrect,\n  qp.attemptCount\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN topics t ON q.topicId = t.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND t.courseId = 2\nORDER BY q.topicId, q.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  qp.questionId,\n  q.topicId,\n  t.title as topicTitle,\n  qp.firstAttemptStatus,\n  qp.lastAttemptCorrect,\n  qp.attemptCount\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN topics t ON q.topicId = t.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND t.courseId = 2\nORDER BY q.topicId, q.id;",
+  "rows": [
+    {
+      "questionId": "60001",
+      "topicId": "4",
+      "topicTitle": "Phishing erkennen",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "25"
+    },
+    {
+      "questionId": "240001",
+      "topicId": "4",
+      "topicTitle": "Phishing erkennen",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "13"
+    },
+    {
+      "questionId": "240002",
+      "topicId": "4",
+      "topicTitle": "Phishing erkennen",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "16"
+    },
+    {
+      "questionId": "60002",
+      "topicId": "5",
+      "topicTitle": "Sichere Passwörter",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "17"
+    },
+    {
+      "questionId": "60003",
+      "topicId": "6",
+      "topicTitle": "Social Engineering",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15"
+    },
+    {
+      "questionId": "60004",
+      "topicId": "30002",
+      "topicTitle": "Geräte & Arbeitsplatzsicherheit",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "14"
+    },
+    {
+      "questionId": "60005",
+      "topicId": "30003",
+      "topicTitle": "MFA & Login-Missbrauch",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "14"
+    },
+    {
+      "questionId": "60006",
+      "topicId": "30004",
+      "topicTitle": "Cloud & Datenaustausch",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "16"
+    },
+    {
+      "questionId": "60008",
+      "topicId": "30005",
+      "topicTitle": "Updates & Fake-Updates",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15"
+    },
+    {
+      "questionId": "60009",
+      "topicId": "30006",
+      "topicTitle": "Mobile Security",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15"
+    },
+    {
+      "questionId": "60010",
+      "topicId": "30007",
+      "topicTitle": "Datenklassifizierung & Datenschutz",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "13"
+    },
+    {
+      "questionId": "60011",
+      "topicId": "30008",
+      "topicTitle": "USB & Fremdgeräte",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "13"
+    },
+    {
+      "questionId": "60012",
+      "topicId": "30009",
+      "topicTitle": "Incident Reporting",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "16"
+    }
+  ],
+  "messages": [],
+  "stdout": "questionId\ttopicId\ttopicTitle\tfirstAttemptStatus\tlastAttemptCorrect\tattemptCount\n60001\t4\tPhishing erkennen\tcorrect\t1\t25\n240001\t4\tPhishing erkennen\tcorrect\t0\t13\n240002\t4\tPhishing erkennen\tcorrect\t0\t16\n60002\t5\tSichere Passwörter\tcorrect\t1\t17\n60003\t6\tSocial Engineering\tcorrect\t1\t15\n60004\t30002\tGeräte & Arbeitsplatzsicherheit\tcorrect\t1\t14\n60005\t30003\tMFA & Login-Missbrauch\tcorrect\t1\t14\n60006\t30004\tCloud & Datenaustausch\tcorrect\t1\t16\n60008\t30005\tUpdates & Fake-Updates\tcorrect\t1\t15\n60009\t30006\tMobile Security\tcorrect\t1\t15\n60010\t30007\tDatenklassifizierung & Datenschutz\tcorrect\t1\t13\n60011\t30008\tUSB & Fremdgeräte\tcorrect\t0\t13\n60012\t30009\tIncident Reporting\tcorrect\t1\t16\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

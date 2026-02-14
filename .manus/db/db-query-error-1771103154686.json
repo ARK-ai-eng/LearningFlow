@@ -1,0 +1,10 @@
+{
+  "query": "-- Finde User testyou@me.com\nSELECT id, email, role FROM users WHERE email = 'testyou@me.com';\n\n-- Zeige alle questionProgress für diesen User in Course 2\nSELECT \n  qp.id,\n  qp.questionId,\n  q.courseId,\n  q.topicId,\n  qp.firstAttemptStatus,\n  qp.lastAttemptCorrect,\n  qp.attemptCount,\n  qp.createdAt\nFROM questionProgress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.courseId = 2\nORDER BY q.topicId, q.id;\n\n-- Statistik: Wie viele correct vs incorrect?\nSELECT \n  firstAttemptStatus,\n  COUNT(*) as count\nFROM questionProgress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.courseId = 2\nGROUP BY firstAttemptStatus;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute -- Finde User testyou@me.com\nSELECT id, email, role FROM users WHERE email = 'testyou@me.com';\n\n-- Zeige alle questionProgress für diesen User in Course 2\nSELECT \n  qp.id,\n  qp.questionId,\n  q.courseId,\n  q.topicId,\n  qp.firstAttemptStatus,\n  qp.lastAttemptCorrect,\n  qp.attemptCount,\n  qp.createdAt\nFROM questionProgress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.courseId = 2\nORDER BY q.topicId, q.id;\n\n-- Statistik: Wie viele correct vs incorrect?\nSELECT \n  firstAttemptStatus,\n  COUNT(*) as count\nFROM questionProgress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND q.courseId = 2\nGROUP BY firstAttemptStatus;",
+  "returncode": 1,
+  "logs": [
+    "id\temail\trole",
+    "180002\ttestyou@me.com\tuser",
+    "ERROR 1146 (42S02) at line 5: Table 'rxc4pg5wbo6egzhnwsxpwa.questionProgress' doesn't exist"
+  ]
+}

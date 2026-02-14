@@ -1,0 +1,724 @@
+{
+  "query": "SELECT \n  q.id,\n  q.topicId,\n  q.courseId as question_courseId,\n  t.courseId as topic_courseId,\n  t.title\nFROM questions q\nJOIN topics t ON q.topicId = t.id\nWHERE q.courseId != t.courseId OR q.courseId IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  q.id,\n  q.topicId,\n  q.courseId as question_courseId,\n  t.courseId as topic_courseId,\n  t.title\nFROM questions q\nJOIN topics t ON q.topicId = t.id\nWHERE q.courseId != t.courseId OR q.courseId IS NULL;",
+  "rows": [
+    {
+      "id": "120002",
+      "topicId": "90001",
+      "question_courseId": "1",
+      "topic_courseId": "90002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "120003",
+      "topicId": "90001",
+      "question_courseId": "1",
+      "topic_courseId": "90002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "120004",
+      "topicId": "90001",
+      "question_courseId": "1",
+      "topic_courseId": "90002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "120005",
+      "topicId": "90001",
+      "question_courseId": "1",
+      "topic_courseId": "90002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "120006",
+      "topicId": "90001",
+      "question_courseId": "1",
+      "topic_courseId": "90002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "120007",
+      "topicId": "90001",
+      "question_courseId": "1",
+      "topic_courseId": "90002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150002",
+      "topicId": "120001",
+      "question_courseId": "1",
+      "topic_courseId": "120002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150003",
+      "topicId": "120001",
+      "question_courseId": "1",
+      "topic_courseId": "120002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150004",
+      "topicId": "120001",
+      "question_courseId": "1",
+      "topic_courseId": "120002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150005",
+      "topicId": "120001",
+      "question_courseId": "1",
+      "topic_courseId": "120002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150006",
+      "topicId": "120001",
+      "question_courseId": "1",
+      "topic_courseId": "120002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150007",
+      "topicId": "120001",
+      "question_courseId": "1",
+      "topic_courseId": "120002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150009",
+      "topicId": "120002",
+      "question_courseId": "1",
+      "topic_courseId": "120004",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150010",
+      "topicId": "120002",
+      "question_courseId": "1",
+      "topic_courseId": "120004",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150011",
+      "topicId": "120002",
+      "question_courseId": "1",
+      "topic_courseId": "120004",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150012",
+      "topicId": "120002",
+      "question_courseId": "1",
+      "topic_courseId": "120004",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150013",
+      "topicId": "120002",
+      "question_courseId": "1",
+      "topic_courseId": "120004",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150014",
+      "topicId": "120002",
+      "question_courseId": "1",
+      "topic_courseId": "120004",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150016",
+      "topicId": "120003",
+      "question_courseId": "1",
+      "topic_courseId": "120006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150017",
+      "topicId": "120003",
+      "question_courseId": "1",
+      "topic_courseId": "120006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150018",
+      "topicId": "120003",
+      "question_courseId": "1",
+      "topic_courseId": "120006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150019",
+      "topicId": "120003",
+      "question_courseId": "1",
+      "topic_courseId": "120006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150020",
+      "topicId": "120003",
+      "question_courseId": "1",
+      "topic_courseId": "120006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150021",
+      "topicId": "120003",
+      "question_courseId": "1",
+      "topic_courseId": "120006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150023",
+      "topicId": "120004",
+      "question_courseId": "1",
+      "topic_courseId": "120008",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150024",
+      "topicId": "120004",
+      "question_courseId": "1",
+      "topic_courseId": "120008",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150025",
+      "topicId": "120004",
+      "question_courseId": "1",
+      "topic_courseId": "120008",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150026",
+      "topicId": "120004",
+      "question_courseId": "1",
+      "topic_courseId": "120008",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150027",
+      "topicId": "120004",
+      "question_courseId": "1",
+      "topic_courseId": "120008",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150028",
+      "topicId": "120004",
+      "question_courseId": "1",
+      "topic_courseId": "120008",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150030",
+      "topicId": "120005",
+      "question_courseId": "1",
+      "topic_courseId": "120010",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150031",
+      "topicId": "120005",
+      "question_courseId": "1",
+      "topic_courseId": "120010",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150032",
+      "topicId": "120005",
+      "question_courseId": "1",
+      "topic_courseId": "120010",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150033",
+      "topicId": "120005",
+      "question_courseId": "1",
+      "topic_courseId": "120010",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150034",
+      "topicId": "120005",
+      "question_courseId": "1",
+      "topic_courseId": "120010",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150035",
+      "topicId": "120005",
+      "question_courseId": "1",
+      "topic_courseId": "120010",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150037",
+      "topicId": "120006",
+      "question_courseId": "1",
+      "topic_courseId": "120012",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150038",
+      "topicId": "120006",
+      "question_courseId": "1",
+      "topic_courseId": "120012",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150039",
+      "topicId": "120006",
+      "question_courseId": "1",
+      "topic_courseId": "120012",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150040",
+      "topicId": "120006",
+      "question_courseId": "1",
+      "topic_courseId": "120012",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150041",
+      "topicId": "120006",
+      "question_courseId": "1",
+      "topic_courseId": "120012",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "150042",
+      "topicId": "120006",
+      "question_courseId": "1",
+      "topic_courseId": "120012",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "180002",
+      "topicId": "150001",
+      "question_courseId": "1",
+      "topic_courseId": "150002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "180003",
+      "topicId": "150001",
+      "question_courseId": "1",
+      "topic_courseId": "150002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "180004",
+      "topicId": "150001",
+      "question_courseId": "1",
+      "topic_courseId": "150002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "180005",
+      "topicId": "150001",
+      "question_courseId": "1",
+      "topic_courseId": "150002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "180006",
+      "topicId": "150001",
+      "question_courseId": "1",
+      "topic_courseId": "150002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "180007",
+      "topicId": "150001",
+      "question_courseId": "1",
+      "topic_courseId": "150002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "210002",
+      "topicId": "180001",
+      "question_courseId": "1",
+      "topic_courseId": "180002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "210003",
+      "topicId": "180001",
+      "question_courseId": "1",
+      "topic_courseId": "180002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "210004",
+      "topicId": "180001",
+      "question_courseId": "1",
+      "topic_courseId": "180002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "210005",
+      "topicId": "180001",
+      "question_courseId": "1",
+      "topic_courseId": "180002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "210006",
+      "topicId": "180001",
+      "question_courseId": "1",
+      "topic_courseId": "180002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "210007",
+      "topicId": "180001",
+      "question_courseId": "1",
+      "topic_courseId": "180002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270002",
+      "topicId": "210001",
+      "question_courseId": "1",
+      "topic_courseId": "210002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270003",
+      "topicId": "210001",
+      "question_courseId": "1",
+      "topic_courseId": "210002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270004",
+      "topicId": "210001",
+      "question_courseId": "1",
+      "topic_courseId": "210002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270005",
+      "topicId": "210001",
+      "question_courseId": "1",
+      "topic_courseId": "210002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270006",
+      "topicId": "210001",
+      "question_courseId": "1",
+      "topic_courseId": "210002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270007",
+      "topicId": "210001",
+      "question_courseId": "1",
+      "topic_courseId": "210002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270009",
+      "topicId": "210002",
+      "question_courseId": "1",
+      "topic_courseId": "210003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270010",
+      "topicId": "210002",
+      "question_courseId": "1",
+      "topic_courseId": "210003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270011",
+      "topicId": "210002",
+      "question_courseId": "1",
+      "topic_courseId": "210003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270012",
+      "topicId": "210002",
+      "question_courseId": "1",
+      "topic_courseId": "210003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270013",
+      "topicId": "210002",
+      "question_courseId": "1",
+      "topic_courseId": "210003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "270014",
+      "topicId": "210002",
+      "question_courseId": "1",
+      "topic_courseId": "210003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "300002",
+      "topicId": "240001",
+      "question_courseId": "1",
+      "topic_courseId": "240002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "300003",
+      "topicId": "240001",
+      "question_courseId": "1",
+      "topic_courseId": "240002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "300004",
+      "topicId": "240001",
+      "question_courseId": "1",
+      "topic_courseId": "240002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "300005",
+      "topicId": "240001",
+      "question_courseId": "1",
+      "topic_courseId": "240002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "300006",
+      "topicId": "240001",
+      "question_courseId": "1",
+      "topic_courseId": "240002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "300007",
+      "topicId": "240001",
+      "question_courseId": "1",
+      "topic_courseId": "240002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330002",
+      "topicId": "270001",
+      "question_courseId": "1",
+      "topic_courseId": "270001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330003",
+      "topicId": "270001",
+      "question_courseId": "1",
+      "topic_courseId": "270001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330004",
+      "topicId": "270001",
+      "question_courseId": "1",
+      "topic_courseId": "270001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330005",
+      "topicId": "270001",
+      "question_courseId": "1",
+      "topic_courseId": "270001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330006",
+      "topicId": "270001",
+      "question_courseId": "1",
+      "topic_courseId": "270001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330007",
+      "topicId": "270001",
+      "question_courseId": "1",
+      "topic_courseId": "270001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330009",
+      "topicId": "270002",
+      "question_courseId": "1",
+      "topic_courseId": "270003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330010",
+      "topicId": "270002",
+      "question_courseId": "1",
+      "topic_courseId": "270003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330011",
+      "topicId": "270002",
+      "question_courseId": "1",
+      "topic_courseId": "270003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330012",
+      "topicId": "270002",
+      "question_courseId": "1",
+      "topic_courseId": "270003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330013",
+      "topicId": "270002",
+      "question_courseId": "1",
+      "topic_courseId": "270003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330014",
+      "topicId": "270002",
+      "question_courseId": "1",
+      "topic_courseId": "270003",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330016",
+      "topicId": "270003",
+      "question_courseId": "1",
+      "topic_courseId": "270006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330017",
+      "topicId": "270003",
+      "question_courseId": "1",
+      "topic_courseId": "270006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330018",
+      "topicId": "270003",
+      "question_courseId": "1",
+      "topic_courseId": "270006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330019",
+      "topicId": "270003",
+      "question_courseId": "1",
+      "topic_courseId": "270006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330020",
+      "topicId": "270003",
+      "question_courseId": "1",
+      "topic_courseId": "270006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "330021",
+      "topicId": "270003",
+      "question_courseId": "1",
+      "topic_courseId": "270006",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "360002",
+      "topicId": "300001",
+      "question_courseId": "1",
+      "topic_courseId": "300001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "360003",
+      "topicId": "300001",
+      "question_courseId": "1",
+      "topic_courseId": "300001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "360004",
+      "topicId": "300001",
+      "question_courseId": "1",
+      "topic_courseId": "300001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "360005",
+      "topicId": "300001",
+      "question_courseId": "1",
+      "topic_courseId": "300001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "360006",
+      "topicId": "300001",
+      "question_courseId": "1",
+      "topic_courseId": "300001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "360007",
+      "topicId": "300001",
+      "question_courseId": "1",
+      "topic_courseId": "300001",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "390002",
+      "topicId": "330001",
+      "question_courseId": "1",
+      "topic_courseId": "330002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "390003",
+      "topicId": "330001",
+      "question_courseId": "1",
+      "topic_courseId": "330002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "390004",
+      "topicId": "330001",
+      "question_courseId": "1",
+      "topic_courseId": "330002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "390005",
+      "topicId": "330001",
+      "question_courseId": "1",
+      "topic_courseId": "330002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "390006",
+      "topicId": "330001",
+      "question_courseId": "1",
+      "topic_courseId": "330002",
+      "title": "Test Topic Progress"
+    },
+    {
+      "id": "390007",
+      "topicId": "330001",
+      "question_courseId": "1",
+      "topic_courseId": "330002",
+      "title": "Test Topic Progress"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttopicId\tquestion_courseId\ttopic_courseId\ttitle\n120002\t90001\t1\t90002\tTest Topic Progress\n120003\t90001\t1\t90002\tTest Topic Progress\n120004\t90001\t1\t90002\tTest Topic Progress\n120005\t90001\t1\t90002\tTest Topic Progress\n120006\t90001\t1\t90002\tTest Topic Progress\n120007\t90001\t1\t90002\tTest Topic Progress\n150002\t120001\t1\t120002\tTest Topic Progress\n150003\t120001\t1\t120002\tTest Topic Progress\n150004\t120001\t1\t120002\tTest Topic Progress\n150005\t120001\t1\t120002\tTest Topic Progress\n150006\t120001\t1\t120002\tTest Topic Progress\n150007\t120001\t1\t120002\tTest Topic Progress\n150009\t120002\t1\t120004\tTest Topic Progress\n150010\t120002\t1\t120004\tTest Topic Progress\n150011\t120002\t1\t120004\tTest Topic Progress\n150012\t120002\t1\t120004\tTest Topic Progress\n150013\t120002\t1\t120004\tTest Topic Progress\n150014\t120002\t1\t120004\tTest Topic Progress\n150016\t120003\t1\t120006\tTest Topic Progress\n150017\t120003\t1\t120006\tTest Topic Progress\n150018\t120003\t1\t120006\tTest Topic Progress\n150019\t120003\t1\t120006\tTest Topic Progress\n150020\t120003\t1\t120006\tTest Topic Progress\n150021\t120003\t1\t120006\tTest Topic Progress\n150023\t120004\t1\t120008\tTest Topic Progress\n150024\t120004\t1\t120008\tTest Topic Progress\n150025\t120004\t1\t120008\tTest Topic Progress\n150026\t120004\t1\t120008\tTest Topic Progress\n150027\t120004\t1\t120008\tTest Topic Progress\n150028\t120004\t1\t120008\tTest Topic Progress\n150030\t120005\t1\t120010\tTest Topic Progress\n150031\t120005\t1\t120010\tTest Topic Progress\n150032\t120005\t1\t120010\tTest Topic Progress\n150033\t120005\t1\t120010\tTest Topic Progress\n150034\t120005\t1\t120010\tTest Topic Progress\n150035\t120005\t1\t120010\tTest Topic Progress\n150037\t120006\t1\t120012\tTest Topic Progress\n150038\t120006\t1\t120012\tTest Topic Progress\n150039\t120006\t1\t120012\tTest Topic Progress\n150040\t120006\t1\t120012\tTest Topic Progress\n150041\t120006\t1\t120012\tTest Topic Progress\n150042\t120006\t1\t120012\tTest Topic Progress\n180002\t150001\t1\t150002\tTest Topic Progress\n180003\t150001\t1\t150002\tTest Topic Progress\n180004\t150001\t1\t150002\tTest Topic Progress\n180005\t150001\t1\t150002\tTest Topic Progress\n180006\t150001\t1\t150002\tTest Topic Progress\n180007\t150001\t1\t150002\tTest Topic Progress\n210002\t180001\t1\t180002\tTest Topic Progress\n210003\t180001\t1\t180002\tTest Topic Progress\n210004\t180001\t1\t180002\tTest Topic Progress\n210005\t180001\t1\t180002\tTest Topic Progress\n210006\t180001\t1\t180002\tTest Topic Progress\n210007\t180001\t1\t180002\tTest Topic Progress\n270002\t210001\t1\t210002\tTest Topic Progress\n270003\t210001\t1\t210002\tTest Topic Progress\n270004\t210001\t1\t210002\tTest Topic Progress\n270005\t210001\t1\t210002\tTest Topic Progress\n270006\t210001\t1\t210002\tTest Topic Progress\n270007\t210001\t1\t210002\tTest Topic Progress\n270009\t210002\t1\t210003\tTest Topic Progress\n270010\t210002\t1\t210003\tTest Topic Progress\n270011\t210002\t1\t210003\tTest Topic Progress\n270012\t210002\t1\t210003\tTest Topic Progress\n270013\t210002\t1\t210003\tTest Topic Progress\n270014\t210002\t1\t210003\tTest Topic Progress\n300002\t240001\t1\t240002\tTest Topic Progress\n300003\t240001\t1\t240002\tTest Topic Progress\n300004\t240001\t1\t240002\tTest Topic Progress\n300005\t240001\t1\t240002\tTest Topic Progress\n300006\t240001\t1\t240002\tTest Topic Progress\n300007\t240001\t1\t240002\tTest Topic Progress\n330002\t270001\t1\t270001\tTest Topic Progress\n330003\t270001\t1\t270001\tTest Topic Progress\n330004\t270001\t1\t270001\tTest Topic Progress\n330005\t270001\t1\t270001\tTest Topic Progress\n330006\t270001\t1\t270001\tTest Topic Progress\n330007\t270001\t1\t270001\tTest Topic Progress\n330009\t270002\t1\t270003\tTest Topic Progress\n330010\t270002\t1\t270003\tTest Topic Progress\n330011\t270002\t1\t270003\tTest Topic Progress\n330012\t270002\t1\t270003\tTest Topic Progress\n330013\t270002\t1\t270003\tTest Topic Progress\n330014\t270002\t1\t270003\tTest Topic Progress\n330016\t270003\t1\t270006\tTest Topic Progress\n330017\t270003\t1\t270006\tTest Topic Progress\n330018\t270003\t1\t270006\tTest Topic Progress\n330019\t270003\t1\t270006\tTest Topic Progress\n330020\t270003\t1\t270006\tTest Topic Progress\n330021\t270003\t1\t270006\tTest Topic Progress\n360002\t300001\t1\t300001\tTest Topic Progress\n360003\t300001\t1\t300001\tTest Topic Progress\n360004\t300001\t1\t300001\tTest Topic Progress\n360005\t300001\t1\t300001\tTest Topic Progress\n360006\t300001\t1\t300001\tTest Topic Progress\n360007\t300001\t1\t300001\tTest Topic Progress\n390002\t330001\t1\t330002\tTest Topic Progress\n390003\t330001\t1\t330002\tTest Topic Progress\n390004\t330001\t1\t330002\tTest Topic Progress\n390005\t330001\t1\t330002\tTest Topic Progress\n390006\t330001\t1\t330002\tTest Topic Progress\n390007\t330001\t1\t330002\tTest Topic Progress\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

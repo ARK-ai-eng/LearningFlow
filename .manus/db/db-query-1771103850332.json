@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  COUNT(*) as total_entries,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'correct' THEN 1 ELSE 0 END) as correct_count,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect_count,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'unanswered' THEN 1 ELSE 0 END) as unanswered_count\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN topics t ON q.topicId = t.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND t.courseId = 2;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  COUNT(*) as total_entries,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'correct' THEN 1 ELSE 0 END) as correct_count,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect_count,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'unanswered' THEN 1 ELSE 0 END) as unanswered_count\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN topics t ON q.topicId = t.id\nWHERE qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\n  AND t.courseId = 2;",
+  "rows": [
+    {
+      "total_entries": "13",
+      "correct_count": "13",
+      "incorrect_count": "0",
+      "unanswered_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_entries\tcorrect_count\tincorrect_count\tunanswered_count\n13\t13\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

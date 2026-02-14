@@ -1,0 +1,114 @@
+{
+  "query": "SELECT \n  qp.questionId, \n  qp.userId,\n  qp.firstAttemptStatus,\n  qp.lastAttemptCorrect,\n  qp.attemptCount,\n  q.topicId\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN topics t ON q.topicId = t.id\nWHERE t.courseId = 2\nAND qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  qp.questionId, \n  qp.userId,\n  qp.firstAttemptStatus,\n  qp.lastAttemptCorrect,\n  qp.attemptCount,\n  q.topicId\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN topics t ON q.topicId = t.id\nWHERE t.courseId = 2\nAND qp.userId = (SELECT id FROM users WHERE email = 'testyou@me.com')\nLIMIT 20;",
+  "rows": [
+    {
+      "questionId": "60001",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "24",
+      "topicId": "4"
+    },
+    {
+      "questionId": "60002",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "17",
+      "topicId": "5"
+    },
+    {
+      "questionId": "60003",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15",
+      "topicId": "6"
+    },
+    {
+      "questionId": "60004",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "14",
+      "topicId": "30002"
+    },
+    {
+      "questionId": "60005",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "14",
+      "topicId": "30003"
+    },
+    {
+      "questionId": "60006",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "16",
+      "topicId": "30004"
+    },
+    {
+      "questionId": "60008",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15",
+      "topicId": "30005"
+    },
+    {
+      "questionId": "60009",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "15",
+      "topicId": "30006"
+    },
+    {
+      "questionId": "60010",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "13",
+      "topicId": "30007"
+    },
+    {
+      "questionId": "60011",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "13",
+      "topicId": "30008"
+    },
+    {
+      "questionId": "60012",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "1",
+      "attemptCount": "16",
+      "topicId": "30009"
+    },
+    {
+      "questionId": "240001",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "13",
+      "topicId": "4"
+    },
+    {
+      "questionId": "240002",
+      "userId": "180002",
+      "firstAttemptStatus": "correct",
+      "lastAttemptCorrect": "0",
+      "attemptCount": "16",
+      "topicId": "4"
+    }
+  ],
+  "messages": [],
+  "stdout": "questionId\tuserId\tfirstAttemptStatus\tlastAttemptCorrect\tattemptCount\ttopicId\n60001\t180002\tcorrect\t1\t24\t4\n60002\t180002\tcorrect\t1\t17\t5\n60003\t180002\tcorrect\t1\t15\t6\n60004\t180002\tcorrect\t1\t14\t30002\n60005\t180002\tcorrect\t1\t14\t30003\n60006\t180002\tcorrect\t1\t16\t30004\n60008\t180002\tcorrect\t1\t15\t30005\n60009\t180002\tcorrect\t1\t15\t30006\n60010\t180002\tcorrect\t1\t13\t30007\n60011\t180002\tcorrect\t0\t13\t30008\n60012\t180002\tcorrect\t1\t16\t30009\n240001\t180002\tcorrect\t0\t13\t4\n240002\t180002\tcorrect\t0\t16\t4\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

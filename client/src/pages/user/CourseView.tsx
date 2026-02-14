@@ -77,7 +77,8 @@ export default function CourseView() {
 
   const completedTopics = course.topics?.filter(t => getTopicStatus(t.id) === 'completed').length || 0;
   const totalTopics = course.topics?.length || 0;
-  const progressPercent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+  // WICHTIG: Fortschritt basiert auf korrekten Fragen, nicht abgeschlossenen Themen! (Option B)
+  const progressPercent = courseProgress?.percentage || 0;
 
   return (
     <DashboardLayout>

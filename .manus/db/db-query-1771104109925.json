@@ -1,0 +1,16 @@
+{
+  "query": "SELECT q.id, q.topicId, q.isExamQuestion, t.title \nFROM questions q \nJOIN topics t ON q.topicId = t.id \nWHERE t.id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT q.id, q.topicId, q.isExamQuestion, t.title \nFROM questions q \nJOIN topics t ON q.topicId = t.id \nWHERE t.id = 30001;",
+  "rows": [
+    {
+      "id": "30003",
+      "topicId": "30001",
+      "isExamQuestion": "0",
+      "title": "E-Mail & Dateianhänge"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttopicId\tisExamQuestion\ttitle\n30003\t30001\t0\tE-Mail & Dateianhänge\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

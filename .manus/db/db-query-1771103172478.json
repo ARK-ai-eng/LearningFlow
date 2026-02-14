@@ -1,0 +1,46 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "certificates"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "companies"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "courses"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "exam_attempts"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "exam_completions"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "invitations"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "question_progress"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "questions"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "topics"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "user_progress"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa\n__drizzle_migrations\ncertificates\ncompanies\ncourses\nexam_attempts\nexam_completions\ninvitations\nquestion_progress\nquestions\ntopics\nuser_progress\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 44
+}

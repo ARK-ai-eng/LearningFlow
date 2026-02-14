@@ -886,3 +886,48 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] Ändere Logik: Fortschritt basiert auf `firstAttemptStatus === 'correct'` (Zeile 806 + 823-824)
 - [x] Kommentar hinzugefügt: "WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)"
 - [ ] Teste im Browser
+
+
+## SPRINT - Option B Wiederholungslogik FINAL (14.02.2026 21:50)
+
+### Ziel
+Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholung bis alle korrekt, Erfolgs-Dialog
+
+### Phase 1: DB-Zustand analysieren
+- [ ] Warum 100% obwohl Thema 4 "0 von 1 richtig"?
+- [ ] DB-Daten exportieren für testyou@me.com Course 2
+
+### Phase 2: Backend Fix
+- [ ] upsertQuestionProgress: firstAttemptStatus = 'correct' bei Wiederholung
+
+### Phase 3: Browser-Test Score
+- [ ] 1 Frage korrekt → Score steigt
+- [ ] 1 Frage falsch → Score bleibt
+
+### Phase 4: Fortschritt-Anzeige
+- [ ] 12/13 korrekt → 92% (nicht 100%)
+
+### Phase 5: Wiederholungs-Dialog
+- [ ] Dialog erscheint nach Quiz
+- [ ] "Ja" → Wiederholung startet
+
+### Phase 6: Wiederholungs-Schleife
+- [ ] So lange wiederholen bis ALLE korrekt
+- [ ] Score steigt bei jeder korrekten Antwort
+
+### Phase 7: Erfolgs-Dialog
+- [ ] "🎉 Herzlichen Glückwunsch!" nach allen korrekt
+
+### Phase 8: Final Test & Checkpoint
+- [ ] Alle Szenarien testen
+- [ ] Checkpoint
+
+
+## Sprint 10 - Bugfixes (14.02.2026)
+
+- [x] BUG: Fortschritt zeigt 100% obwohl 1 Frage falsch beantwortet wurde
+  - Ursache: Frage Q30003 hatte falsche/fehlende courseId → wurde nicht in getQuestionsByCourse() geladen
+  - Fix 1: UPDATE questions SET courseId = (SELECT courseId FROM topics WHERE id = topicId) WHERE courseId != topicId.courseId
+  - Fix 2: Auto-Sync courseId in createQuestion() und updateQuestion() implementiert
+  - Ergebnis: 102 Fragen mit falscher courseId korrigiert
+  - Prävention: Backend synchronisiert courseId automatisch beim Erstellen/Updaten von Fragen

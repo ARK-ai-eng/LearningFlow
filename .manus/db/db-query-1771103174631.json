@@ -1,0 +1,46 @@
+{
+  "query": "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE();",
+  "rows": [
+    {
+      "TABLE_NAME": "__drizzle_migrations"
+    },
+    {
+      "TABLE_NAME": "users"
+    },
+    {
+      "TABLE_NAME": "certificates"
+    },
+    {
+      "TABLE_NAME": "companies"
+    },
+    {
+      "TABLE_NAME": "courses"
+    },
+    {
+      "TABLE_NAME": "exam_attempts"
+    },
+    {
+      "TABLE_NAME": "invitations"
+    },
+    {
+      "TABLE_NAME": "questions"
+    },
+    {
+      "TABLE_NAME": "topics"
+    },
+    {
+      "TABLE_NAME": "user_progress"
+    },
+    {
+      "TABLE_NAME": "question_progress"
+    },
+    {
+      "TABLE_NAME": "exam_completions"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\n__drizzle_migrations\nusers\ncertificates\ncompanies\ncourses\nexam_attempts\ninvitations\nquestions\ntopics\nuser_progress\nquestion_progress\nexam_completions\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}
