@@ -121,12 +121,7 @@ export default function CourseView() {
         {/* Progress Overview */}
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold">Kursfortschritt</h3>
-              <p className="text-sm text-muted-foreground">
-                {completedTopics} von {totalTopics} Themen bearbeitet
-              </p>
-            </div>
+            <h3 className="font-semibold">Kursfortschritt</h3>
             <span className="text-2xl font-bold gradient-text">{progressPercent}%</span>
           </div>
           <div className="progress-bar">

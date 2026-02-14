@@ -1016,3 +1016,8 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Unten: "Gesamtanzahl: Y Fragen" (alle Fragen im Kurs) ✅
   - Vorher: "14 von 14 Fragen beantwortet" (verwirrend!)
   - Nachher: "Gesamtanzahl: 14 Fragen" (klar!)
+
+- [x] UX: "12 von 12 Themen bearbeitet" entfernt
+  - Redundante Information (Fortschrittsbalken + "X Fragen warten" zeigen bereits alles)
+  - Vorher: "12 von 12 Themen bearbeitet" unter "Kursfortschritt"
+  - Nachher: Nur noch "Kursfortschritt" + Prozentanzeige
