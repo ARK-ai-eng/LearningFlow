@@ -1042,3 +1042,11 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [ ] Staging-Datenbank aufsetzen
 - [ ] Monitoring für Daten-Counts
 - [ ] Backup-Restore-Prozess testen
+
+
+## 🚨 KRITISCHE PROBLEME (nach Datenbank-Vorfall 14.02.2026)
+
+- [x] Kursinhalte wiederhergestellt (12 Themen, 12 Fragen für IT-Sicherheit)
+- [x] courseId-Bug gefixed (alle Fragen haben jetzt courseId)
+- [ ] Login-System debuggen (schlägt fehl trotz korrekter Passwort-Hashes)
+- [ ] Kurs-Wiederholungs-Feature implementieren (lastCompletedAt + Reset-Button)

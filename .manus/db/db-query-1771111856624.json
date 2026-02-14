@@ -1,0 +1,22 @@
+{
+  "query": "\nSELECT courseId, COUNT(*) as anzahl \nFROM questions \nGROUP BY courseId \nORDER BY courseId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT courseId, COUNT(*) as anzahl \nFROM questions \nGROUP BY courseId \nORDER BY courseId;\n",
+  "rows": [
+    {
+      "courseId": "30001",
+      "anzahl": "6"
+    },
+    {
+      "courseId": "30002",
+      "anzahl": "12"
+    },
+    {
+      "courseId": "30003",
+      "anzahl": "24"
+    }
+  ],
+  "messages": [],
+  "stdout": "courseId\tanzahl\n30001\t6\n30002\t12\n30003\t24\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

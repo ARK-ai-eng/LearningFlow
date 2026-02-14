@@ -1,0 +1,30 @@
+{
+  "query": "\nSELECT 'users' as table_name, COUNT(*) as count FROM users\nUNION ALL\nSELECT 'companies', COUNT(*) FROM companies\nUNION ALL\nSELECT 'courses', COUNT(*) FROM courses\nUNION ALL\nSELECT 'topics', COUNT(*) FROM topics\nUNION ALL\nSELECT 'questions', COUNT(*) FROM questions;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT 'users' as table_name, COUNT(*) as count FROM users\nUNION ALL\nSELECT 'companies', COUNT(*) FROM companies\nUNION ALL\nSELECT 'courses', COUNT(*) FROM courses\nUNION ALL\nSELECT 'topics', COUNT(*) FROM topics\nUNION ALL\nSELECT 'questions', COUNT(*) FROM questions;\n",
+  "rows": [
+    {
+      "table_name": "users",
+      "count": "3"
+    },
+    {
+      "table_name": "questions",
+      "count": "37"
+    },
+    {
+      "table_name": "topics",
+      "count": "10"
+    },
+    {
+      "table_name": "courses",
+      "count": "3"
+    },
+    {
+      "table_name": "companies",
+      "count": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\tcount\nusers\t3\nquestions\t37\ntopics\t10\ncourses\t3\ncompanies\t1\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

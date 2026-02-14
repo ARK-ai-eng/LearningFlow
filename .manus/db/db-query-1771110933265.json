@@ -1,0 +1,28 @@
+{
+  "query": "\nSELECT \n  c.id as course_id,\n  c.title as course_title,\n  COUNT(DISTINCT t.id) as topic_count,\n  COUNT(q.id) as question_count\nFROM courses c\nLEFT JOIN topics t ON c.id = t.courseId\nLEFT JOIN questions q ON c.id = q.courseId\nGROUP BY c.id, c.title\nORDER BY c.id;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT \n  c.id as course_id,\n  c.title as course_title,\n  COUNT(DISTINCT t.id) as topic_count,\n  COUNT(q.id) as question_count\nFROM courses c\nLEFT JOIN topics t ON c.id = t.courseId\nLEFT JOIN questions q ON c.id = q.courseId\nGROUP BY c.id, c.title\nORDER BY c.id;\n",
+  "rows": [
+    {
+      "course_id": "4",
+      "course_title": "Datenschutz Grundlagen",
+      "topic_count": "3",
+      "question_count": "18"
+    },
+    {
+      "course_id": "5",
+      "course_title": "IT-Sicherheit Sensibilisierung",
+      "topic_count": "3",
+      "question_count": "18"
+    },
+    {
+      "course_id": "6",
+      "course_title": "Datenschutz Zertifizierung",
+      "topic_count": "4",
+      "question_count": "100"
+    }
+  ],
+  "messages": [],
+  "stdout": "course_id\tcourse_title\ttopic_count\tquestion_count\n4\tDatenschutz Grundlagen\t3\t18\n5\tIT-Sicherheit Sensibilisierung\t3\t18\n6\tDatenschutz Zertifizierung\t4\t100\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

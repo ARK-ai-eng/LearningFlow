@@ -1,0 +1,8 @@
+{
+  "query": "\nDELETE FROM users;\n\nINSERT INTO users (email, passwordHash, name, role, companyId, createdAt, updatedAt) VALUES\n('arton.ritter@aismarterflow.de', '$2b$10$/wada2SckoR6TtuRT9Ad7.hjoJ.C8l/pdOWqPRtwUEIcIzUbgc.Hu', 'Arton Ritter', 'admin', NULL, NOW(), NOW()),\n('test@me.com', '$2b$10$LG.aGLcs4Hyo5Hv2yJk/s.acc7rNSc2ij25Jszz3ZyKYu58nw6Vw2', 'FirmenAdmin', 'admin', 1, NOW(), NOW()),\n('testyou@me.com', '$2b$10$caelIRkDj44vbXLmSP455ObpxJbQcMPIB0ZuvgEzIquSmWa8u8f3y', 'Test User', 'user', 1, NOW(), NOW());\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nDELETE FROM users;\n\nINSERT INTO users (email, passwordHash, name, role, companyId, createdAt, updatedAt) VALUES\n('arton.ritter@aismarterflow.de', '$2b$10$/wada2SckoR6TtuRT9Ad7.hjoJ.C8l/pdOWqPRtwUEIcIzUbgc.Hu', 'Arton Ritter', 'admin', NULL, NOW(), NOW()),\n('test@me.com', '$2b$10$LG.aGLcs4Hyo5Hv2yJk/s.acc7rNSc2ij25Jszz3ZyKYu58nw6Vw2', 'FirmenAdmin', 'admin', 1, NOW(), NOW()),\n('testyou@me.com', '$2b$10$caelIRkDj44vbXLmSP455ObpxJbQcMPIB0ZuvgEzIquSmWa8u8f3y', 'Test User', 'user', 1, NOW(), NOW());\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1265 (01000) at line 4: Data truncated for column 'role' at row 1"
+  ]
+}

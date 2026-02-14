@@ -1,0 +1,26 @@
+{
+  "query": "\nSELECT 'courses' as table_name, COUNT(*) as count FROM courses\nUNION ALL\nSELECT 'topics', COUNT(*) FROM topics\nUNION ALL\nSELECT 'questions', COUNT(*) FROM questions\nUNION ALL\nSELECT 'companies', COUNT(*) FROM companies;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT 'courses' as table_name, COUNT(*) as count FROM courses\nUNION ALL\nSELECT 'topics', COUNT(*) FROM topics\nUNION ALL\nSELECT 'questions', COUNT(*) FROM questions\nUNION ALL\nSELECT 'companies', COUNT(*) FROM companies;\n",
+  "rows": [
+    {
+      "table_name": "questions",
+      "count": "37"
+    },
+    {
+      "table_name": "companies",
+      "count": "0"
+    },
+    {
+      "table_name": "courses",
+      "count": "3"
+    },
+    {
+      "table_name": "topics",
+      "count": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\tcount\nquestions\t37\ncompanies\t0\ncourses\t3\ntopics\t10\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

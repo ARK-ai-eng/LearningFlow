@@ -1,0 +1,94 @@
+{
+  "query": "\nSELECT \n  c.id as kurs_id,\n  c.title,\n  t.id as thema_id,\n  t.title as thema_titel,\n  COUNT(q.id) as fragen_anzahl\nFROM courses c\nLEFT JOIN topics t ON c.id = t.courseId\nLEFT JOIN questions q ON t.id = q.topicId\nWHERE c.id = 8\nGROUP BY c.id, c.title, t.id, t.title\nORDER BY t.orderIndex;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT \n  c.id as kurs_id,\n  c.title,\n  t.id as thema_id,\n  t.title as thema_titel,\n  COUNT(q.id) as fragen_anzahl\nFROM courses c\nLEFT JOIN topics t ON c.id = t.courseId\nLEFT JOIN questions q ON t.id = q.topicId\nWHERE c.id = 8\nGROUP BY c.id, c.title, t.id, t.title\nORDER BY t.orderIndex;\n",
+  "rows": [
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "24",
+      "thema_titel": "Phishing erkennen",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "25",
+      "thema_titel": "Sichere Passwörter",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "26",
+      "thema_titel": "Social Engineering",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "27",
+      "thema_titel": "E-Mail & Dateianhänge",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "28",
+      "thema_titel": "Geräte & Arbeitsplatzsicherheit",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "29",
+      "thema_titel": "MFA & Login-Missbrauch",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "30",
+      "thema_titel": "Cloud & Datenaustausch",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "31",
+      "thema_titel": "Updates & Fake-Updates",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "32",
+      "thema_titel": "Mobile Security",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "33",
+      "thema_titel": "Datenschutz & Datenklassifizierung",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "34",
+      "thema_titel": "USB & Fremdgeräte",
+      "fragen_anzahl": "1"
+    },
+    {
+      "kurs_id": "8",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "thema_id": "35",
+      "thema_titel": "Incident Reporting",
+      "fragen_anzahl": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "kurs_id\ttitle\tthema_id\tthema_titel\tfragen_anzahl\n8\tIT-Sicherheit Sensibilisierung\t24\tPhishing erkennen\t1\n8\tIT-Sicherheit Sensibilisierung\t25\tSichere Passwörter\t1\n8\tIT-Sicherheit Sensibilisierung\t26\tSocial Engineering\t1\n8\tIT-Sicherheit Sensibilisierung\t27\tE-Mail & Dateianhänge\t1\n8\tIT-Sicherheit Sensibilisierung\t28\tGeräte & Arbeitsplatzsicherheit\t1\n8\tIT-Sicherheit Sensibilisierung\t29\tMFA & Login-Missbrauch\t1\n8\tIT-Sicherheit Sensibilisierung\t30\tCloud & Datenaustausch\t1\n8\tIT-Sicherheit Sensibilisierung\t31\tUpdates & Fake-Updates\t1\n8\tIT-Sicherheit Sensibilisierung\t32\tMobile Security\t1\n8\tIT-Sicherheit Sensibilisierung\t33\tDatenschutz & Datenklassifizierung\t1\n8\tIT-Sicherheit Sensibilisierung\t34\tUSB & Fremdgeräte\t1\n8\tIT-Sicherheit Sensibilisierung\t35\tIncident Reporting\t1\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
