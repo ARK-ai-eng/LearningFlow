@@ -1,0 +1,16 @@
+{
+  "query": "\nSELECT \n  u.email,\n  COUNT(qp.id) as progress_count,\n  COUNT(DISTINCT qp.questionId) as unique_questions,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect_count\nFROM users u\nLEFT JOIN question_progress qp ON u.id = qp.userId\nWHERE u.email = 'testyou@me.com'\nGROUP BY u.id, u.email;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT \n  u.email,\n  COUNT(qp.id) as progress_count,\n  COUNT(DISTINCT qp.questionId) as unique_questions,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect_count\nFROM users u\nLEFT JOIN question_progress qp ON u.id = qp.userId\nWHERE u.email = 'testyou@me.com'\nGROUP BY u.id, u.email;\n",
+  "rows": [
+    {
+      "email": "testyou@me.com",
+      "progress_count": "0",
+      "unique_questions": "0",
+      "incorrect_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "email\tprogress_count\tunique_questions\tincorrect_count\ntestyou@me.com\t0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

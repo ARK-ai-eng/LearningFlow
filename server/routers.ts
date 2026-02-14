@@ -804,6 +804,7 @@ export const appRouter = router({
         const answered = uniqueQuestions.size;
         // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
         const correct = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
+        const incorrect = progress.filter((p: any) => p.firstAttemptStatus === 'incorrect').length;
         const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
         
         // Topic-Fortschritt berechnen
@@ -831,7 +832,7 @@ export const appRouter = router({
           total,
           answered,
           correct,
-          incorrect: answered - correct,
+          incorrect,
           percentage,
           topicProgress,
         };
