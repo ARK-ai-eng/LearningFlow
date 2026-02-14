@@ -1,0 +1,9 @@
+{
+  "query": "SELECT \n  qp.questionId,\n  qp.firstAttemptStatus,\n  qp.attemptCount,\n  q.questionText\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN users u ON qp.userId = u.id\nWHERE u.email = 'testyou@me.com'\n  AND q.courseId = 2\n  AND qp.firstAttemptStatus = 'incorrect';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  qp.questionId,\n  qp.firstAttemptStatus,\n  qp.attemptCount,\n  q.questionText\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nJOIN users u ON qp.userId = u.id\nWHERE u.email = 'testyou@me.com'\n  AND q.courseId = 2\n  AND qp.firstAttemptStatus = 'incorrect';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 173
+}

@@ -931,3 +931,15 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Fix 2: Auto-Sync courseId in createQuestion() und updateQuestion() implementiert
   - Ergebnis: 102 Fragen mit falscher courseId korrigiert
   - Prävention: Backend synchronisiert courseId automatisch beim Erstellen/Updaten von Fragen
+
+## Sprint 10 - Bugfixes (14.02.2026)
+
+- [x] BUG: Fortschritt zeigt 100% obwohl Fragen falsch beantwortet wurden
+  - Root Cause: Frage Q30003 hatte falsche courseId → wurde nicht in getCourseStats gezählt
+  - Fix: SQL UPDATE um alle Fragen mit falscher courseId zu korrigieren (102 Fragen)
+  - Fix: Auto-Sync in createQuestion() und updateQuestion() - courseId wird aus Topic übernommen
+- [x] BUG: Antworten springen bei Quiz-Wiederholungen (deterministisches Shuffling basierend auf questionId + userId)
+  - Root Cause: Math.random() in Fisher-Yates Shuffle war nicht deterministisch
+  - Fix: Seeded Random Generator (LCG) basierend auf questionId implementiert
+  - Fix: QuizView.tsx, TopicView.tsx, ExamView.tsx verwenden jetzt seededShuffleArray()
+  - Ergebnis: Antworten bleiben bei Wiederholungen in derselben Reihenfolge

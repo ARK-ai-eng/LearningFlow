@@ -1,0 +1,241 @@
+{
+  "query": "SELECT \n  u.id,\n  u.email,\n  u.firstName,\n  u.lastName,\n  COUNT(DISTINCT qp.questionId) as answered\nFROM users u\nLEFT JOIN question_progress qp ON u.id = qp.userId\nLEFT JOIN questions q ON qp.questionId = q.id AND q.courseId = 2\nGROUP BY u.id\nHAVING answered > 0\nORDER BY answered DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  u.id,\n  u.email,\n  u.firstName,\n  u.lastName,\n  COUNT(DISTINCT qp.questionId) as answered\nFROM users u\nLEFT JOIN question_progress qp ON u.id = qp.userId\nLEFT JOIN questions q ON qp.questionId = q.id AND q.courseId = 2\nGROUP BY u.id\nHAVING answered > 0\nORDER BY answered DESC;",
+  "rows": [
+    {
+      "id": "180002",
+      "email": "testyou@me.com",
+      "firstName": "MitarbeiterA",
+      "lastName": "MitarbeiterA",
+      "answered": "19"
+    },
+    {
+      "id": "390003",
+      "email": "test-progress-1770463182591@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "390001",
+      "email": "test-progress-1770463051248@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "240001",
+      "email": "test-progress-1769686709142@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "420001",
+      "email": "test-progress-1770470785498@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "240003",
+      "email": "test-progress-1769687018108@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "390005",
+      "email": "test-progress-1770463216576@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "450001",
+      "email": "test-progress-1771098256041@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "240005",
+      "email": "test-progress-1769687275411@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "240007",
+      "email": "test-progress-1769687551346@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "300001",
+      "email": "test-progress-1769693511049@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "240009",
+      "email": "test-progress-1769687953197@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "360001",
+      "email": "test-progress-1770461205820@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "240011",
+      "email": "test-progress-1769688290614@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "330003",
+      "email": "test-progress-1770459722914@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "270001",
+      "email": "test-progress-1769689469278@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "210001",
+      "email": "test-progress-1769685368732@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "6"
+    },
+    {
+      "id": "270002",
+      "email": "test-all-correct-1769689471446@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "300002",
+      "email": "test-all-correct-1769693513329@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "240012",
+      "email": "test-all-correct-1769688292811@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "330004",
+      "email": "test-all-correct-1770459723715@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "240010",
+      "email": "test-all-correct-1769687955302@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "360002",
+      "email": "test-all-correct-1770461206555@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "240008",
+      "email": "test-all-correct-1769687553465@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "390002",
+      "email": "test-all-correct-1770463052046@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "240006",
+      "email": "test-all-correct-1769687277532@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "390004",
+      "email": "test-all-correct-1770463183306@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "240004",
+      "email": "test-all-correct-1769687020365@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "390006",
+      "email": "test-all-correct-1770463217304@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "240002",
+      "email": "test-all-correct-1769686711307@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "420002",
+      "email": "test-all-correct-1770470786314@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "210002",
+      "email": "test-all-correct-1769685371036@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    },
+    {
+      "id": "450002",
+      "email": "test-all-correct-1771098256896@test.com",
+      "firstName": "NULL",
+      "lastName": "NULL",
+      "answered": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tfirstName\tlastName\tanswered\n180002\ttestyou@me.com\tMitarbeiterA\tMitarbeiterA\t19\n390003\ttest-progress-1770463182591@test.com\tNULL\tNULL\t6\n390001\ttest-progress-1770463051248@test.com\tNULL\tNULL\t6\n240001\ttest-progress-1769686709142@test.com\tNULL\tNULL\t6\n420001\ttest-progress-1770470785498@test.com\tNULL\tNULL\t6\n240003\ttest-progress-1769687018108@test.com\tNULL\tNULL\t6\n390005\ttest-progress-1770463216576@test.com\tNULL\tNULL\t6\n450001\ttest-progress-1771098256041@test.com\tNULL\tNULL\t6\n240005\ttest-progress-1769687275411@test.com\tNULL\tNULL\t6\n240007\ttest-progress-1769687551346@test.com\tNULL\tNULL\t6\n300001\ttest-progress-1769693511049@test.com\tNULL\tNULL\t6\n240009\ttest-progress-1769687953197@test.com\tNULL\tNULL\t6\n360001\ttest-progress-1770461205820@test.com\tNULL\tNULL\t6\n240011\ttest-progress-1769688290614@test.com\tNULL\tNULL\t6\n330003\ttest-progress-1770459722914@test.com\tNULL\tNULL\t6\n270001\ttest-progress-1769689469278@test.com\tNULL\tNULL\t6\n210001\ttest-progress-1769685368732@test.com\tNULL\tNULL\t6\n270002\ttest-all-correct-1769689471446@test.com\tNULL\tNULL\t1\n300002\ttest-all-correct-1769693513329@test.com\tNULL\tNULL\t1\n240012\ttest-all-correct-1769688292811@test.com\tNULL\tNULL\t1\n330004\ttest-all-correct-1770459723715@test.com\tNULL\tNULL\t1\n240010\ttest-all-correct-1769687955302@test.com\tNULL\tNULL\t1\n360002\ttest-all-correct-1770461206555@test.com\tNULL\tNULL\t1\n240008\ttest-all-correct-1769687553465@test.com\tNULL\tNULL\t1\n390002\ttest-all-correct-1770463052046@test.com\tNULL\tNULL\t1\n240006\ttest-all-correct-1769687277532@test.com\tNULL\tNULL\t1\n390004\ttest-all-correct-1770463183306@test.com\tNULL\tNULL\t1\n240004\ttest-all-correct-1769687020365@test.com\tNULL\tNULL\t1\n390006\ttest-all-correct-1770463217304@test.com\tNULL\tNULL\t1\n240002\ttest-all-correct-1769686711307@test.com\tNULL\tNULL\t1\n420002\ttest-all-correct-1770470786314@test.com\tNULL\tNULL\t1\n210002\ttest-all-correct-1769685371036@test.com\tNULL\tNULL\t1\n450002\ttest-all-correct-1771098256896@test.com\tNULL\tNULL\t1\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

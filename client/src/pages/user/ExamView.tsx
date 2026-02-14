@@ -6,16 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 // Toast functionality removed - using console.log for now
-
-// Shuffle helper
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { seededShuffleArray } from "@/lib/seededShuffle";
 
 export default function ExamView() {
   const { id } = useParams<{ id: string }>();
@@ -59,19 +50,20 @@ export default function ExamView() {
   const examQuestions = useMemo(() => {
     if (!allExamQuestions || allExamQuestions.length === 0) return [];
     
-    // Shuffle and take 20 questions
-    const shuffled = shuffleArray(allExamQuestions);
+    // Shuffle questions using exam ID as seed (consistent per exam)
+    const examSeed = courseId * 1000;
+    const shuffled = seededShuffleArray(allExamQuestions, examSeed);
     const selected = shuffled.slice(0, Math.min(20, shuffled.length));
     
-    // Shuffle options for each question
+    // Shuffle options for each question using questionId as seed
     return selected.map(q => ({
       ...q,
-      shuffledOptions: shuffleArray([
+      shuffledOptions: seededShuffleArray([
         { label: 'A', text: q.optionA },
         { label: 'B', text: q.optionB },
         { label: 'C', text: q.optionC },
         { label: 'D', text: q.optionD },
-      ])
+      ], q.id)
     }));
   }, [allExamQuestions]);
 

@@ -13,16 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-// Fisher-Yates Shuffle
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { seededShuffleArray } from "@/lib/seededShuffle";
 
 type ShuffledOption = {
   label: 'A' | 'B' | 'C' | 'D';
@@ -85,7 +76,9 @@ export default function TopicView() {
         { label: 'D', text: q.optionD },
       ];
 
-      const shuffled = shuffleArray(options);
+      // Use questionId as seed for deterministic shuffling
+      // This ensures answers stay in the same order on repeat
+      const shuffled = seededShuffleArray(options, q.id);
       const correctIndex = shuffled.findIndex(opt => opt.label === q.correctAnswer);
       const newCorrectAnswer = ['A', 'B', 'C', 'D'][correctIndex] as 'A' | 'B' | 'C' | 'D';
 
