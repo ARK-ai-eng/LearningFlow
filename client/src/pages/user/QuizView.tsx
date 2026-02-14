@@ -197,22 +197,15 @@ export default function QuizView() {
   };
 
   const handleNextQuestion = () => {
-    // Invalidate progress to refresh data (moved from submitAnswer.onSuccess)
-    utils.question.getProgressByCourse.invalidate({ courseId });
-
     if (isLastQuestion) {
+      // Check BEFORE invalidate to avoid race condition
       // In repeat mode: Check if all repeat questions are now correct
       if (isRepeatMode) {
         // Refresh stats to check current state
         const currentIncorrect = questionsWithStatus.filter(q => q.status === 'incorrect').length;
         
-        if (currentIncorrect === 0) {
-          // All repeat questions answered correctly! Show success dialog
-          setShowRepeatDialog(true);
-        } else {
-          // Still some incorrect - ask if user wants to repeat again
-          setShowRepeatDialog(true);
-        }
+        // Show dialog immediately (before invalidate clears currentQuestion)
+        setShowRepeatDialog(true);
       } else {
         // Normal mode: Show repeat dialog if there are incorrect answers
         if (stats.incorrect > 0) {
@@ -228,6 +221,10 @@ export default function QuizView() {
       setSelectedAnswer(null);
       setHasAnswered(false);
     }
+    
+    // Invalidate AFTER dialog logic to prevent race condition
+    // This ensures dialog is shown before currentQuestion becomes undefined
+    utils.question.getProgressByCourse.invalidate({ courseId });
   };
 
   const handleRepeatIncorrect = () => {
