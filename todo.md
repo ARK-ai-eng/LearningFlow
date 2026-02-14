@@ -824,3 +824,21 @@ Lösung: Quiz über alle Fragen eines Kurses, Themen nur zur Organisation
 - [x] QuizView.tsx: Mappe firstAttemptStatus und lastAttemptCorrect in questionsWithStatus
 - [x] TopicView.tsx: Gleicher Fix
 - [x] Dialog erscheint jetzt korrekt
+
+## KRITISCH - Wiederholungsmodus aktualisiert firstAttemptStatus NICHT (14.02.2026)
+
+### Problem
+1. User beantwortet Wiederholungs-Frage KORREKT (grüner Rahmen)
+2. Dialog "Nochmal wiederholen?" erscheint trotzdem - sagt "Du hast noch 2 fehlerhafte Fragen"
+3. Nach Pause: Quiz startet von vorne, Progress nicht gespeichert
+
+### Root Cause
+- [x] upsertQuestionProgress aktualisiert firstAttemptStatus im UPDATE-Fall NICHT
+- [x] Backend setzt nur status und lastAttemptCorrect
+- [x] firstAttemptStatus bleibt 'incorrect' auch nach korrekter Wiederholung
+- [x] GEFIXT: firstAttemptStatus wird jetzt auf 'correct' gesetzt wenn Wiederholung korrekt
+
+### Lösung
+- [x] Backend-Logik: firstAttemptStatus wird auf 'correct' gesetzt wenn Wiederholungs-Antwort korrekt
+- [x] Regel: Score steigt NUR wenn Antwort korrekt ist (egal ob erste oder Wiederholung)
+- [x] Wenn User bei Wiederholung wieder falsch → firstAttemptStatus bleibt 'incorrect'

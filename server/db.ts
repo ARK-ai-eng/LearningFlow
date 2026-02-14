@@ -566,12 +566,15 @@ export async function upsertQuestionProgress(data: {
   
   if (existing.length > 0) {
     // Update: Erhöhe attemptCount, update lastAttemptCorrect
-    // ABER: firstAttemptStatus bleibt unverändert! (ADR-013)
+    // firstAttemptStatus: Wird auf 'correct' gesetzt wenn Wiederholung korrekt, sonst bleibt es
     await db
       .update(questionProgress)
       .set({
         // DEPRECATED: status kept for backward compatibility, but not used
         status: data.isCorrect ? 'correct' : 'incorrect',
+        
+        // Update firstAttemptStatus: Score steigt NUR wenn Antwort korrekt
+        firstAttemptStatus: data.isCorrect ? 'correct' : existing[0].firstAttemptStatus,
         
         // Update last attempt result (for UI feedback)
         lastAttemptCorrect: data.isCorrect,
