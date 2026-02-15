@@ -1652,3 +1652,17 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - [x] Content in `flex-1` Wrapper
 - [x] Browser-Test: Badges aligned prüfen - PERFEKT aligned! ✓
 - [x] Checkpoint erstellen
+
+
+## 🎨 Roadmap-Section Optimierung (15.02.2026 20:00)
+
+**Ziel:** Zeitliche Reihenfolge korrigieren + Option 2 (Badge absolut positioniert) für besseres Responsive-Verhalten
+
+- [x] Zeitliche Reihenfolge korrigieren: Q2 → Q3 → Q4 (vorher: Q3 → Q2 → Q4)
+- [x] Option 2 implementieren: Badge absolut positioniert (oben rechts)
+  - [x] Icon wieder zentriert (`mx-auto`)
+  - [x] Badge `absolute top-4 right-4`
+  - [x] Card `relative` für Positioning-Context
+  - [x] `min-h` entfernen (dynamische Höhe)
+- [x] Responsive testen (Desktop + Mobile) - PERFEKT! ✓
+- [x] Checkpoint erstellen

@@ -237,58 +237,46 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Multi-Portal Integration */}
-            <div className="glass-card p-8 text-center min-h-[320px] flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                  <GraduationCap className="w-8 h-8 text-primary-foreground" />
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                  Q3 2026
-                </span>
+            {/* Mobile App - Q2 2026 */}
+            <div className="glass-card p-8 text-center relative">
+              <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Q2 2026
+              </span>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-6">
+                <Smartphone className="w-8 h-8 text-white" />
               </div>
-              <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-semibold mb-3">Multi-Portal-Integration</h3>
-                <p className="text-muted-foreground">
-                  Zentrale Übersicht aller Lernaktivitäten: Udemy, LinkedIn Learning, SAP SuccessFactors und mehr.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold mb-3">Mobile App</h3>
+              <p className="text-muted-foreground">
+                Lernen Sie unterwegs mit unserer iOS & Android App. Offline-Modus inklusive.
+              </p>
             </div>
 
-            {/* Mobile App */}
-            <div className="glass-card p-8 text-center min-h-[320px] flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                  <Smartphone className="w-8 h-8 text-white" />
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Q2 2026
-                </span>
+            {/* Multi-Portal Integration - Q3 2026 */}
+            <div className="glass-card p-8 text-center relative">
+              <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                Q3 2026
+              </span>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6">
+                <GraduationCap className="w-8 h-8 text-primary-foreground" />
               </div>
-              <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-semibold mb-3">Mobile App</h3>
-                <p className="text-muted-foreground">
-                  Lernen Sie unterwegs mit unserer iOS & Android App. Offline-Modus inklusive.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold mb-3">Multi-Portal-Integration</h3>
+              <p className="text-muted-foreground">
+                Zentrale Übersicht aller Lernaktivitäten: Udemy, LinkedIn Learning, SAP SuccessFactors und mehr.
+              </p>
             </div>
 
-            {/* White-Label */}
-            <div className="glass-card p-8 text-center min-h-[320px] flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
-                  <Palette className="w-8 h-8 text-white" />
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  Q4 2026
-                </span>
+            {/* White-Label - Q4 2026 */}
+            <div className="glass-card p-8 text-center relative">
+              <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                Q4 2026
+              </span>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center mx-auto mb-6">
+                <Palette className="w-8 h-8 text-white" />
               </div>
-              <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-semibold mb-3">White-Label Option</h3>
-                <p className="text-muted-foreground">
-                  Passen Sie die Plattform an Ihr Corporate Design an. Logo, Farben und Domain.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold mb-3">White-Label Option</h3>
+              <p className="text-muted-foreground">
+                Passen Sie die Plattform an Ihr Corporate Design an. Logo, Farben und Domain.
+              </p>
             </div>
           </div>
         </div>
