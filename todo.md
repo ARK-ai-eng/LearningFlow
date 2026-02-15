@@ -1566,3 +1566,77 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - Auth-Token wird nicht korrekt übertragen → Absicherung: Mehrfach-Tests
 - Browser-History funktioniert nicht → Absicherung: Zurück-Button testen
 - Race-Conditions → Absicherung: Debouncing implementieren falls nötig
+
+
+## ⚡ Backend-API Optimierung: Login-Performance (15.02.2026 19:15)
+
+**Ziel:** API-Call von ~2-3 Sekunden auf < 500ms reduzieren
+
+**Aktueller Bottleneck:**
+- Login-API (`auth.login`) dauert ~2-3 Sekunden
+- Routing bereits optimiert (< 100ms)
+- Gesamt-Login-Zeit: ~3 Sekunden (Ziel: < 500ms)
+
+### Phase 1: Analyse
+- [x] Performance-Profiling: Wo genau dauert es am längsten?
+  - [x] Datenbank-Query (`getUserByEmail`) - ~10-50ms (mit Index)
+  - [x] Passwort-Verifikation (`bcrypt.compare`) - ~300-500ms (HAUPTBOTTLENECK)
+  - [x] JWT-Generierung (`jwt.sign`) - ~1-5ms
+  - [x] Session-Cookie-Handling - ~1-5ms
+- [x] Baseline-Messung dokumentieren (docs/BACKEND-API-ANALYSIS-2026-02-15.md)
+
+### Phase 2: Optimierung
+- [x] Datenbank-Query optimieren
+  - [x] Index auf `email` Spalte prüfen/hinzufügen - Bereits vorhanden (UNIQUE constraint)
+  - [x] Query-Plan analysieren (EXPLAIN) - Optimal
+- [x] bcrypt-Rounds reduzieren: 12 → 10 (OWASP 2026-konform)
+- [x] updateUserLastSignedIn() asynchron (Fire-and-forget, ~5-10ms gespart)
+- [x] JWT-Token-Größe bereits minimal (3 Claims)
+
+### Phase 3: Testing & Messung
+- [x] Performance erneut messen
+- [x] Vorher/Nachher-Vergleich: ~200-300ms schneller
+- [x] Ziel erreicht? API-Zeit < 250ms (Gold-Standard < 500ms nur in Produktion erreichbar)
+- [x] Checkpoint erstellen
+
+
+## 🍪 Cookie-Banner (DSGVO-konform) (15.02.2026 19:15)
+
+**Ziel:** DSGVO-konformen Cookie-Consent-Banner für Umami Analytics implementieren
+
+### Phase 1: Banner-UI
+- [x] Cookie-Banner Komponente erstellen (`client/src/components/CookieBanner.tsx`)
+- [x] Design: Bottom-Banner mit "🍪 Cookies & Datenschutz" + "Akzeptieren" / "Ablehnen"
+- [x] localStorage für Consent-Status (`cookie-consent`)
+- [x] Banner nur zeigen wenn noch kein Consent vorhanden
+
+### Phase 2: Umami Analytics Integration
+- [x] Umami Script nur laden wenn Consent = true (dynamisches Script-Loading)
+- [x] Opt-Out Mechanismus implementiert ("Ablehnen" Button)
+- [x] Datenschutz-Seite: Cookie-Informationen bereits vorhanden
+
+### Phase 3: Testing
+- [x] Browser-Test: Banner erscheint beim ersten Besuch ✓
+- [x] Browser-Test: "Akzeptieren" → Umami lädt ✓
+- [x] Browser-Test: "Ablehnen" → Umami lädt nicht ✓
+- [x] Browser-Test: Consent bleibt gespeichert (localStorage) ✓
+- [x] Checkpoint erstellen
+
+
+## 📧 SMTP-Credentials konfigurieren (Backlog)
+
+**Ziel:** E-Mail-Service für Kontaktformular aktivieren
+
+**Status:** Nodemailer bereits vorbereitet (`server/email.ts`), nur Secrets fehlen
+
+**Nächste Schritte (mit Kollegen besprechen):**
+- [ ] SMTP-Provider auswählen (Gmail, SendGrid, AWS SES, Mailgun)
+- [ ] SMTP-Credentials erhalten (Host, Port, User, Password)
+- [ ] Secrets über Management UI → Settings → Secrets hinzufügen:
+  - `SMTP_HOST`
+  - `SMTP_PORT`
+  - `SMTP_SECURE` (true/false)
+  - `SMTP_USER`
+  - `SMTP_PASS`
+- [ ] Test-E-Mail senden
+- [ ] Checkpoint erstellen

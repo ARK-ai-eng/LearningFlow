@@ -109,8 +109,8 @@ export const appRouter = router({
           throw new TRPCError({ code: "UNAUTHORIZED", message: "E-Mail oder Passwort falsch" });
         }
         
-        // Last sign in aktualisieren
-        await db.updateUserLastSignedIn(user.id);
+        // Last sign in aktualisieren (asynchron, blockiert Response nicht)
+        db.updateUserLastSignedIn(user.id).catch(err => console.error('[Login] Failed to update lastSignedIn:', err));
         
         // JWT Token erstellen
         const token = createToken(user.id, user.email, user.role);

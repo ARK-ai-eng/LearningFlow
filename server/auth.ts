@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ENV } from './_core/env';
 
-const SALT_ROUNDS = 12;
+const SALT_ROUNDS = 10; // Optimiert für Performance (OWASP 2026: 10-12 Rounds empfohlen)
 
 // Passwort hashen
 export async function hashPassword(password: string): Promise<string> {
