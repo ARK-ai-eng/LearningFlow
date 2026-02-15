@@ -1313,3 +1313,11 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Tests schreiben und Script testen
 - [x] Dokumentation erstellen
 - [x] Checkpoint erstellen
+
+
+## ⏰ Cron-Job für Data-Integrity-Check (15.02.2026)
+
+- [x] Cron-Job Script erstellen mit Logging
+- [x] Cron-Job installieren und testen (Script bereit, Anleitung erstellt)
+- [x] Dokumentation aktualisieren
+- [x] Checkpoint erstellen

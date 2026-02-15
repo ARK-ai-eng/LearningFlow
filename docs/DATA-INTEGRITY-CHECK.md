@@ -154,11 +154,17 @@ Fixed by type:
 
 ### Regelmäßig (empfohlen)
 
-Führe das Script **wöchentlich** aus um Inkonsistenzen frühzeitig zu erkennen:
+Führe das Script **wöchentlich** aus um Inkonsistenzen frühzeitig zu erkennen.
 
+**✅ Automatisierung verfügbar:** Ein vorkonfiguriertes Cron-Job Script ist bereits erstellt:
+- **Script:** `scripts/cron-integrity-check.sh`
+- **Zeitplan:** Jeden Montag um 3 Uhr
+- **Features:** Automatisches Logging, Error-Handling, Owner-Benachrichtigung
+- **Installation:** Siehe `docs/CRON-JOB-INSTALLATION.md`
+
+**Manueller Test:**
 ```bash
-# Jeden Montag um 3 Uhr morgens (Cron-Job)
-0 3 * * 1 cd /path/to/project && npx tsx scripts/check-data-integrity.ts --fix >> /var/log/integrity-check.log 2>&1
+./scripts/cron-integrity-check.sh
 ```
 
 ### Nach größeren Änderungen
