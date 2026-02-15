@@ -1372,3 +1372,30 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] ADR-018 erstellt (Kurs-Wiederholung: Zwei Features)
 - [x] CRITICAL-DATABASE-MIGRATION-RULES.md aktualisiert (Data-Integrity-Check)
 - [x] Checkpoint erstellen
+
+
+## 🎨 Landing Page Überarbeitung (15.02.2026 15:40)
+
+- [ ] "Demo ansehen" Button deaktivieren/entfernen
+- [ ] "Jetzt starten" Button → direkt zur Anmeldung (Login-Seite)
+- [ ] Überschrift ändern: "Drei Kurstypen für jeden Bedarf" → "Kurstypen für jeden Bedarf"
+- [ ] Awareness Schulungen: "3 von 5 richtigen Antworten" Text entfernen (Regel gilt nicht mehr)
+- [ ] Neuer Kurstyp hinzufügen: "Unterweisung des Personals in Arbeitssicherheit" (firmen-spezifischer Modul)
+- [ ] Roadmap-Section hinzufügen: "Was kommt als nächstes?"
+  - Geplant: Multi-Portal-Integration (Udemy, LinkedIn Learning, etc.)
+  - Kunde soll sehen was ansteht und was in Zukunft kommt
+- [ ] Testen und Checkpoint erstellen
+
+
+## 🎨 Landing Page Überarbeitung (15.02.2026 15:40)
+
+- [x] "Demo ansehen" Button deaktivieren/entfernen
+- [x] "Jetzt starten" Button → direkt zur Anmeldung (Login-Seite)
+- [x] Überschrift ändern: "Drei Kurstypen für jeden Bedarf" → "Kurstypen für jeden Bedarf"
+- [x] Awareness Schulungen: "3 von 5 richtigen Antworten" Text entfernen (Regel gilt nicht mehr)
+- [x] Neuer Kurstyp hinzufügen: "Unterweisung des Personals in Arbeitssicherheit" (firmen-spezifischer Modul)
+- [x] Roadmap-Section hinzufügen: "Was kommt als nächstes?"
+  - Geplant: Multi-Portal-Integration (Udemy, LinkedIn Learning, etc.)
+  - Kunde soll sehen was ansteht und was in Zukunft kommt
+- [x] Testen und Checkpoint erstellen
+- [x] Dokumentation erstellt: docs/LANDING-PAGE-REDESIGN-2026-02-15.md

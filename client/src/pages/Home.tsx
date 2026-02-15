@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 // OAuth entfernt - alle nutzen /login
 import { useLocation, useSearch } from "wouter";
 import { useEffect, useState } from "react";
-import { GraduationCap, Shield, Award, ArrowRight, Sparkles, AlertCircle, X } from "lucide-react";
+import { GraduationCap, Shield, Award, ArrowRight, Sparkles, AlertCircle, X, Briefcase, Rocket, Smartphone, Palette } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Home() {
@@ -153,13 +153,6 @@ export default function Home() {
                 Jetzt starten
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="text-lg px-8"
-              >
-                Demo ansehen
-              </Button>
             </div>
           </div>
         </div>
@@ -169,13 +162,13 @@ export default function Home() {
       <section className="py-24 bg-card/30">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Drei Kurstypen für jeden Bedarf</h2>
+            <h2 className="text-3xl font-bold mb-4">Kurstypen für jeden Bedarf</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Von optionalen Lernmodulen bis zu zertifizierten Pflichtschulungen
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Learning Card */}
             <div className="course-card">
               <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
@@ -197,8 +190,7 @@ export default function Home() {
               <span className="badge-sensitization mb-4 inline-block">Sensitization</span>
               <h3 className="text-xl font-semibold mb-3">Sensibilisierung</h3>
               <p className="text-muted-foreground">
-                Awareness-Schulungen mit Mini-Quiz. 
-                Bestehen Sie mit mindestens 3 von 5 richtigen Antworten pro Thema.
+                Awareness-Schulungen mit interaktiven Fragen und sofortigem Feedback.
               </p>
             </div>
 
@@ -213,6 +205,78 @@ export default function Home() {
                 Pflichtschulungen mit Jahresprüfung. 
                 20 Fragen, 80% Bestehensgrenze, 15 Minuten Zeitlimit.
               </p>
+            </div>
+
+            {/* Arbeitsschutz Card */}
+            <div className="course-card">
+              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6">
+                <Briefcase className="w-7 h-7 text-blue-400" />
+              </div>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-4">Arbeitsschutz</span>
+              <h3 className="text-xl font-semibold mb-3">Unterweisung Arbeitssicherheit</h3>
+              <p className="text-muted-foreground">
+                Firmen-spezifische Unterweisungen nach §12 ArbSchG mit digitaler Unterschrift und Audit-Trail.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Roadmap Section */}
+      <section className="py-24 bg-gradient-to-br from-accent/5 via-background to-primary/5">
+        <div className="container">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
+              <Rocket className="w-4 h-4 text-accent" />
+              <span className="text-sm text-accent">In Entwicklung</span>
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Was kommt als nächstes?</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Wir arbeiten kontinuierlich an neuen Features, um Ihre Lernerfahrung zu verbessern
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Multi-Portal Integration */}
+            <div className="glass-card p-8 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6">
+                <GraduationCap className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Multi-Portal-Integration</h3>
+              <p className="text-muted-foreground mb-4">
+                Zentrale Übersicht aller Lernaktivitäten: Udemy, LinkedIn Learning, SAP SuccessFactors und mehr.
+              </p>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                Q3 2026
+              </span>
+            </div>
+
+            {/* Mobile App */}
+            <div className="glass-card p-8 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-6">
+                <Smartphone className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Mobile App</h3>
+              <p className="text-muted-foreground mb-4">
+                Lernen Sie unterwegs mit unserer iOS & Android App. Offline-Modus inklusive.
+              </p>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Q2 2026
+              </span>
+            </div>
+
+            {/* White-Label */}
+            <div className="glass-card p-8 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center mx-auto mb-6">
+                <Palette className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">White-Label Option</h3>
+              <p className="text-muted-foreground mb-4">
+                Passen Sie die Plattform an Ihr Corporate Design an. Logo, Farben und Domain.
+              </p>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                Q4 2026
+              </span>
             </div>
           </div>
         </div>
