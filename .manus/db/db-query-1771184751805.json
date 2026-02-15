@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, email, role, name FROM users LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, email, role, name FROM users LIMIT 5;",
+  "rows": [
+    {
+      "id": "5",
+      "email": "arton.ritter@aismarterflow.de",
+      "role": "sysadmin",
+      "name": "Arton Ritter"
+    },
+    {
+      "id": "6",
+      "email": "test@me.com",
+      "role": "companyadmin",
+      "name": "FirmenAdmin"
+    },
+    {
+      "id": "7",
+      "email": "testyou@me.com",
+      "role": "user",
+      "name": "Test User"
+    },
+    {
+      "id": "30001",
+      "email": "test-progress-1771160497764@test.com",
+      "role": "user",
+      "name": "Test User"
+    },
+    {
+      "id": "30002",
+      "email": "test-all-correct-1771160498994@test.com",
+      "role": "user",
+      "name": "Test User 2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trole\tname\n5\tarton.ritter@aismarterflow.de\tsysadmin\tArton Ritter\n6\ttest@me.com\tcompanyadmin\tFirmenAdmin\n7\ttestyou@me.com\tuser\tTest User\n30001\ttest-progress-1771160497764@test.com\tuser\tTest User\n30002\ttest-all-correct-1771160498994@test.com\tuser\tTest User 2\n",
+  "stderr": "",
+  "execution_time_ms": 215
+}

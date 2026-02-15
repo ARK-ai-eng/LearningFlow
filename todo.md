@@ -1666,3 +1666,11 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - [x] `min-h` entfernen (dynamische Höhe)
 - [x] Responsive testen (Desktop + Mobile) - PERFEKT! ✓
 - [x] Checkpoint erstellen
+
+
+## Sprint 15 - Responsive-Optimierung (15.02.2026)
+
+### Responsive-Test & Fixes
+- [x] Kompletter Responsive-Test durchgeführt (Desktop 1920px, Tablet 768px, Mobile 375px)
+- [x] Roadmap-Section Mobile-Fix: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 (statt md:grid-cols-3)
+- [ ] Optional: Kurstypen-Cards Mobile-Optimierung (grid-cols-1 sm:grid-cols-2 lg:grid-cols-4)
