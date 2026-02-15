@@ -1210,3 +1210,85 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Checkliste
 
 **Hinweis:** Cron-Job NICHT implementiert (Sandbox ist temporär, Cron-Jobs gehen nach Neustart verloren). Stattdessen: Manuelles Backup vor wichtigen Änderungen.
+
+
+---
+
+## 🚀 Strategische Features (Zukünftige Entwicklung - 15.02.2026)
+
+**Dokumentation:** `docs/decisions/ADR-017-mandantenfaehigkeit-multi-portal.md`
+
+### 📱 Mobile App
+- [ ] React Native Setup (iOS + Android)
+- [ ] Offline-Modus (SQLite + Sync)
+- [ ] Push-Notifications (Erinnerungen, neue Kurse)
+- [ ] App Store Submission
+
+### 🏢 Mandantenfähigkeit
+- [ ] Schema: `courses.companyId` (Kurse pro Firma)
+- [ ] Schema: `companies` erweitern (logo, primaryColor, secondaryColor, customDomain)
+- [ ] Backend: Kurs-Filtering nach Firma
+- [ ] Frontend: White-Label (Logo, Farben pro Firma)
+- [ ] Custom Domains (z.B. `academy.firma-xyz.de`)
+
+### ✍️ Arbeitsunterweisung (§12 ArbSchG)
+- [ ] Schema: `instruction_signatures` Tabelle
+- [ ] Kurs-Typ: `instruction` hinzufügen
+- [ ] Frontend: Unterschriften-Canvas (digitale Signatur)
+- [ ] Backend: Unterschrift speichern + Audit-Trail (IP, Device, Timestamp)
+- [ ] PDF-Zertifikat mit Unterschrift generieren
+- [ ] Wiedervorlage-System (jährliche Erinnerung)
+- [ ] FirmenAdmin: Unterschriften-Übersicht für Audits
+
+**Use-Case:** Rechtlich verpflichtende Dokumentation von Arbeitsschutz-Unterweisungen
+
+### 🔌 Multi-Portal-Integration (Learning Hub)
+- [ ] Schema: `external_portals`, `external_courses`, `external_progress`
+- [ ] FirmenAdmin: Externe Portale hinterlegen (LinkedIn, Udemy, SAP, Moodle)
+- [ ] Dashboard: Zentrale Übersicht (intern + extern)
+- [ ] Manuelle Progress-Eingabe + CSV-Import
+- [ ] API-Integration: LinkedIn Learning
+- [ ] API-Integration: Udemy Business
+- [ ] SCORM 1.2/2004 Support
+- [ ] xAPI (Tin Can API) Support
+- [ ] LTI 1.3 Integration (SAP SuccessFactors, Moodle)
+- [ ] SSO-Integration (SAML/OAuth)
+- [ ] Automatischer Progress-Sync (Cron-Job)
+
+**Use-Case:** Firmen haben 100+ verschiedene Lernportale → AISmarterFlow vereint alle an einem Ort
+
+### 📊 FirmenAdmin Analytics
+- [ ] Heatmap: Welche Fragen werden häufig falsch beantwortet?
+- [ ] Kurs-Statistiken: Durchschnittliche Completion-Rate
+- [ ] User-Statistiken: Wer ist im Verzug?
+- [ ] Export: CSV/PDF für Management-Reports
+
+---
+
+## 📝 Offene Fragen (für Produktentscheidungen)
+
+**Externe Portale:**
+- Welche Portale sind am wichtigsten? (LinkedIn, Udemy, SAP, Moodle, ...?)
+- Haben Firmen bereits API-Zugriff?
+
+**Mandantenfähigkeit:**
+- Soll jede Firma eigene Kurse erstellen können oder nur SysAdmin?
+- Sollen Firmen Kurse untereinander teilen können?
+
+**White-Label:**
+- Ist Custom Domain wichtig? (`academy.firma-xyz.de`)
+- Welche Anpassungen? (Logo, Farben, Texte, ...?)
+
+**Arbeitsunterweisung:**
+- Welche Branchen/Firmen brauchen das? (Bau, Produktion, Logistik, ...?)
+- Welche Standard-Inhalte?
+
+**Mobile App:**
+- Wie wichtig ist Offline-Modus? (Baustellen ohne Internet?)
+- Welche Features sind mobile am wichtigsten?
+
+**Pricing:**
+- Ist vorgeschlagenes Pricing realistisch? (Basic 5€, Pro 12€, Enterprise 25€)
+- Wie viel würden Firmen für "All-in-One"-Lösung zahlen?
+
+**Details:** Siehe `docs/decisions/ADR-017-mandantenfaehigkeit-multi-portal.md`
