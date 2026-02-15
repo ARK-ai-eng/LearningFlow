@@ -1399,3 +1399,11 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Kunde soll sehen was ansteht und was in Zukunft kommt
 - [x] Testen und Checkpoint erstellen
 - [x] Dokumentation erstellt: docs/LANDING-PAGE-REDESIGN-2026-02-15.md
+
+
+## 🎨 Landing Page - CTA Section entfernen (15.02.2026 16:05)
+
+- [x] CTA Section "Bereit für moderne Compliance?" komplett entfernen
+- [x] "Kostenlos testen" Button entfernen (redundant zu "Jetzt starten" im Hero)
+- [x] Header "Anmelden" Button behalten (für direkten Login ohne Scrollen)
+- [x] Testen und Checkpoint erstellen

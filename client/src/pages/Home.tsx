@@ -306,27 +306,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-primary/10 via-background to-accent/5">
-        <div className="container">
-          <div className="glass-card p-12 text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4">Bereit für moderne Compliance?</h2>
-            <p className="text-muted-foreground mb-8">
-              Starten Sie noch heute mit der AISmarterFlow Academy und bringen Sie 
-              Ihre Compliance-Schulungen auf das nächste Level.
-            </p>
-            <Button 
-              size="lg" 
-              onClick={() => setLocation('/login')}
-              className="bg-primary hover:bg-primary/90"
-            >
-              Kostenlos testen
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="py-12 border-t border-border">
         <div className="container">
