@@ -192,6 +192,12 @@ SELECT COUNT(*) as question_count FROM questions;
 - Erst auf Staging testen
 - Dann auf Produktion anwenden
 
+### 5. Data-Integrity-Check nach Änderungen
+- Nach jeder Schema-Änderung: `npx tsx scripts/check-data-integrity.ts --dry-run`
+- Prüft Konsistenz zwischen `question_progress` und `user_progress`
+- Bei Inkonsistenzen: `npx tsx scripts/check-data-integrity.ts --fix`
+- Automatische wöchentliche Prüfung (Montag 3 Uhr via Cron)
+
 ---
 
 ## 🚨 NOTFALL-KONTAKTE
@@ -255,4 +261,66 @@ ALTER TABLE question_progress DROP COLUMN lastCompletedAt;
 
 **Bei Fragen:** Lieber 2x fragen als 1x Daten verlieren.
 
-**Letzte Aktualisierung:** 14.02.2026 23:05 Uhr
+---
+
+## 🔍 DATA-INTEGRITY-CHECK (NEU: 15.02.2026)
+
+### Warum brauchen wir das?
+
+Nach der Implementierung von Kurs-Wiederholung und Fortschritts-Tracking stellte sich heraus dass `user_progress` und `question_progress` inkonsistent werden können:
+
+- Topics als `completed` markiert obwohl nicht alle Fragen korrekt
+- Fehlende `user_progress` Einträge für beantwortete Fragen
+- Topics nicht als `completed` markiert obwohl alle Fragen korrekt
+
+### Automatische Validierung
+
+**Script:** `scripts/check-data-integrity.ts`
+
+**Prüft 3 Regeln:**
+
+1. **Incomplete Topics:** `user_progress.status='completed'` aber nicht alle Fragen korrekt
+2. **Fehlende Einträge:** Fragen beantwortet aber kein `user_progress` Eintrag
+3. **Complete nicht markiert:** Alle Fragen korrekt aber `user_progress.status!='completed'`
+
+**Verwendung:**
+
+```bash
+# Dry-Run (nur prüfen, nichts ändern)
+npx tsx scripts/check-data-integrity.ts --dry-run
+
+# Fix-Mode (automatisch korrigieren)
+npx tsx scripts/check-data-integrity.ts --fix
+
+# Verbose (detaillierte Ausgabe)
+npx tsx scripts/check-data-integrity.ts --fix --verbose
+```
+
+**Wöchentlicher Cron-Job:**
+
+```bash
+# Jeden Montag um 3 Uhr
+0 3 * * 1 /home/ubuntu/aismarterflow-academy/scripts/cron-integrity-check.sh
+```
+
+**Logs:** `/var/log/aismarterflow/integrity-check.log`
+
+### Nach Schema-Änderungen IMMER ausführen!
+
+```bash
+# 1. Schema ändern (manuell per SQL)
+ALTER TABLE question_progress ADD COLUMN xyz ...
+
+# 2. Data-Integrity-Check
+npx tsx scripts/check-data-integrity.ts --fix
+
+# 3. Verifizieren
+npx tsx scripts/check-data-integrity.ts --dry-run
+# Sollte "No inconsistencies found" zeigen
+```
+
+**Siehe auch:** `docs/DATA-INTEGRITY-CHECK.md` für vollständige Dokumentation
+
+---
+
+**Letzte Aktualisierung:** 15.02.2026 15:30 Uhr

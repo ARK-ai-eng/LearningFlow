@@ -1364,3 +1364,11 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Getestet: Kurs wiederholen bei 100% setzt alles auf 0% ✅
 - [x] Getestet: Falsche Fragen wiederholen bei <100% zeigt nur falsche ✅
 - [x] Checkpoint erstellt
+
+
+## 📚 Wissensmanagement: Session 15.02.2026 (Dokumentation)
+
+- [x] Lessons Learned Dokument erstellt (`LESSONS-LEARNED-SESSION-2026-02-15.md`)
+- [x] ADR-018 erstellt (Kurs-Wiederholung: Zwei Features)
+- [x] CRITICAL-DATABASE-MIGRATION-RULES.md aktualisiert (Data-Integrity-Check)
+- [x] Checkpoint erstellen
