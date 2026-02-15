@@ -319,7 +319,7 @@ export default function Home() {
             <div className="flex gap-6 text-sm text-muted-foreground">
               <a href="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</a>
               <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
-              <a href="#" className="hover:text-foreground transition-colors">Kontakt</a>
+              <a href="/kontakt" className="hover:text-foreground transition-colors">Kontakt</a>
             </div>
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} LearningFlow. Eine Marke der AISmarterFlow UG (haftungsbeschränkt). Alle Rechte vorbehalten.

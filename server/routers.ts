@@ -35,6 +35,41 @@ export const appRouter = router({
   system: systemRouter,
   
   // ============================================
+  // PUBLIC ROUTES
+  // ============================================
+  public: router({
+    // Kontaktformular E-Mail senden
+    sendContactEmail: publicProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        email: z.string().email(),
+        subject: z.string().min(1),
+        message: z.string().min(1),
+      }))
+      .mutation(async ({ input }) => {
+        // TODO: Implement email sending logic
+        // For now, just log the contact request
+        console.log('[Contact Form]', {
+          from: input.email,
+          name: input.name,
+          subject: input.subject,
+          message: input.message,
+          timestamp: new Date().toISOString(),
+        });
+        
+        // In production, you would send an email here:
+        // await sendEmail({
+        //   to: 'info@aismarterflow.com',
+        //   from: input.email,
+        //   subject: `Kontaktanfrage: ${input.subject}`,
+        //   text: `Name: ${input.name}\nE-Mail: ${input.email}\n\nNachricht:\n${input.message}`,
+        // });
+        
+        return { success: true };
+      }),
+  }),
+  
+  // ============================================
   // AUTH ROUTES
   // ============================================
   auth: router({

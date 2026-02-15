@@ -1446,3 +1446,15 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Footer-Link "Datenschutz" aktivieren
 - [x] Browser-Test
 - [x] Checkpoint erstellen
+
+
+## 📧 Kontakt-Seite mit Formular (15.02.2026 17:00)
+
+- [x] Kontakt-Seite erstellen: client/src/pages/Kontakt.tsx
+- [x] Formular-Felder: Name, E-Mail, Betreff, Nachricht
+- [x] tRPC Procedure für E-Mail-Versand erstellen (server/routers.ts)
+- [x] E-Mail-Empfänger: info@aismarterflow.com (aktuell nur Console-Log, TODO: E-Mail-Service integrieren)
+- [x] Route registrieren in App.tsx
+- [x] Footer-Link "Kontakt" aktivieren
+- [x] Browser-Test (Formular absenden)
+- [x] Checkpoint erstellen
