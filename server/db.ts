@@ -1,4 +1,4 @@
-import { eq, and, desc, gt, isNull, sql, inArray } from "drizzle-orm";
+import { eq, and, desc, gt, isNull, sql, inArray, not } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import { 
@@ -567,6 +567,18 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
       eq(questionProgress.userId, userId),
       inArray(questionProgress.questionId, questionIds)
     ));
+  
+  // Setze auch user_progress zurück (Topics auf 'in_progress')
+  await db
+    .update(userProgress)
+    .set({
+      status: 'in_progress',
+      completedAt: null,
+    })
+    .where(and(
+      eq(userProgress.userId, userId),
+      eq(userProgress.courseId, courseId)
+    ));
 }
 
 // Prüft ob User 100% erreicht hat und setzt lastCompletedAt
@@ -740,13 +752,14 @@ export async function getUnansweredQuestionsByCourse(userId: number, courseId: n
     return [];
   }
   
-  // Hole alle beantworteten Fragen (egal ob richtig oder falsch)
+  // Hole alle WIRKLICH beantworteten Fragen (nicht unanswered nach Reset)
   const answeredProgress = await db
-    .select({ questionId: questionProgress.questionId })
+    .select({ questionId: questionProgress.questionId, firstAttemptStatus: questionProgress.firstAttemptStatus })
     .from(questionProgress)
     .where(and(
       eq(questionProgress.userId, userId),
-      inArray(questionProgress.questionId, questionIds)
+      inArray(questionProgress.questionId, questionIds),
+      not(eq(questionProgress.firstAttemptStatus, 'unanswered'))
     ));
   
   const answeredQuestionIds = answeredProgress.map((p: any) => p.questionId);

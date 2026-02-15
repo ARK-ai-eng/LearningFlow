@@ -1167,3 +1167,24 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - Immer prüfen WELCHE API das Frontend wirklich aufruft (nicht annehmen!)
 - `getCourseStats` ≠ `getCourseProgress` (zwei verschiedene APIs!)
 - Nach Code-Änderungen: Server-Neustart prüfen (HMR funktioniert nicht immer)
+
+
+## ✅ BUG GELÖST: QuizView zeigt keine Fragen nach Klick (15.02.2026)
+
+- [x] CourseView zeigt korrekt "12 Fragen warten auf dich"
+- [x] Nach Klick auf "Starten" → QuizView zeigt keine Fragen
+- [x] Kurs 30002 betroffen (nach Reset)
+
+**Root Cause:** `getUnansweredQuestionsByCourse` holte ALLE Progress-Einträge (auch `firstAttemptStatus='unanswered'`) und filterte dann alle Fragen raus die einen Progress-Eintrag haben. Nach Reset: Alle 12 Fragen haben Progress-Einträge → 0 Fragen zurück.
+
+**Lösung:** Zeile 750 in db.ts - Filter hinzugefügt: `not(eq(questionProgress.firstAttemptStatus, 'unanswered'))`. Jetzt werden nur WIRKLICH beantwortete Fragen als "answered" gezählt.
+
+
+## ✅ BUG GELÖST: Dashboard zeigt falschen Fortschritt (15.02.2026)
+
+- [x] Dashboard zeigt 100% Fortschritt für Kurs 30002
+- [x] CourseView zeigt korrekt 42% Fortschritt
+
+**Root Cause:** Dashboard verwendet `user_progress` Tabelle (zählt completed Topics), CourseView verwendet `question_progress` (zählt korrekte Fragen). `resetQuestionProgressByCourse` setzte nur `question_progress` zurück, NICHT `user_progress` → Dashboard zeigte weiterhin 100%.
+
+**Lösung:** Zeile 571-581 in db.ts - `resetQuestionProgressByCourse` erweitert um `user_progress` Reset. Jetzt werden BEIDE Tabellen zurückgesetzt: `question_progress` UND `user_progress`.
