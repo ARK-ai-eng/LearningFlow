@@ -1302,3 +1302,14 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - Root Cause: Dashboard berechnet completedTopics / totalTopics, aber alle Topics sind 'completed'
   - Betroffener User: testyou@me.com, Kurs 30002 (IT-Sicherheit)
   - Daten: 3/12 Fragen korrekt beantwortet, aber 12/12 Topics auf 'completed'
+
+
+## 🔧 Data-Integrity-Check Script (15.02.2026)
+
+- [x] Script-Design und Anforderungen definieren
+- [x] Check-Logik implementieren (Inkonsistenzen erkennen)
+- [x] Fix-Logik implementieren (Daten korrigieren)
+- [x] Dry-Run Mode und Logging hinzufügen
+- [x] Tests schreiben und Script testen
+- [x] Dokumentation erstellen
+- [x] Checkpoint erstellen
