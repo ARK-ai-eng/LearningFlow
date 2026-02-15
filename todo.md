@@ -1334,3 +1334,9 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] CourseView: Query-Bedingung geändert auf `correct < total` (Zeile 37)
 - [x] Frontend getestet: Nach Wiederholung nur 5 falsche Fragen angezeigt ✅
 - [x] Checkpoint erstellt
+
+
+## 🎨 UI-Verbesserung: Redundante "Themen bearbeitet" entfernen (15.02.2026)
+
+- [x] "12 von 12 Themen bearbeitet" aus CourseView entfernen
+- [x] Checkpoint erstellen
