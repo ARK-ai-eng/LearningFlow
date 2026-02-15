@@ -1340,3 +1340,27 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 
 - [x] "12 von 12 Themen bearbeitet" aus CourseView entfernen
 - [x] Checkpoint erstellen
+
+
+## 🐛 KRITISCHER BUG: "Kurs wiederholen" bei 100% funktioniert nicht (15.02.2026 15:05)
+
+**Problem:** Nach Klick auf "Kurs wiederholen" (bei 100%) wird der Kurs NICHT zurückgesetzt. Progress bleibt bei 100%, keine Fragen verfügbar.
+
+**Root Cause:** `resetQuestionProgressByCourse()` wurde geändert um nur `incorrect` Fragen zurückzusetzen (für Feature "Falsche Fragen wiederholen"). Dadurch funktioniert der komplette Reset nicht mehr.
+
+**Lösung:**
+- [ ] `resetQuestionProgressByCourse()` auf Original zurücksetzen (setzt ALLE Fragen zurück)
+- [ ] Testen: "Kurs wiederholen" bei 100% → Progress geht auf 0%
+- [ ] Testen: "Falsche Fragen wiederholen" bei <100% → zeigt nur falsche Fragen
+- [ ] Checkpoint erstellen
+
+
+## 🐛 KRITISCHER BUG: "Kurs wiederholen" setzt nichts zurück (15.02.2026 15:04) ✅ GEFIXED
+
+**Problem:** "Kurs wiederholen" Button bei 100% funktionierte nicht - Fortschritt blieb bei 100%, keine Fragen wurden zurückgesetzt
+
+**Lösung:**
+- [x] `resetQuestionProgressByCourse()` auf Original zurückgesetzt (ALLE Fragen zurücksetzen, nicht nur incorrect)
+- [x] Getestet: Kurs wiederholen bei 100% setzt alles auf 0% ✅
+- [x] Getestet: Falsche Fragen wiederholen bei <100% zeigt nur falsche ✅
+- [x] Checkpoint erstellt

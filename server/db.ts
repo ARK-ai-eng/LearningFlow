@@ -565,8 +565,7 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
     })
     .where(and(
       eq(questionProgress.userId, userId),
-      inArray(questionProgress.questionId, questionIds),
-      eq(questionProgress.firstAttemptStatus, 'incorrect')  // ✅ NUR incorrect zurücksetzen!
+      inArray(questionProgress.questionId, questionIds)
     ));
   
   // Setze auch user_progress zurück (Topics auf 'in_progress')
