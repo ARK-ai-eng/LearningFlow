@@ -15,18 +15,12 @@ export default function UserDashboard() {
   const { data: certificates } = trpc.certificate.my.useQuery();
 
   const getCourseProgress = (courseId: number) => {
-    if (!progress) return 0;
+    // Hole Kurs-Statistik (korrekte Fragen / Gesamt-Fragen)
+    const courseData = courses?.find((c: any) => c.id === courseId);
+    if (!courseData?.stats) return 0;
     
-    // Zähle completed Topics aus user_progress (nur Topics mit topicId !== null)
-    const courseProgress = progress.filter((p: any) => p.courseId === courseId && p.topicId !== null);
-    const completedTopics = courseProgress.filter((p: any) => p.status === 'completed').length;
-    
-    // Wenn keine Topics in user_progress, dann 0%
-    if (courseProgress.length === 0) return 0;
-    
-    // WICHTIG: Wir zählen nur die Topics die in user_progress sind
-    // Nach dem Fix sollten ALLE Topics in user_progress sein (12/12)
-    return Math.round((completedTopics / courseProgress.length) * 100);
+    // Fortschritt = korrekte Fragen / Gesamt-Fragen (wie in CourseView)
+    return courseData.stats.percentage || 0;
   };
 
   const getCourseIcon = (type: string) => {

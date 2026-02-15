@@ -1,0 +1,25 @@
+{
+  "query": "SELECT topicId, status, score FROM user_progress WHERE userId = 7 AND courseId = 30002 ORDER BY topicId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT topicId, status, score FROM user_progress WHERE userId = 7 AND courseId = 30002 ORDER BY topicId;",
+  "rows": [
+    {
+      "topicId": "43",
+      "status": "completed",
+      "score": "100"
+    },
+    {
+      "topicId": "44",
+      "status": "completed",
+      "score": "100"
+    },
+    {
+      "topicId": "45",
+      "status": "completed",
+      "score": "100"
+    }
+  ],
+  "messages": [],
+  "stdout": "topicId\tstatus\tscore\n43\tcompleted\t100\n44\tcompleted\t100\n45\tcompleted\t100\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

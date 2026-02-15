@@ -1321,3 +1321,16 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Cron-Job installieren und testen (Script bereit, Anleitung erstellt)
 - [x] Dokumentation aktualisieren
 - [x] Checkpoint erstellen
+
+
+## 🐛 KRITISCHER BUG: Kurs-Wiederholung setzt ALLE Fragen zurück (15.02.2026 14:46) ✅ GEFIXED
+
+**Problem:** Nach "Kurs wiederholen" wurden ALLE 12 Fragen zurückgesetzt, nicht nur die falschen!
+
+**Lösung:**
+- [x] `resetQuestionProgressByCourse` geändert: Nur `incorrect` Fragen zurücksetzen (Zeile 569)
+- [x] `getUnansweredQuestionsByCourse` geändert: Nur `correct` Fragen als "beantwortet" zählen (Zeile 763)
+- [x] CourseView: "Fragen warten" berechnet mit `total - correct` statt `total - answered` (Zeile 173)
+- [x] CourseView: Query-Bedingung geändert auf `correct < total` (Zeile 37)
+- [x] Frontend getestet: Nach Wiederholung nur 5 falsche Fragen angezeigt ✅
+- [x] Checkpoint erstellt

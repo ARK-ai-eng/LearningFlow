@@ -1,0 +1,94 @@
+{
+  "query": "SELECT qp.topicId, COUNT(*) as total, \n  SUM(CASE WHEN qp.firstAttemptStatus = 'correct' THEN 1 ELSE 0 END) as correct,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'unanswered' THEN 1 ELSE 0 END) as unanswered\nFROM question_progress qp\nJOIN topics t ON qp.topicId = t.id\nWHERE qp.userId = 7 AND t.courseId = 30002\nGROUP BY qp.topicId\nORDER BY qp.topicId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT qp.topicId, COUNT(*) as total, \n  SUM(CASE WHEN qp.firstAttemptStatus = 'correct' THEN 1 ELSE 0 END) as correct,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'unanswered' THEN 1 ELSE 0 END) as unanswered\nFROM question_progress qp\nJOIN topics t ON qp.topicId = t.id\nWHERE qp.userId = 7 AND t.courseId = 30002\nGROUP BY qp.topicId\nORDER BY qp.topicId;",
+  "rows": [
+    {
+      "topicId": "43",
+      "total": "1",
+      "correct": "1",
+      "incorrect": "0",
+      "unanswered": "0"
+    },
+    {
+      "topicId": "44",
+      "total": "1",
+      "correct": "1",
+      "incorrect": "0",
+      "unanswered": "0"
+    },
+    {
+      "topicId": "45",
+      "total": "1",
+      "correct": "1",
+      "incorrect": "0",
+      "unanswered": "0"
+    },
+    {
+      "topicId": "46",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "47",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "48",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "49",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "50",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "51",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "52",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "53",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    },
+    {
+      "topicId": "54",
+      "total": "1",
+      "correct": "0",
+      "incorrect": "0",
+      "unanswered": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "topicId\ttotal\tcorrect\tincorrect\tunanswered\n43\t1\t1\t0\t0\n44\t1\t1\t0\t0\n45\t1\t1\t0\t0\n46\t1\t0\t0\t1\n47\t1\t0\t0\t1\n48\t1\t0\t0\t1\n49\t1\t0\t0\t1\n50\t1\t0\t0\t1\n51\t1\t0\t0\t1\n52\t1\t0\t0\t1\n53\t1\t0\t0\t1\n54\t1\t0\t0\t1\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

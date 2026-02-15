@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as count, \n  SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) as completed,\n  SUM(CASE WHEN status='in_progress' THEN 1 ELSE 0 END) as in_progress\nFROM user_progress \nWHERE userId = 7 AND courseId = 30002;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT COUNT(*) as count, \n  SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) as completed,\n  SUM(CASE WHEN status='in_progress' THEN 1 ELSE 0 END) as in_progress\nFROM user_progress \nWHERE userId = 7 AND courseId = 30002;",
+  "rows": [
+    {
+      "count": "3",
+      "completed": "3",
+      "in_progress": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "count\tcompleted\tin_progress\n3\t3\t0\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

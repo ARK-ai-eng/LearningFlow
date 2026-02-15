@@ -482,9 +482,25 @@ export const appRouter = router({
   // COURSE ROUTES
   // ============================================
   course: router({
-    // Öffentliche Liste aktiver Kurse
-    listActive: protectedProcedure.query(async () => {
-      return db.getActiveCourses();
+    // Öffentliche Liste aktiver Kurse (mit Progress-Stats)
+    listActive: protectedProcedure.query(async ({ ctx }) => {
+      const courses = await db.getActiveCourses();
+      // Füge Stats für jeden Kurs hinzu
+      const coursesWithStats = await Promise.all(
+        courses.map(async (course: any) => {
+          // Berechne Stats wie in question.getCourseStats
+          const questions = await db.getQuestionsByCourse(course.id);
+          const progress = await db.getQuestionProgressByCourse(ctx.user.id, course.id);
+          
+          const total = questions.length;
+          const answered = progress.filter((p: any) => p.firstAttemptStatus !== 'unanswered').length;
+          const correct = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
+          const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+          
+          return { ...course, stats: { total, answered, correct, percentage } };
+        })
+      );
+      return coursesWithStats;
     }),
 
     // Admin: Alle Kurse

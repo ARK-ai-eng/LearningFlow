@@ -34,7 +34,7 @@ export default function CourseView() {
   );
   const { data: randomUnanswered } = trpc.question.getRandomUnanswered.useQuery(
     { courseId },
-    { enabled: courseId > 0 && (courseProgress?.answered || 0) < (courseProgress?.total || 0) }
+    { enabled: courseId > 0 && (courseProgress?.correct || 0) < (courseProgress?.total || 0) }
   );
   
   const [showResetDialog, setShowResetDialog] = useState(false);
@@ -170,7 +170,7 @@ export default function CourseView() {
           <BookOpen className="w-16 h-16 mx-auto mb-4 text-primary" />
           <h2 className="text-2xl font-semibold mb-2">Quiz starten</h2>
           <p className="text-muted-foreground mb-6">
-            {(courseProgress?.total || 0) - (courseProgress?.answered || 0)} Fragen warten auf dich
+            {(courseProgress?.total || 0) - (courseProgress?.correct || 0)} Fragen warten auf dich
           </p>
           {progressPercent === 100 ? (
             <>

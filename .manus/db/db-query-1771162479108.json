@@ -1,0 +1,94 @@
+{
+  "query": "SELECT up.topicId, up.status, up.score, up.completedAt,\n  (SELECT COUNT(*) FROM question_progress qp WHERE qp.userId = 7 AND qp.topicId = up.topicId) as answered\nFROM user_progress up\nWHERE up.userId = 7 AND up.courseId = 30002\nORDER BY up.topicId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT up.topicId, up.status, up.score, up.completedAt,\n  (SELECT COUNT(*) FROM question_progress qp WHERE qp.userId = 7 AND qp.topicId = up.topicId) as answered\nFROM user_progress up\nWHERE up.userId = 7 AND up.courseId = 30002\nORDER BY up.topicId;",
+  "rows": [
+    {
+      "topicId": "43",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-02-15 13:13:18",
+      "answered": "1"
+    },
+    {
+      "topicId": "44",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-02-15 13:13:18",
+      "answered": "1"
+    },
+    {
+      "topicId": "45",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-02-15 13:13:18",
+      "answered": "1"
+    },
+    {
+      "topicId": "46",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "47",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "48",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "49",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "50",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "51",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "52",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "53",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    },
+    {
+      "topicId": "54",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 13:22:27",
+      "answered": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "topicId\tstatus\tscore\tcompletedAt\tanswered\n43\tcompleted\t100\t2026-02-15 13:13:18\t1\n44\tcompleted\t100\t2026-02-15 13:13:18\t1\n45\tcompleted\t100\t2026-02-15 13:13:18\t1\n46\tcompleted\t0\t2026-02-15 13:22:27\t1\n47\tcompleted\t0\t2026-02-15 13:22:27\t1\n48\tcompleted\t0\t2026-02-15 13:22:27\t1\n49\tcompleted\t0\t2026-02-15 13:22:27\t1\n50\tcompleted\t0\t2026-02-15 13:22:27\t1\n51\tcompleted\t0\t2026-02-15 13:22:27\t1\n52\tcompleted\t0\t2026-02-15 13:22:27\t1\n53\tcompleted\t0\t2026-02-15 13:22:27\t1\n54\tcompleted\t0\t2026-02-15 13:22:27\t1\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

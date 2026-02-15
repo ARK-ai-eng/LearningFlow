@@ -552,7 +552,7 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
     return;
   }
   
-  // Setze firstAttemptStatus zurück, BEHALTE lastCompletedAt
+  // Setze firstAttempt  // 1. Setze NUR FALSCHE Fragen zurück (correct bleiben erhalten!)
   await db
     .update(questionProgress)
     .set({
@@ -565,7 +565,8 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
     })
     .where(and(
       eq(questionProgress.userId, userId),
-      inArray(questionProgress.questionId, questionIds)
+      inArray(questionProgress.questionId, questionIds),
+      eq(questionProgress.firstAttemptStatus, 'incorrect')  // ✅ NUR incorrect zurücksetzen!
     ));
   
   // Setze auch user_progress zurück (Topics auf 'in_progress')
@@ -752,20 +753,20 @@ export async function getUnansweredQuestionsByCourse(userId: number, courseId: n
     return [];
   }
   
-  // Hole alle WIRKLICH beantworteten Fragen (nicht unanswered nach Reset)
-  const answeredProgress = await db
-    .select({ questionId: questionProgress.questionId, firstAttemptStatus: questionProgress.firstAttemptStatus })
+  // Hole alle KORREKT beantworteten Fragen (correct)
+  const correctProgress = await db
+    .select({ questionId: questionProgress.questionId })
     .from(questionProgress)
     .where(and(
       eq(questionProgress.userId, userId),
       inArray(questionProgress.questionId, questionIds),
-      not(eq(questionProgress.firstAttemptStatus, 'unanswered'))
+      eq(questionProgress.firstAttemptStatus, 'correct')  // ✅ Nur correct zählt als "beantwortet"!
     ));
   
-  const answeredQuestionIds = answeredProgress.map((p: any) => p.questionId);
+  const correctQuestionIds = correctProgress.map((p: any) => p.questionId);
   
-  // Filtere nur die UNBEANTWORTETEN Fragen (keine in questionProgress)
-  return courseQuestions.filter((q: any) => !answeredQuestionIds.includes(q.id));
+  // Filtere nur die NICHT-KORREKTEN Fragen (unanswered ODER incorrect)
+  return courseQuestions.filter((q: any) => !correctQuestionIds.includes(q.id));
 }
 
 // ============================================
