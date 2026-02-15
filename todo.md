@@ -1188,3 +1188,25 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 **Root Cause:** Dashboard verwendet `user_progress` Tabelle (zählt completed Topics), CourseView verwendet `question_progress` (zählt korrekte Fragen). `resetQuestionProgressByCourse` setzte nur `question_progress` zurück, NICHT `user_progress` → Dashboard zeigte weiterhin 100%.
 
 **Lösung:** Zeile 571-581 in db.ts - `resetQuestionProgressByCourse` erweitert um `user_progress` Reset. Jetzt werden BEIDE Tabellen zurückgesetzt: `question_progress` UND `user_progress`.
+
+
+## ✅ Feature: Backup-System (15.02.2026)
+
+- [x] Backup-Script erstellen (`scripts/create-backup.sh`)
+  - mysqldump für alle Tabellen (TiDB-kompatibel)
+  - Komplettes Projekt-Verzeichnis (inkl. node_modules, .git)
+  - Dateiname mit Timestamp (YYYY-MM-DD-HHmm)
+  - 7-Tage-Rotation (alte Backups automatisch löschen)
+  - ZIP-Kompression (~520MB)
+- [x] Test-Backup erstellt und verifiziert
+  - SQL-Dump: 36KB
+  - Gesamt-ZIP: 520MB
+  - Speicherort: `/home/ubuntu/backups/`
+- [x] Dokumentation in `docs/BACKUP-SYSTEM.md`
+  - Verwendungs-Anleitung
+  - Wiederherstellungs-Szenarien
+  - Troubleshooting
+  - Best Practices
+  - Checkliste
+
+**Hinweis:** Cron-Job NICHT implementiert (Sandbox ist temporär, Cron-Jobs gehen nach Neustart verloren). Stattdessen: Manuelles Backup vor wichtigen Änderungen.
