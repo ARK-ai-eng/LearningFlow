@@ -22,7 +22,7 @@ export default function Login() {
         localStorage.setItem('auth_token', data.token);
       }
       
-      // Redirect based on role
+      // Redirect based on role (ohne Skeleton durch sofortigen Redirect)
       if (data.role === 'sysadmin') {
         window.location.href = '/admin';
       } else if (data.role === 'companyadmin') {

@@ -120,7 +120,16 @@ export const appRouter = router({
         ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
         
         // Token auch zurückgeben für localStorage (Hauptmethode)
-        return { success: true, role: user.role, token };
+        // + User-Daten für optimistisches Caching (verhindert Skeleton-Flicker)
+        return { 
+          success: true, 
+          role: user.role, 
+          token,
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+          companyId: user.companyId,
+        };
       }),
     
     logout: publicProcedure.mutation(({ ctx }) => {

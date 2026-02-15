@@ -1517,3 +1517,12 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Google reCAPTCHA v3 integrieren (NICHT implementiert - Rate-Limiting ausreichend, DSGVO-Bedenken)
 - [x] Browser-Test (Favicon + Rate-Limiting) - ERFOLGREICH: Request 1-5 OK, Request 6 blockiert mit HTTP 429
 - [x] Checkpoint erstellen
+
+
+## 🐛 Bug-Fix: Blauer Flicker beim Login/Dashboard-Load (15.02.2026 17:30)
+
+- [x] Problem reproduzieren: Login-Flow testen und blauen Flicker beobachten
+- [x] Ursache identifizieren: DashboardLayoutSkeleton wurde bei jedem Login angezeigt
+- [x] Fix implementiert: Skeleton nur zeigen wenn noch kein User im localStorage gecacht ist
+- [x] Browser-Test: Login mehrmals wiederholt - KEIN Flicker mehr!
+- [x] Checkpoint erstellen

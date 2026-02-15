@@ -72,7 +72,10 @@ export default function DashboardLayout({
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
   }, [sidebarWidth]);
 
-  if (loading) {
+  // Skeleton nur zeigen wenn wirklich noch kein User-Check gemacht wurde
+  // (nicht bei jedem Seitenwechsel nach Login)
+  const cachedUser = localStorage.getItem('manus-runtime-user-info');
+  if (loading && !cachedUser) {
     return <DashboardLayoutSkeleton />
   }
 
