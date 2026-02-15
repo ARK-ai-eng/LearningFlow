@@ -115,7 +115,7 @@ export default function Home() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <GraduationCap className="w-6 h-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold gradient-text">AISmarterFlow Academy</span>
+              <span className="text-xl font-bold gradient-text">LearningFlow</span>
             </div>
             <Button 
               onClick={() => setLocation('/login')}
@@ -314,15 +314,15 @@ export default function Home() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <GraduationCap className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="font-semibold">AISmarterFlow Academy</span>
+              <span className="font-semibold">LearningFlow</span>
             </div>
             <div className="flex gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Datenschutz</a>
-              <a href="#" className="hover:text-foreground transition-colors">Impressum</a>
+              <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
               <a href="#" className="hover:text-foreground transition-colors">Kontakt</a>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} AISmarterFlow. Alle Rechte vorbehalten.
+              © {new Date().getFullYear()} LearningFlow. Eine Marke der AISmarterFlow UG (haftungsbeschränkt). Alle Rechte vorbehalten.
             </p>
           </div>
         </div>

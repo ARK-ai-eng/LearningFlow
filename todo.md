@@ -1407,3 +1407,19 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] "Kostenlos testen" Button entfernen (redundant zu "Jetzt starten" im Hero)
 - [x] Header "Anmelden" Button behalten (für direkten Login ohne Scrollen)
 - [x] Testen und Checkpoint erstellen
+
+
+## 🎨 Rebranding: AISmarterFlow Academy → LearningFlow (15.02.2026 16:15)
+
+**Strategie:** Option 1 (Diskret) - AISmarterFlow UG nur im Footer erwähnen
+
+- [x] Header/Logo: "AISmarterFlow Academy" → "LearningFlow"
+- [x] Footer: Copyright-Text mit "Eine Marke der AISmarterFlow UG (haftungsbeschränkt)"
+- [x] Impressum-Seite erstellen mit vollständigen UG-Angaben
+  - HRB 747568
+  - USt-ID DE367495868
+  - Adresse: Köllestr. 43, 89077 Ulm
+  - Geschäftsführung: Arton Ritter Kodra
+- [x] Footer-Link "Impressum" aktivieren
+- [x] Browser-Test
+- [x] Checkpoint erstellen
