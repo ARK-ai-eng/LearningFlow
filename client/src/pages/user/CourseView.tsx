@@ -2,8 +2,18 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useParams, useLocation } from "wouter";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle, Clock, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle, Clock, Play, RotateCcw } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 export default function CourseView() {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +36,24 @@ export default function CourseView() {
     { courseId },
     { enabled: courseId > 0 && (courseProgress?.answered || 0) < (courseProgress?.total || 0) }
   );
+  
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const utils = trpc.useUtils();
+  const resetMutation = trpc.course.resetProgress.useMutation({
+    onSuccess: () => {
+      toast.success("Kurs zurückgesetzt", {
+        description: "Du kannst den Kurs jetzt erneut durchführen."
+      });
+      utils.question.getCourseStats.invalidate({ courseId });
+      utils.progress.byCourse.invalidate({ courseId });
+      setShowResetDialog(false);
+    },
+    onError: (error) => {
+      toast.error("Fehler beim Zurücksetzen", {
+        description: error.message
+      });
+    }
+  });
 
   const getTopicStatus = (topicId: number) => {
     if (!progress) return 'not_started';
@@ -144,7 +172,28 @@ export default function CourseView() {
           <p className="text-muted-foreground mb-6">
             {(courseProgress?.total || 0) - (courseProgress?.answered || 0)} Fragen warten auf dich
           </p>
-          {randomUnanswered ? (
+          {progressPercent === 100 ? (
+            <>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <CheckCircle className="w-6 h-6 text-green-500" />
+                <span className="text-lg font-semibold text-green-500">Kurs abgeschlossen!</span>
+              </div>
+              {courseProgress?.lastCompletedAt && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  Zuletzt abgeschlossen: {new Date(courseProgress.lastCompletedAt).toLocaleDateString('de-DE')}
+                </p>
+              )}
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => setShowResetDialog(true)}
+                className="min-w-[200px]"
+              >
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Kurs wiederholen
+              </Button>
+            </>
+          ) : randomUnanswered ? (
             <Button 
               size="lg" 
               onClick={() => {
@@ -253,6 +302,30 @@ export default function CourseView() {
           </div>
         )}
       </div>
+      
+      {/* Reset Confirmation Dialog */}
+      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Kurs wiederholen?</DialogTitle>
+            <DialogDescription>
+              Dein Fortschritt wird zurückgesetzt und du kannst den Kurs erneut durchführen.
+              Dein Abschlussdatum bleibt für Compliance-Zwecke gespeichert.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowResetDialog(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={() => resetMutation.mutate({ courseId })}
+              disabled={resetMutation.isPending}
+            >
+              {resetMutation.isPending ? "Wird zurückgesetzt..." : "Kurs wiederholen"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

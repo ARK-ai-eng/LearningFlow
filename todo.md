@@ -1062,3 +1062,57 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
     - Backend: API-Endpoint in routers.ts (Zeile 958-963)
     - Frontend: QuizView.tsx verwendet neue API (Zeile 35)
   - **Ergebnis:** Neue User sehen jetzt alle 12 Fragen ✅
+
+
+## 🔄 Feature: Kurs-Wiederholung (15.02.2026)
+
+**Anforderung:** User sollen Kurse wiederholen können wenn sie 100% erreicht haben. Abschlussdatum muss für Compliance gespeichert werden.
+
+### Phase 1: Schema erweitern
+- [ ] `lastCompletedAt` Feld zu `question_progress` Tabelle hinzufügen (TIMESTAMP NULL)
+- [ ] Manuelle SQL-Migration (KEIN `pnpm db:push`!)
+- [ ] Schema in drizzle/schema.ts aktualisieren
+
+### Phase 2: Backend-Logik
+- [ ] Auto-Tracking: Bei 100% Abschluss → `lastCompletedAt` setzen
+- [ ] `resetCourseProgress()` Funktion: Setzt `firstAttemptStatus` zurück, behält `lastCompletedAt`
+- [ ] API-Endpoint: `course.resetProgress` für Frontend
+
+### Phase 3: Frontend
+- [ ] "Kurs wiederholen" Button wenn 100% erreicht
+- [ ] Bestätigungs-Dialog vor Reset
+- [ ] Anzeige "Zuletzt abgeschlossen: DD.MM.YYYY"
+
+### Phase 4: Testing
+- [ ] Manueller Test: Kurs abschließen → lastCompletedAt gesetzt
+- [ ] Manueller Test: "Wiederholen" klicken → Progress zurückgesetzt
+- [ ] Manueller Test: Abschlussdatum bleibt erhalten
+- [ ] Checkpoint erstellen
+
+
+## ✅ Feature: Kurs-Wiederholung (15.02.2026)
+
+- [x] Schema: `lastCompletedAt` Feld zu `question_progress` hinzugefügt (manuelle SQL-Migration)
+- [x] Backend: Auto-Tracking bei 100% Abschluss (`checkAndMarkCourseCompletion`)
+- [x] Backend: `resetQuestionProgressByCourse()` Funktion (setzt firstAttemptStatus zurück, behält lastCompletedAt)
+- [x] Backend: API-Endpoint `course.resetProgress` hinzugefügt
+- [x] Backend: `getCourseStats` gibt `lastCompletedAt` zurück
+- [x] Frontend: "Kurs wiederholen" Button bei 100% (mit Bestätigungs-Dialog)
+- [x] Frontend: Anzeige "Zuletzt abgeschlossen: DD.MM.YYYY"
+- [x] Frontend: Optimistic Updates mit Toast-Notifications
+
+**Implementierung:**
+- **Schema:** `lastCompletedAt DATETIME NULL` Spalte in `question_progress` Tabelle
+- **Auto-Tracking:** Nach jedem `upsertQuestionProgress` wird geprüft ob 100% erreicht → setzt `lastCompletedAt` für alle Progress-Einträge
+- **Reset:** Setzt `firstAttemptStatus='unanswered'`, `attemptCount=0`, behält `lastCompletedAt`
+- **UI:** Zeigt "Kurs abgeschlossen!" + Abschlussdatum + "Kurs wiederholen" Button bei 100%
+
+**Compliance-Nachweis:**
+- FirmenAdmin kann sehen wann User Kurs abgeschlossen hat (auch nach Wiederholung)
+- Wichtig für jährliche Auffrischungs-Schulungen
+
+**Dateien geändert:**
+- `drizzle/schema.ts`: lastCompletedAt Feld hinzugefügt
+- `server/db.ts`: checkAndMarkCourseCompletion(), resetQuestionProgressByCourse() angepasst
+- `server/routers.ts`: course.resetProgress Endpoint, getCourseStats erweitert
+- `client/src/pages/user/CourseView.tsx`: Wiederholen-Button + Dialog + Abschlussdatum

@@ -158,6 +158,10 @@ export const questionProgress = mysqlTable("question_progress", {
   
   attemptCount: int("attemptCount").default(0).notNull(),
   lastAttemptAt: timestamp("lastAttemptAt"),
+  
+  // Kurs-Wiederholung: Speichert wann User 100% erreicht hat (für Compliance)
+  lastCompletedAt: timestamp("lastCompletedAt"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({

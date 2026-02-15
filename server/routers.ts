@@ -581,6 +581,14 @@ export const appRouter = router({
         await db.deleteCourse(input.id);
         return { success: true };
       }),
+
+    // Kurs-Wiederholung: Setzt Progress zurück, behält lastCompletedAt
+    resetProgress: protectedProcedure
+      .input(z.object({ courseId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.resetQuestionProgressByCourse(ctx.user.id, input.courseId);
+        return { success: true };
+      }),
   }),
 
   // ============================================
@@ -827,6 +835,11 @@ export const appRouter = router({
           })
         );
         
+        // Hole lastCompletedAt vom ersten Progress-Eintrag (alle haben denselben Wert)
+        const lastCompletedAt = progress.length > 0 && progress[0].lastCompletedAt 
+          ? progress[0].lastCompletedAt 
+          : null;
+        
         return {
           courseId: input.courseId,
           total,
@@ -835,6 +848,7 @@ export const appRouter = router({
           incorrect,
           percentage,
           topicProgress,
+          lastCompletedAt,
         };
       }),
 

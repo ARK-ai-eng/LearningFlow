@@ -539,7 +539,7 @@ export async function getQuestionProgressByCourse(userId: number, courseId: numb
     ));
 }
 
-// Setzt Fortschritt für einen Kurs zurück (löscht alle question_progress Einträge)
+// Setzt Fortschritt für einen Kurs zurück (setzt firstAttemptStatus zurück, behält lastCompletedAt)
 export async function resetQuestionProgressByCourse(userId: number, courseId: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -552,13 +552,57 @@ export async function resetQuestionProgressByCourse(userId: number, courseId: nu
     return;
   }
   
-  // Lösche alle question_progress Einträge für diese Fragen
+  // Setze firstAttemptStatus zurück, BEHALTE lastCompletedAt
   await db
-    .delete(questionProgress)
+    .update(questionProgress)
+    .set({
+      status: 'unanswered',
+      firstAttemptStatus: 'unanswered',
+      lastAttemptCorrect: null,
+      attemptCount: 0,
+      lastAttemptAt: null,
+      // lastCompletedAt bleibt erhalten!
+    })
     .where(and(
       eq(questionProgress.userId, userId),
       inArray(questionProgress.questionId, questionIds)
     ));
+}
+
+// Prüft ob User 100% erreicht hat und setzt lastCompletedAt
+async function checkAndMarkCourseCompletion(userId: number, courseId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Hole alle Fragen des Kurses
+  const courseQuestions = await getQuestionsByCourse(courseId);
+  const totalQuestions = courseQuestions.length;
+  
+  if (totalQuestions === 0) return;
+  
+  // Hole Progress des Users für diesen Kurs
+  const progress = await db
+    .select()
+    .from(questionProgress)
+    .where(and(
+      eq(questionProgress.userId, userId),
+      inArray(questionProgress.questionId, courseQuestions.map((q: any) => q.id))
+    ));
+  
+  // Zähle korrekte firstAttemptStatus
+  const correctCount = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
+  
+  // Wenn 100% erreicht: Setze lastCompletedAt für ALLE Progress-Einträge dieses Kurses
+  if (correctCount === totalQuestions) {
+    const now = new Date();
+    await db
+      .update(questionProgress)
+      .set({ lastCompletedAt: now })
+      .where(and(
+        eq(questionProgress.userId, userId),
+        inArray(questionProgress.questionId, courseQuestions.map((q: any) => q.id))
+      ));
+  }
 }
 
 // Speichert oder aktualisiert Fortschritt für eine Frage
@@ -621,6 +665,17 @@ export async function upsertQuestionProgress(data: {
       attemptCount: 1,
       lastAttemptAt: new Date(),
     });
+  }
+  
+  // Prüfe ob Kurs jetzt 100% erreicht hat
+  const question = await db
+    .select({ courseId: questions.courseId })
+    .from(questions)
+    .where(eq(questions.id, data.questionId))
+    .limit(1);
+  
+  if (question.length > 0 && question[0].courseId) {
+    await checkAndMarkCourseCompletion(data.userId, question[0].courseId);
   }
 }
 
