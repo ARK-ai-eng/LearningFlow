@@ -1,0 +1,22 @@
+{
+  "query": "SELECT * FROM courses WHERE id = 30002;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT * FROM courses WHERE id = 30002;",
+  "rows": [
+    {
+      "id": "30002",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "description": "Sensibilisierung für IT-Sicherheitsrisiken im Arbeitsalltag. Erkennen Sie Phishing, Social Engineering und andere Bedrohungen.",
+      "courseType": "sensitization",
+      "isActive": "1",
+      "isMandatory": "1",
+      "passingScore": "60",
+      "timeLimit": "0",
+      "createdAt": "2026-02-14 23:28:59",
+      "updatedAt": "2026-02-14 23:28:59"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tdescription\tcourseType\tisActive\tisMandatory\tpassingScore\ttimeLimit\tcreatedAt\tupdatedAt\n30002\tIT-Sicherheit Sensibilisierung\tSensibilisierung für IT-Sicherheitsrisiken im Arbeitsalltag. Erkennen Sie Phishing, Social Engineering und andere Bedrohungen.\tsensitization\t1\t1\t60\t0\t2026-02-14 23:28:59\t2026-02-14 23:28:59\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

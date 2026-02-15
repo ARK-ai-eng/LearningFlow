@@ -807,9 +807,8 @@ export const appRouter = router({
         const progress = await db.getQuestionProgressByCourse(ctx.user.id, input.courseId);
         
         const total = questions.length;
-        // Zähle unique Fragen (nicht Versuche!)
-        const uniqueQuestions = new Set(progress.map((p: any) => p.questionId));
-        const answered = uniqueQuestions.size;
+        // Zähle nur Fragen die wirklich beantwortet wurden (nicht unanswered nach Reset)
+        const answered = progress.filter((p: any) => p.firstAttemptStatus !== 'unanswered').length;
         // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
         const correct = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
         const incorrect = progress.filter((p: any) => p.firstAttemptStatus === 'incorrect').length;
@@ -821,13 +820,13 @@ export const appRouter = router({
           topics.map(async (topic: any) => {
             const topicQuestions = await db.getQuestionsByTopic(topic.id);
             const topicProg = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
-            // Zähle unique Fragen pro Topic
-            const uniqueTopicQuestions = new Set(topicProg.map((p: any) => p.questionId));
+            // Zähle nur wirklich beantwortete Fragen (nicht unanswered nach Reset)
+            const answered = topicProg.filter((p: any) => p.firstAttemptStatus !== 'unanswered').length;
             return {
               topicId: topic.id,
               topicTitle: topic.title,
               total: topicQuestions.length,
-              answered: uniqueTopicQuestions.size,
+              answered,
               // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
               correct: topicProg.filter((p: any) => p.firstAttemptStatus === 'correct').length,
               percentage: topicQuestions.length > 0 ? Math.round((topicProg.filter((p: any) => p.firstAttemptStatus === 'correct').length / topicQuestions.length) * 100) : 0,
@@ -930,7 +929,7 @@ export const appRouter = router({
             const progress = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
             
             const total = questions.length;
-            const answered = progress.length;
+            const answered = progress.filter(p => p.firstAttemptStatus !== 'unanswered').length;
             const correct = progress.filter(p => p.status === 'correct').length;
             const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
             

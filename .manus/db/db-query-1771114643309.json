@@ -1,0 +1,14 @@
+{
+  "query": "SELECT \n  firstAttemptStatus,\n  COUNT(*) as count\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE q.courseId = 30002\nGROUP BY firstAttemptStatus;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  firstAttemptStatus,\n  COUNT(*) as count\nFROM question_progress qp\nJOIN questions q ON qp.questionId = q.id\nWHERE q.courseId = 30002\nGROUP BY firstAttemptStatus;",
+  "rows": [
+    {
+      "firstAttemptStatus": "unanswered",
+      "count": "12"
+    }
+  ],
+  "messages": [],
+  "stdout": "firstAttemptStatus\tcount\nunanswered\t12\n",
+  "stderr": "",
+  "execution_time_ms": 76
+}

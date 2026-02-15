@@ -1116,3 +1116,54 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - `server/db.ts`: checkAndMarkCourseCompletion(), resetQuestionProgressByCourse() angepasst
 - `server/routers.ts`: course.resetProgress Endpoint, getCourseStats erweitert
 - `client/src/pages/user/CourseView.tsx`: Wiederholen-Button + Dialog + Abschlussdatum
+
+
+## Backlog - Nächste Features (Priorisiert)
+
+### Analytics & Reporting
+- [ ] FirmenAdmin Analytics: Heatmap-Ansicht welche Fragen am häufigsten falsch beantwortet werden
+  - Hilft Schulungsinhalte zu optimieren
+  - Zeigt Wissenslücken der Mitarbeiter auf
+  - Dashboard mit Top 10 schwierigsten Fragen
+
+### Prüfungs-Modus
+- [ ] ExamView vollständig testen und validieren
+  - 20 Fragen aus Fragenpool
+  - 80% Bestehensgrenze
+  - 15-Minuten-Timer
+  - PDF-Zertifikat-Download nach bestandener Prüfung
+  - Edge Cases: Timer abgelaufen, Browser-Refresh, Verbindungsabbruch
+
+### Mobile UX
+- [ ] Touch-Gesten für Quiz implementieren
+  - Swipe links/rechts für vorherige/nächste Frage
+  - Touch-Feedback bei Antwortauswahl
+  - Mobile-optimierte Button-Größen
+  - Responsive Design für Tablets
+
+
+## ✅ BUG GELÖST: Kurs-Wiederholung zeigt 0 Fragen (15.02.2026)
+
+- [x] Nach "Kurs wiederholen" zeigt CourseView "0 Fragen warten auf dich"
+- [x] Kurs 30002 betroffen
+- [x] User hat sich angemeldet, Kurs existiert in DB
+
+**Root Cause:**
+- `getCourseStats` in routers.ts Zeile 812 zählte ALLE Progress-Einträge als "beantwortet"
+- Nach Reset: Alle Fragen haben `firstAttemptStatus='unanswered'` Progress-Einträge
+- Berechnung: `answered = uniqueQuestions.size` = 12 (FALSCH!)
+- Resultat: `total - answered = 12 - 12 = 0 Fragen warten`
+
+**Fehlgeschlagene Lösungsversuche:**
+1. ❌ Fix in `getCourseProgress` (Zeile 933) - FALSCHE API! CourseView ruft `getCourseStats` auf
+2. ❌ Server-Neustart ohne richtigen Fix - Problem blieb bestehen
+
+**Erfolgreiche Lösung:**
+- ✅ `getCourseStats` Zeile 811: `answered = progress.filter(p => p.firstAttemptStatus !== 'unanswered').length`
+- ✅ Topic-Progress Zeile 824: Gleicher Fix für Topic-Statistiken
+- ✅ Jetzt werden nur WIRKLICH beantwortete Fragen gezählt (nicht `unanswered` nach Reset)
+
+**Was gelernt:**
+- Immer prüfen WELCHE API das Frontend wirklich aufruft (nicht annehmen!)
+- `getCourseStats` ≠ `getCourseProgress` (zwei verschiedene APIs!)
+- Nach Code-Änderungen: Server-Neustart prüfen (HMR funktioniert nicht immer)
