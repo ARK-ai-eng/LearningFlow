@@ -1640,3 +1640,15 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
   - `SMTP_PASS`
 - [ ] Test-E-Mail senden
 - [ ] Checkpoint erstellen
+
+
+## 🎨 Roadmap Badge-Alignment (15.02.2026 19:45)
+
+**Ziel:** Badges "Q3 2026", "Q2 2026", "Q4 2026" horizontal aligned (Option 1: Gleiche Card-Höhe)
+
+- [x] Home.tsx Roadmap-Section anpassen
+  - [x] `min-h-[320px] flex flex-col` zu Cards hinzufügen
+  - [x] Icon + Badge in eine Row mit `justify-between`
+  - [x] Content in `flex-1` Wrapper
+- [x] Browser-Test: Badges aligned prüfen - PERFEKT aligned! ✓
+- [x] Checkpoint erstellen
