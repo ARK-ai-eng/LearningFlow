@@ -1,0 +1,94 @@
+{
+  "query": "\nSELECT u.email, up.courseId, up.topicId, up.status, up.completedAt\nFROM user_progress up\nJOIN users u ON up.userId = u.id\nWHERE u.email = 'testyou@me.com' AND up.courseId = 30002\nORDER BY up.topicId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT u.email, up.courseId, up.topicId, up.status, up.completedAt\nFROM user_progress up\nJOIN users u ON up.userId = u.id\nWHERE u.email = 'testyou@me.com' AND up.courseId = 30002\nORDER BY up.topicId;\n",
+  "rows": [
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "43",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:37:06"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "44",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:21:47"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "45",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:21:52"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "46",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:37:33"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "47",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:21:58"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "48",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:03"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "49",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:17"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "50",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:20"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "51",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:22"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "52",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:24"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "53",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:26"
+    },
+    {
+      "email": "testyou@me.com",
+      "courseId": "30002",
+      "topicId": "54",
+      "status": "completed",
+      "completedAt": "2026-02-15 12:22:28"
+    }
+  ],
+  "messages": [],
+  "stdout": "email\tcourseId\ttopicId\tstatus\tcompletedAt\ntestyou@me.com\t30002\t43\tcompleted\t2026-02-15 12:37:06\ntestyou@me.com\t30002\t44\tcompleted\t2026-02-15 12:21:47\ntestyou@me.com\t30002\t45\tcompleted\t2026-02-15 12:21:52\ntestyou@me.com\t30002\t46\tcompleted\t2026-02-15 12:37:33\ntestyou@me.com\t30002\t47\tcompleted\t2026-02-15 12:21:58\ntestyou@me.com\t30002\t48\tcompleted\t2026-02-15 12:22:03\ntestyou@me.com\t30002\t49\tcompleted\t2026-02-15 12:22:17\ntestyou@me.com\t30002\t50\tcompleted\t2026-02-15 12:22:20\ntestyou@me.com\t30002\t51\tcompleted\t2026-02-15 12:22:22\ntestyou@me.com\t30002\t52\tcompleted\t2026-02-15 12:22:24\ntestyou@me.com\t30002\t53\tcompleted\t2026-02-15 12:22:26\ntestyou@me.com\t30002\t54\tcompleted\t2026-02-15 12:22:28\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

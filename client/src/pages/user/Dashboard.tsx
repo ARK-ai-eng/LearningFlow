@@ -98,7 +98,10 @@ export default function UserDashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {progress?.filter((p: any) => p.status === 'in_progress').length || 0}
+                  {courses?.filter((course: any) => {
+                    const progressPercent = getCourseProgress(course.id);
+                    return progressPercent > 0 && progressPercent < 100;
+                  }).length || 0}
                 </p>
                 <p className="text-sm text-muted-foreground">In Bearbeitung</p>
               </div>

@@ -1,0 +1,118 @@
+{
+  "query": "\nSELECT \n  up.topicId,\n  t.title as topic_title,\n  up.status,\n  up.score,\n  up.completedAt,\n  (SELECT COUNT(*) FROM questions WHERE topicId = up.topicId) as total_questions,\n  (SELECT COUNT(*) FROM question_progress qp WHERE qp.userId = up.userId AND qp.topicId = up.topicId) as answered_questions\nFROM user_progress up\nJOIN users u ON up.userId = u.id\nJOIN topics t ON up.topicId = t.id\nWHERE u.email = 'testyou@me.com' AND up.courseId = 30002\nORDER BY up.topicId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT \n  up.topicId,\n  t.title as topic_title,\n  up.status,\n  up.score,\n  up.completedAt,\n  (SELECT COUNT(*) FROM questions WHERE topicId = up.topicId) as total_questions,\n  (SELECT COUNT(*) FROM question_progress qp WHERE qp.userId = up.userId AND qp.topicId = up.topicId) as answered_questions\nFROM user_progress up\nJOIN users u ON up.userId = u.id\nJOIN topics t ON up.topicId = t.id\nWHERE u.email = 'testyou@me.com' AND up.courseId = 30002\nORDER BY up.topicId;\n",
+  "rows": [
+    {
+      "topicId": "43",
+      "topic_title": "Phishing erkennen",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-02-15 12:37:06",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "44",
+      "topic_title": "Sichere Passwörter",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-02-15 12:21:47",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "45",
+      "topic_title": "Social Engineering",
+      "status": "completed",
+      "score": "100",
+      "completedAt": "2026-02-15 12:21:52",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "46",
+      "topic_title": "E-Mail & Dateianhänge",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:37:33",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "47",
+      "topic_title": "Geräte & Arbeitsplatzsicherheit",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:21:58",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "48",
+      "topic_title": "MFA & Login-Missbrauch",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:03",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "49",
+      "topic_title": "Cloud & Datenaustausch",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:17",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "50",
+      "topic_title": "Updates & Fake-Updates",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:20",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "51",
+      "topic_title": "Mobile Security",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:22",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "52",
+      "topic_title": "Datenschutz & Datenklassifizierung",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:24",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "53",
+      "topic_title": "USB & Fremdgeräte",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:26",
+      "total_questions": "1",
+      "answered_questions": "1"
+    },
+    {
+      "topicId": "54",
+      "topic_title": "Incident Reporting",
+      "status": "completed",
+      "score": "0",
+      "completedAt": "2026-02-15 12:22:28",
+      "total_questions": "1",
+      "answered_questions": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "topicId\ttopic_title\tstatus\tscore\tcompletedAt\ttotal_questions\tanswered_questions\n43\tPhishing erkennen\tcompleted\t100\t2026-02-15 12:37:06\t1\t1\n44\tSichere Passwörter\tcompleted\t100\t2026-02-15 12:21:47\t1\t1\n45\tSocial Engineering\tcompleted\t100\t2026-02-15 12:21:52\t1\t1\n46\tE-Mail & Dateianhänge\tcompleted\t0\t2026-02-15 12:37:33\t1\t1\n47\tGeräte & Arbeitsplatzsicherheit\tcompleted\t0\t2026-02-15 12:21:58\t1\t1\n48\tMFA & Login-Missbrauch\tcompleted\t0\t2026-02-15 12:22:03\t1\t1\n49\tCloud & Datenaustausch\tcompleted\t0\t2026-02-15 12:22:17\t1\t1\n50\tUpdates & Fake-Updates\tcompleted\t0\t2026-02-15 12:22:20\t1\t1\n51\tMobile Security\tcompleted\t0\t2026-02-15 12:22:22\t1\t1\n52\tDatenschutz & Datenklassifizierung\tcompleted\t0\t2026-02-15 12:22:24\t1\t1\n53\tUSB & Fremdgeräte\tcompleted\t0\t2026-02-15 12:22:26\t1\t1\n54\tIncident Reporting\tcompleted\t0\t2026-02-15 12:22:28\t1\t1\n",
+  "stderr": "",
+  "execution_time_ms": 73
+}

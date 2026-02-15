@@ -1292,3 +1292,13 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - Wie viel würden Firmen für "All-in-One"-Lösung zahlen?
 
 **Details:** Siehe `docs/decisions/ADR-017-mandantenfaehigkeit-multi-portal.md`
+
+
+## 🚨 KRITISCHER BUG (15.02.2026 08:15 Uhr)
+
+- [x] **Dashboard zeigt 100% statt 25% Fortschritt** ✅ GEFIXED 
+  - Problem: user_progress Tabelle enthält alle 12 Topics als 'completed' obwohl nur 3 beantwortet wurden
+  - Symptom: Dashboard zeigt 100%, CourseView zeigt korrekt 25%
+  - Root Cause: Dashboard berechnet completedTopics / totalTopics, aber alle Topics sind 'completed'
+  - Betroffener User: testyou@me.com, Kurs 30002 (IT-Sicherheit)
+  - Daten: 3/12 Fragen korrekt beantwortet, aber 12/12 Topics auf 'completed'

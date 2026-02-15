@@ -1,0 +1,17 @@
+{
+  "query": "\nSELECT \n  u.email,\n  COUNT(*) as total_questions,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'correct' THEN 1 ELSE 0 END) as correct_first_attempt,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect_first_attempt,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'unanswered' THEN 1 ELSE 0 END) as unanswered\nFROM question_progress qp\nJOIN users u ON qp.userId = u.id\nJOIN questions q ON qp.questionId = q.id\nWHERE u.email = 'testyou@me.com' AND q.courseId = 30002\nGROUP BY u.email;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSELECT \n  u.email,\n  COUNT(*) as total_questions,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'correct' THEN 1 ELSE 0 END) as correct_first_attempt,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'incorrect' THEN 1 ELSE 0 END) as incorrect_first_attempt,\n  SUM(CASE WHEN qp.firstAttemptStatus = 'unanswered' THEN 1 ELSE 0 END) as unanswered\nFROM question_progress qp\nJOIN users u ON qp.userId = u.id\nJOIN questions q ON qp.questionId = q.id\nWHERE u.email = 'testyou@me.com' AND q.courseId = 30002\nGROUP BY u.email;\n",
+  "rows": [
+    {
+      "email": "testyou@me.com",
+      "total_questions": "12",
+      "correct_first_attempt": "3",
+      "incorrect_first_attempt": "0",
+      "unanswered": "9"
+    }
+  ],
+  "messages": [],
+  "stdout": "email\ttotal_questions\tcorrect_first_attempt\tincorrect_first_attempt\tunanswered\ntestyou@me.com\t12\t3\t0\t9\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
