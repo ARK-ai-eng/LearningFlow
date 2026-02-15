@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 // Pages
 import Home from "./pages/Home";
 import Impressum from "./pages/Impressum";
+import Datenschutz from "./pages/Datenschutz";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -41,6 +42,7 @@ function Router() {
       {/* Public Routes */}
       <Route path="/" component={Home} />
       <Route path="/impressum" component={Impressum} />
+      <Route path="/datenschutz" component={Datenschutz} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/invite/:token" component={AcceptInvitation} />

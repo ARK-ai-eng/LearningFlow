@@ -317,7 +317,7 @@ export default function Home() {
               <span className="font-semibold">LearningFlow</span>
             </div>
             <div className="flex gap-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors">Datenschutz</a>
+              <a href="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</a>
               <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
               <a href="#" className="hover:text-foreground transition-colors">Kontakt</a>
             </div>

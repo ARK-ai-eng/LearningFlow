@@ -1437,3 +1437,12 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] SysAdmin-Bereich: Alle Seiten prüfen und aktualisieren (nutzt DashboardLayout)
 - [x] Browser-Test (alle Rollen)
 - [x] Checkpoint erstellen
+
+
+## 🎨 Browser-Tab-Title & Datenschutz-Seite (15.02.2026 16:45)
+
+- [x] Browser-Tab-Title: client/index.html `<title>` Tag ändern
+- [x] Datenschutz-Seite erstellen (DSGVO-konform)
+- [x] Footer-Link "Datenschutz" aktivieren
+- [x] Browser-Test
+- [x] Checkpoint erstellen
