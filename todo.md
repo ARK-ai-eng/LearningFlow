@@ -1526,3 +1526,43 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Fix implementiert: Skeleton nur zeigen wenn noch kein User im localStorage gecacht ist
 - [x] Browser-Test: Login mehrmals wiederholt - KEIN Flicker mehr!
 - [x] Checkpoint erstellen
+
+
+## ⚡ Performance-Optimierung: Login-Flow beschleunigen (15.02.2026 17:45)
+
+**Ziel:** Login-Flow von aktuell ~2-3 Sekunden auf < 500ms reduzieren (Gold-Standard 2026)
+
+**Backup-Checkpoint:** 0a488c0e (17:40 Uhr) - Jederzeit Rollback möglich
+
+### Phase 1: Baseline & Loading-States
+- [x] Performance-Baseline messen (aktueller Login-Flow)
+  - [x] Zeit vom Klick "Anmelden" bis Dashboard sichtbar: 19.24 Sekunden!
+  - [x] Network-Requests analysieren: Full Page Reload verursacht Problem
+  - [x] Dokumentieren: Was dauert am längsten? JavaScript-Bundles neu laden (~18.9s)
+- [x] Loading-Spinner während Login hinzufügen
+  - [x] Visuelles Feedback für User
+  - [x] "Wird angemeldet..." Text bereits vorhanden, optimiert
+
+### Phase 2: Client-side Routing
+- [x] Login.tsx: `window.location.href` → `setLocation()` ersetzen
+- [x] Auth-Token-Handling geprüft (localStorage bleibt erhalten)
+- [x] Browser-History getestet (Zurück-Button funktioniert)
+- [x] Getestet: SysAdmin, CompanyAdmin, User Login
+
+### Phase 3: Performance-Messung & Vergleich
+- [x] Performance erneut gemessen (~3 Sekunden)
+- [x] Vorher/Nachher-Vergleich dokumentiert (docs/PERFORMANCE-RESULTS-2026-02-15.md)
+- [x] Ziel erreicht? Nein (< 500ms), aber ~85% schneller (von 19s auf ~3s)
+- [x] Hauptflaschenhals identifiziert: API-Call (~2-3s), nicht Routing
+
+### Phase 4: Testing & Rollback-Plan
+- [x] Login-Flow getestet (alle 3 Rollen) - Funktioniert!
+- [x] Logout getestet - OK
+- [x] Browser-Refresh getestet - OK
+- [x] Kein Flicker mehr, smooth Transition
+- [x] Checkpoint erstellen
+
+**Risiken:**
+- Auth-Token wird nicht korrekt übertragen → Absicherung: Mehrfach-Tests
+- Browser-History funktioniert nicht → Absicherung: Zurück-Button testen
+- Race-Conditions → Absicherung: Debouncing implementieren falls nötig

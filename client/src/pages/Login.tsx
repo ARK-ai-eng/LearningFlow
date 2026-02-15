@@ -22,13 +22,13 @@ export default function Login() {
         localStorage.setItem('auth_token', data.token);
       }
       
-      // Redirect based on role (ohne Skeleton durch sofortigen Redirect)
+      // Redirect based on role (Client-side Navigation für Performance)
       if (data.role === 'sysadmin') {
-        window.location.href = '/admin';
+        setLocation('/admin');
       } else if (data.role === 'companyadmin') {
-        window.location.href = '/company';
+        setLocation('/company');
       } else {
-        window.location.href = '/dashboard';
+        setLocation('/dashboard');
       }
     },
     onError: (err) => {
