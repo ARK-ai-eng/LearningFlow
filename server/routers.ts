@@ -46,24 +46,36 @@ export const appRouter = router({
         subject: z.string().min(1),
         message: z.string().min(1),
       }))
-      .mutation(async ({ input }) => {
-        // TODO: Implement email sending logic
-        // For now, just log the contact request
-        console.log('[Contact Form]', {
-          from: input.email,
+      .mutation(async ({ input, ctx }) => {
+        // Rate-Limiting prüfen
+        const { checkRateLimit, getClientIp, formatResetTime } = await import('./rateLimit');
+        const clientIp = getClientIp(ctx.req.headers);
+        const rateLimit = checkRateLimit(clientIp);
+        
+        if (!rateLimit.allowed) {
+          const resetTime = formatResetTime(rateLimit.resetAt);
+          throw new TRPCError({
+            code: 'TOO_MANY_REQUESTS',
+            message: `Zu viele Anfragen. Bitte versuchen Sie es in ${resetTime} erneut.`,
+          });
+        }
+        
+        // E-Mail senden
+        const { sendContactEmail } = await import('./email');
+        
+        const result = await sendContactEmail({
           name: input.name,
+          email: input.email,
           subject: input.subject,
           message: input.message,
-          timestamp: new Date().toISOString(),
         });
         
-        // In production, you would send an email here:
-        // await sendEmail({
-        //   to: 'info@aismarterflow.com',
-        //   from: input.email,
-        //   subject: `Kontaktanfrage: ${input.subject}`,
-        //   text: `Name: ${input.name}\nE-Mail: ${input.email}\n\nNachricht:\n${input.message}`,
-        // });
+        if (!result.success) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: result.error || 'E-Mail konnte nicht gesendet werden',
+          });
+        }
         
         return { success: true };
       }),

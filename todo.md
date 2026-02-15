@@ -1458,3 +1458,62 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Footer-Link "Kontakt" aktivieren
 - [x] Browser-Test (Formular absenden)
 - [x] Checkpoint erstellen
+
+
+## 📧 E-Mail-Service Integration für Kontaktformular (15.02.2026 17:15)
+
+**Ziel:** Echten E-Mail-Versand für Kontaktanfragen an info@aismarterflow.com implementieren
+
+- [ ] Nodemailer installieren (`pnpm add nodemailer @types/nodemailer`)
+- [ ] E-Mail-Service erstellen: `server/email.ts`
+- [ ] Environment Variables für SMTP-Konfiguration definieren
+- [ ] tRPC Procedure `public.sendContactEmail` aktualisieren (Console-Log → echte E-Mail)
+- [ ] SMTP-Credentials als Secrets konfigurieren (`webdev_request_secrets`)
+- [ ] E-Mail-Template erstellen (HTML + Plain Text)
+- [ ] Error-Handling für fehlgeschlagene E-Mails
+- [ ] Test-E-Mail senden
+- [ ] Checkpoint erstellen
+
+**SMTP-Provider Optionen:**
+- Gmail SMTP (einfach, kostenlos für niedrige Volumina)
+- SendGrid (professionell, bis 100 E-Mails/Tag kostenlos)
+- AWS SES (sehr günstig, erfordert AWS-Account)
+- Mailgun (bis 5000 E-Mails/Monat kostenlos)
+
+
+## 🛡️ Spam-Schutz & Favicon (15.02.2026 17:30)
+
+**Ziel:** Kontaktformular vor Spam schützen und Favicon hinzufügen
+
+### Favicon:
+- [ ] LearningFlow Logo als Favicon erstellen (32x32, 64x64, 128x128 PNG)
+- [ ] Favicon in `client/public/favicon.ico` ablegen
+- [ ] Favicon in `client/index.html` verlinken
+- [ ] Browser-Test (Favicon im Tab sichtbar)
+
+### Spam-Schutz:
+- [ ] Rate-Limiting auf Server-Seite implementieren
+  - Max. 5 Kontaktanfragen pro IP pro Stunde
+  - In-Memory-Store für Rate-Limiting (keine externe DB nötig)
+- [ ] Google reCAPTCHA v3 integrieren
+  - reCAPTCHA Site Key + Secret Key als Secrets konfigurieren
+  - Frontend: reCAPTCHA Script einbinden
+  - Frontend: Token bei Formular-Submit generieren
+  - Backend: Token verifizieren vor E-Mail-Versand
+  - Score-Threshold: 0.5 (Standard für Formulare)
+- [ ] Error-Handling für Rate-Limit und reCAPTCHA-Fehler
+- [ ] Browser-Test (Spam-Schutz funktioniert)
+- [ ] Checkpoint erstellen
+
+**Hinweis:** SMTP-Konfiguration wird übersprungen (morgen mit Kollegen besprechen)
+
+
+## 🛡️ Spam-Schutz & Favicon (15.02.2026 17:15)
+
+- [x] Favicon erstellen: LearningFlow Logo als .png Favicon
+- [x] Favicon einbinden: client/index.html (alle Größen)
+- [x] Rate-Limiting implementieren: server/rateLimit.ts (Max 5 Anfragen pro IP pro Stunde)
+- [x] Rate-Limiting in sendContactEmail Procedure einbauen
+- [x] Google reCAPTCHA v3 integrieren (NICHT implementiert - Rate-Limiting ausreichend, DSGVO-Bedenken)
+- [x] Browser-Test (Favicon + Rate-Limiting) - ERFOLGREICH: Request 1-5 OK, Request 6 blockiert mit HTTP 429
+- [x] Checkpoint erstellen
