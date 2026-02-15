@@ -1423,3 +1423,17 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Footer-Link "Impressum" aktivieren
 - [x] Browser-Test
 - [x] Checkpoint erstellen
+
+
+## 🎨 Dashboard-Branding Update: LearningFlow (15.02.2026 16:30)
+
+**Ziel:** Alle eingeloggten Bereiche auf "LearningFlow" Branding umstellen
+
+- [x] DashboardLayout.tsx: Logo und Texte aktualisieren (bereits korrekt - nur Icon, kein Text)
+- [x] Login.tsx: Logo und Texte aktualisieren (bereits korrekt - kein Branding-Text)
+- [x] Register.tsx: Logo und Texte aktualisieren (bereits korrekt - kein Branding-Text)
+- [x] User-Bereich: Alle Seiten prüfen und aktualisieren (CertificateView.tsx: PDF-Text geändert)
+- [x] FirmenAdmin-Bereich: Alle Seiten prüfen und aktualisieren (nutzt DashboardLayout)
+- [x] SysAdmin-Bereich: Alle Seiten prüfen und aktualisieren (nutzt DashboardLayout)
+- [x] Browser-Test (alle Rollen)
+- [x] Checkpoint erstellen

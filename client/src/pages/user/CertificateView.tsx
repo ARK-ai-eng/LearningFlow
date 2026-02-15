@@ -167,7 +167,7 @@ Datum: ${completedAt.toLocaleDateString('de-DE')}
 Gültig bis: ${expiresAt.toLocaleDateString('de-DE')}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AISmarterFlow Academy
+LearningFlow
   `;
 
   return certificateText;
