@@ -1,0 +1,88 @@
+{
+  "query": "\nSHOW TABLES;\nSELECT COUNT(*) as user_count FROM users;\nSELECT COUNT(*) as company_count FROM companies;\nSELECT COUNT(*) as course_count FROM courses;\nSELECT COUNT(*) as topic_count FROM topics;\nSELECT COUNT(*) as question_count FROM questions;\nSELECT COUNT(*) as question_progress_count FROM question_progress;\nSELECT COUNT(*) as user_progress_count FROM user_progress;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute \nSHOW TABLES;\nSELECT COUNT(*) as user_count FROM users;\nSELECT COUNT(*) as company_count FROM companies;\nSELECT COUNT(*) as course_count FROM courses;\nSELECT COUNT(*) as topic_count FROM topics;\nSELECT COUNT(*) as question_count FROM questions;\nSELECT COUNT(*) as question_progress_count FROM question_progress;\nSELECT COUNT(*) as user_progress_count FROM user_progress;\n",
+  "rows": [
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "certificates"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "companies"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "courses"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "exam_attempts"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "exam_completions"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "invitations"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "question_progress"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "questions"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "topics"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "user_progress"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "users"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "user_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "3"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "company_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "1"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "course_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "3"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "topic_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "19"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "question_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "42"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "question_progress_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "16"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "user_progress_count"
+    },
+    {
+      "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa": "12"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_RXc4pG5Wbo6eGZhnWSXpwa\n__drizzle_migrations\ncertificates\ncompanies\ncourses\nexam_attempts\nexam_completions\ninvitations\nquestion_progress\nquestions\ntopics\nuser_progress\nusers\nuser_count\n3\ncompany_count\n1\ncourse_count\n3\ntopic_count\n19\nquestion_count\n42\nquestion_progress_count\n16\nuser_progress_count\n12\n",
+  "stderr": "",
+  "execution_time_ms": 1923
+}

@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as db from './db';
-import { getDb } from './_core/database.js';
 
 describe('Kurs-Wiederholungs-Feature', () => {
   let testUserId: number;
@@ -10,20 +9,13 @@ describe('Kurs-Wiederholungs-Feature', () => {
 
   beforeAll(async () => {
     // Setup: Erstelle Test-User, Kurs, Topic und Fragen
-    const database = await getDb();
-    if (!database) throw new Error('Database not available');
-
-    // Erstelle Test-User
-    const userResult = await database
-      .insert(await import('./drizzle/schema').then(m => m.users))
-      .values({
-        email: `test-reset-${Date.now()}@test.com`,
-        passwordHash: 'test',
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'user',
-      });
-    testUserId = Number(userResult.insertId);
+    testUserId = await db.createUser({
+      email: `test-reset-${Date.now()}@test.com`,
+      passwordHash: 'test',
+      name: 'Test User',
+      role: 'user',
+      isActive: true,
+    });
 
     // Erstelle Test-Kurs
     testCourseId = await db.createCourse({
@@ -47,12 +39,11 @@ describe('Kurs-Wiederholungs-Feature', () => {
         courseId: testCourseId,
         questionText: `Test Frage ${i}`,
         correctAnswer: 'A',
-        answerA: 'Richtig',
-        answerB: 'Falsch',
-        answerC: 'Falsch',
-        answerD: 'Falsch',
+        optionA: 'Richtig',
+        optionB: 'Falsch',
+        optionC: 'Falsch',
+        optionD: 'Falsch',
         explanation: 'Test',
-        orderIndex: i,
       });
       testQuestionIds.push(questionId);
     }
