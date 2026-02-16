@@ -1760,3 +1760,27 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - **P95:** < 150ms (Ziel erreicht)
 
 ### Nächste Schritte: PHASE 2 - Indizes hinzufügen
+
+
+## Sprint 18 - PHASE 2 & 3: Stabilisierung + Skalierung (16.02.2026)
+
+### PHASE 2: Präzise Indizes
+- [x] Analysiere neue JOIN-Queries in db-optimized.ts
+- [x] Leite Composite-Indizes ab (Reihenfolge = WHERE/JOIN-Reihenfolge)
+- [x] Erstelle SQL-Migrations-Script
+- [x] Messe Vorher/Nachher (P50/P95)
+- [x] Dokumentation: PHASE-2-INDIZES-RESULTS.md
+
+### PHASE 3: Transactions
+- [x] Prüfungs-Submit mit Transaction (Certificate + ExamCompletion atomic)
+- [x] Invitation Accept mit Transaction (User + Invitation atomic)
+- [ ] Rollback-Tests implementieren
+- [ ] Dokumentation: PHASE-3-TRANSACTIONS-RESULTS.md
+
+### PHASE 4: Lasttest
+- [x] 10 parallele Dashboard-Requests (Ziel: P95 < 200ms)
+- [x] 50 parallele Requests (Ziel: P95 < 300ms)
+- [x] 100 parallele Requests (Ziel: P95 < 500ms)
+- [x] CPU-Auslastung + Event Loop Delay messen
+- [x] Bewertung: System bereit für 100/500/1000 User?
+- [x] Dokumentation: PHASE-4-LASTTEST-RESULTS.md

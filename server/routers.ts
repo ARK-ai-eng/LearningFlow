@@ -217,8 +217,29 @@ export const appRouter = router({
           userData.personnelNumber = invitation.personnelNumber;
         }
 
-        const userId = await db.createUser(userData);
-        await db.markInvitationUsed(invitation.id);
+        // TRANSACTION: User erstellen + Einladung als verwendet markieren (atomic)
+        const database = await db.getDb();
+        if (!database) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
+        }
+
+        const { users, invitations } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+
+        const userId = await database.transaction(async (tx: any) => {
+          // User erstellen
+          const [userResult] = await tx.insert(users).values({
+            ...userData,
+            email: userData.email.toLowerCase(),
+          });
+          
+          // Einladung als verwendet markieren
+          await tx.update(invitations)
+            .set({ usedAt: new Date() })
+            .where(eq(invitations.id, invitation.id));
+          
+          return userResult.insertId;
+        });
 
         // JWT Token erstellen und Cookie setzen
         const token = createToken(userId, invitation.email, invitation.type);
@@ -1136,6 +1157,7 @@ export const appRouter = router({
   // ============================================
   exam: router({
     // Record exam completion (DSGVO-konform: kein PDF gespeichert)
+    // TRANSACTION: ExamCompletion + Certificate (atomic)
     recordCompletion: protectedProcedure
       .input(z.object({
         courseId: z.number(),
@@ -1143,13 +1165,59 @@ export const appRouter = router({
         passed: z.boolean(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const completionId = await db.recordExamCompletion({
-          userId: ctx.user.id,
-          courseId: input.courseId,
-          score: input.score,
-          passed: input.passed,
-        });
-        return { completionId };
+        // Wenn Prüfung bestanden, Certificate erstellen (atomic)
+        if (input.passed) {
+          const database = await db.getDb();
+          if (!database) {
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
+          }
+
+          const { examCompletions, certificates } = await import('../drizzle/schema');
+          
+          const result = await database.transaction(async (tx: any) => {
+            // ExamCompletion erstellen
+            const [completionResult] = await tx.insert(examCompletions).values({
+              userId: ctx.user.id,
+              courseId: input.courseId,
+              score: input.score,
+              passed: input.passed,
+              completedAt: new Date(),
+            });
+            
+            // Certificate erstellen
+            const certificateNumber = `CERT-${Date.now()}-${ctx.user.id}-${input.courseId}`;
+            const issuedAt = new Date();
+            const expiresAt = new Date(issuedAt);
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 Jahr gültig
+            
+            const [certResult] = await tx.insert(certificates).values({
+              userId: ctx.user.id,
+              courseId: input.courseId,
+              examAttemptId: completionResult.insertId,
+              certificateNumber,
+              issuedAt,
+              expiresAt,
+              pdfUrl: null, // PDF wird später generiert
+            });
+            
+            return {
+              completionId: completionResult.insertId,
+              certificateId: certResult.insertId,
+              certificateNumber,
+            };
+          });
+          
+          return result;
+        } else {
+          // Prüfung nicht bestanden, nur ExamCompletion speichern
+          const completionId = await db.recordExamCompletion({
+            userId: ctx.user.id,
+            courseId: input.courseId,
+            score: input.score,
+            passed: input.passed,
+          });
+          return { completionId };
+        }
       }),
 
     // Get latest exam completion

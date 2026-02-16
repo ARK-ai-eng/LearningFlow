@@ -1,0 +1,45 @@
+{
+  "query": "SELECT \n  TABLE_NAME, \n  INDEX_NAME, \n  GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) as COLUMNS\nFROM INFORMATION_SCHEMA.STATISTICS \nWHERE TABLE_SCHEMA = DATABASE() \n  AND INDEX_NAME LIKE 'idx_%'\nGROUP BY TABLE_NAME, INDEX_NAME\nORDER BY TABLE_NAME, INDEX_NAME;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  TABLE_NAME, \n  INDEX_NAME, \n  GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) as COLUMNS\nFROM INFORMATION_SCHEMA.STATISTICS \nWHERE TABLE_SCHEMA = DATABASE() \n  AND INDEX_NAME LIKE 'idx_%'\nGROUP BY TABLE_NAME, INDEX_NAME\nORDER BY TABLE_NAME, INDEX_NAME;",
+  "rows": [
+    {
+      "TABLE_NAME": "certificates",
+      "INDEX_NAME": "idx_certificates_user_issued",
+      "COLUMNS": "userId,issuedAt"
+    },
+    {
+      "TABLE_NAME": "courses",
+      "INDEX_NAME": "idx_courses_is_active",
+      "COLUMNS": "isActive"
+    },
+    {
+      "TABLE_NAME": "question_progress",
+      "INDEX_NAME": "idx_question_progress_question_user",
+      "COLUMNS": "questionId,userId"
+    },
+    {
+      "TABLE_NAME": "question_progress",
+      "INDEX_NAME": "idx_question_progress_status",
+      "COLUMNS": "firstAttemptStatus"
+    },
+    {
+      "TABLE_NAME": "question_progress",
+      "INDEX_NAME": "idx_user_topic_first_attempt",
+      "COLUMNS": "userId,topicId,firstAttemptStatus"
+    },
+    {
+      "TABLE_NAME": "questions",
+      "INDEX_NAME": "idx_questions_topic_id",
+      "COLUMNS": "topicId"
+    },
+    {
+      "TABLE_NAME": "topics",
+      "INDEX_NAME": "idx_topics_course_id",
+      "COLUMNS": "courseId"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\tINDEX_NAME\tCOLUMNS\ncertificates\tidx_certificates_user_issued\tuserId,issuedAt\ncourses\tidx_courses_is_active\tisActive\nquestion_progress\tidx_question_progress_question_user\tquestionId,userId\nquestion_progress\tidx_question_progress_status\tfirstAttemptStatus\nquestion_progress\tidx_user_topic_first_attempt\tuserId,topicId,firstAttemptStatus\nquestions\tidx_questions_topic_id\ttopicId\ntopics\tidx_topics_course_id\tcourseId\n",
+  "stderr": "",
+  "execution_time_ms": 175
+}
