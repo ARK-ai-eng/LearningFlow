@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AcceptInvitation from "./pages/AcceptInvitation";
+import ChangePassword from "./pages/ChangePassword";
 
 // User Pages
 import UserDashboard from "./pages/user/Dashboard";
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/invite/:token" component={AcceptInvitation} />
+      <Route path="/change-password" component={ChangePassword} />
       
       {/* User Routes */}
       <Route path="/dashboard" component={UserDashboard} />

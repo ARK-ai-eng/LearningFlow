@@ -1784,3 +1784,15 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] CPU-Auslastung + Event Loop Delay messen
 - [x] Bewertung: System bereit für 100/500/1000 User?
 - [x] Dokumentation: PHASE-4-LASTTEST-RESULTS.md
+
+
+## Sprint 19 - Pragmatische Sicherheits-Härtung (16.02.2026)
+
+### Sicherheitsmaßnahmen (für max. 60 User)
+- [x] JWT-Lifetime von 7 Tage auf 24 Stunden reduzieren
+- [x] forcePasswordChange Boolean-Feld zum User-Modell hinzufügen (Migration)
+- [x] Login-Prüfung: Redirect auf Passwort-Änderung wenn forcePasswordChange = true
+- [x] Passwort-Änderungs-Seite implementieren (Frontend)
+- [x] Rate Limiting für Login-Endpoint (5 Versuche / 15 Minuten)
+- [x] Admin-Funktion: Passwort manuell setzen + forcePasswordChange aktivieren
+- [x] Dokumentation: SECURITY-HARDENING-2026-02-16.md

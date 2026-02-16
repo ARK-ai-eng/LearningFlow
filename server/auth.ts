@@ -14,12 +14,12 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-// JWT Token erstellen (7 Tage gültig, für Session)
+// JWT Token erstellen (24 Stunden gültig, für Session)
 export function createToken(userId: number, email: string, role: string): string {
   return jwt.sign(
     { userId, email, role },
     ENV.jwtSecret,
-    { expiresIn: '7d' }
+    { expiresIn: '24h' }
   );
 }
 

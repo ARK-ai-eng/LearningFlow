@@ -77,7 +77,7 @@ export async function updateUser(id: number, data: Partial<InsertUser>) {
 export async function updateUserPassword(id: number, passwordHash: string) {
   const db = await getDb();
   if (!db) return;
-  await db.update(users).set({ passwordHash }).where(eq(users.id, id));
+  await db.update(users).set({ passwordHash, forcePasswordChange: false }).where(eq(users.id, id));
 }
 
 export async function updateUserLastSignedIn(id: number) {

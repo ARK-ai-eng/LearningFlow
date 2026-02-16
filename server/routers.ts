@@ -95,6 +95,18 @@ export const appRouter = router({
       }))
       .mutation(async ({ ctx, input }) => {
         const { verifyPassword, createToken } = await import('./auth');
+        const { checkRateLimit, resetRateLimit } = await import('./rate-limit');
+        
+        // Rate Limiting (IP-basiert)
+        const clientIp = ctx.req.ip || ctx.req.headers['x-forwarded-for'] || 'unknown';
+        const rateLimit = checkRateLimit(clientIp as string);
+        
+        if (!rateLimit.allowed) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: `Zu viele Login-Versuche. Bitte versuchen Sie es später erneut. (Gesperrt bis ${rateLimit.blockedUntil?.toLocaleTimeString('de-DE')})`,
+          });
+        }
         
         const user = await db.getUserByEmail(input.email.toLowerCase());
         if (!user) {
@@ -109,6 +121,22 @@ export const appRouter = router({
           throw new TRPCError({ code: "UNAUTHORIZED", message: "E-Mail oder Passwort falsch" });
         }
         
+        // Prüfe ob Passwort-Änderung erzwungen wird
+        if (user.forcePasswordChange) {
+          // Temporäres Token für Passwort-Änderung (nur 15 Minuten gültig)
+          const tempToken = createToken(user.id, user.email, user.role);
+          return {
+            success: false,
+            forcePasswordChange: true,
+            tempToken, // Für auth.changePassword Endpoint
+            userId: user.id,
+            email: user.email,
+          };
+        }
+        
+        // Erfolgreicher Login → Rate Limit zurücksetzen
+        resetRateLimit(clientIp as string);
+        
         // Last sign in aktualisieren (asynchron, blockiert Response nicht)
         db.updateUserLastSignedIn(user.id).catch(err => console.error('[Login] Failed to update lastSignedIn:', err));
         
@@ -117,7 +145,7 @@ export const appRouter = router({
         
         // Cookie setzen (Fallback)
         const cookieOptions = getSessionCookieOptions(ctx.req);
-        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 }); // 24 Stunden
         
         // Token auch zurückgeben für localStorage (Hauptmethode)
         // + User-Daten für optimistisches Caching (verhindert Skeleton-Flicker)
@@ -137,6 +165,49 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    
+    // Passwort ändern (für forcePasswordChange oder freiwillig)
+    changePassword: protectedProcedure
+      .input(z.object({
+        oldPassword: z.string(),
+        newPassword: z.string().min(8),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { verifyPassword, hashPassword, validatePassword, createToken } = await import('./auth');
+        
+        // Validiere neues Passwort
+        const validation = validatePassword(input.newPassword);
+        if (!validation.valid) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: validation.error || "Ungültiges Passwort" });
+        }
+        
+        // Hole User
+        const user = await db.getUserById(ctx.user.id);
+        if (!user || !user.passwordHash) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Benutzer nicht gefunden" });
+        }
+        
+        // Prüfe altes Passwort
+        const validPassword = await verifyPassword(input.oldPassword, user.passwordHash);
+        if (!validPassword) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Altes Passwort falsch" });
+        }
+        
+        // Hashe neues Passwort
+        const newPasswordHash = await hashPassword(input.newPassword);
+        
+        // Update Passwort + setze forcePasswordChange = false
+        await db.updateUserPassword(user.id, newPasswordHash);
+        
+        // Neues Token erstellen (altes ist ungültig)
+        const token = createToken(user.id, user.email, user.role);
+        
+        // Cookie setzen
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 });
+        
+        return { success: true, token };
+      }),
     
     // HINWEIS: exchangeToken wurde entfernt!
     // Auth-Bootstrap läuft jetzt über REST: POST /api/auth/exchange-session
@@ -244,7 +315,7 @@ export const appRouter = router({
         // JWT Token erstellen und Cookie setzen
         const token = createToken(userId, invitation.email, invitation.type);
         const cookieOptions = getSessionCookieOptions(ctx.req);
-        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 }); // 24 Stunden
 
         return { success: true };
       }),
@@ -1255,6 +1326,37 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.updateUserRole(input.userId, input.role);
+        return { success: true };
+      }),
+    
+    // Passwort zurücksetzen (manuell durch Admin)
+    resetUserPassword: adminProcedure
+      .input(z.object({
+        userId: z.number(),
+        newPassword: z.string().min(8),
+        forcePasswordChange: z.boolean().optional().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        const { hashPassword, validatePassword } = await import('./auth');
+        
+        // Validiere neues Passwort
+        const validation = validatePassword(input.newPassword);
+        if (!validation.valid) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: validation.error || "Ungültiges Passwort" });
+        }
+        
+        // Hashe neues Passwort
+        const newPasswordHash = await hashPassword(input.newPassword);
+        
+        // Update Passwort (updateUserPassword setzt forcePasswordChange automatisch auf false)
+        // Wir müssen forcePasswordChange separat setzen wenn gewünscht
+        await db.updateUserPassword(input.userId, newPasswordHash);
+        
+        // Setze forcePasswordChange explizit (wenn true gewünscht)
+        if (input.forcePasswordChange) {
+          await db.updateUser(input.userId, { forcePasswordChange: true });
+        }
+        
         return { success: true };
       }),
   }),

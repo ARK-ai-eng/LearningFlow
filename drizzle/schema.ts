@@ -16,6 +16,7 @@ export const users = mysqlTable("users", {
   role: mysqlEnum("role", ["sysadmin", "companyadmin", "user"]).default("user").notNull(),
   companyId: int("companyId"),
   isActive: boolean("isActive").default(true).notNull(),
+  forcePasswordChange: boolean("forcePasswordChange").default(false).notNull(), // Admin kann Passwort-Änderung erzwingen
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

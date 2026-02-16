@@ -17,6 +17,17 @@ export default function Login() {
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data) => {
+      // Prüfe ob Passwort-Änderung erzwungen wird
+      if (data.forcePasswordChange) {
+        // Temporäres Token speichern
+        if (data.tempToken) {
+          localStorage.setItem('auth_token', data.tempToken);
+        }
+        // Redirect zu Passwort-Änderung
+        setLocation('/change-password');
+        return;
+      }
+      
       // Token in localStorage speichern (Hauptmethode, da Cookies im Proxy nicht funktionieren)
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
