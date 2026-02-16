@@ -539,24 +539,10 @@ export const appRouter = router({
   // ============================================
   course: router({
     // Öffentliche Liste aktiver Kurse (mit Progress-Stats)
+    // OPTIMIERT: 1 Query statt 34+ (N+1 eliminiert)
     listActive: protectedProcedure.query(async ({ ctx }) => {
-      const courses = await db.getActiveCourses();
-      // Füge Stats für jeden Kurs hinzu
-      const coursesWithStats = await Promise.all(
-        courses.map(async (course: any) => {
-          // Berechne Stats wie in question.getCourseStats
-          const questions = await db.getQuestionsByCourse(course.id);
-          const progress = await db.getQuestionProgressByCourse(ctx.user.id, course.id);
-          
-          const total = questions.length;
-          const answered = progress.filter((p: any) => p.firstAttemptStatus !== 'unanswered').length;
-          const correct = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
-          const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
-          
-          return { ...course, stats: { total, answered, correct, percentage } };
-        })
-      );
-      return coursesWithStats;
+      const { getActiveCoursesWithStats } = await import('./db-optimized');
+      return getActiveCoursesWithStats(ctx.user.id);
     }),
 
     // Admin: Alle Kurse
@@ -872,55 +858,16 @@ export const appRouter = router({
       }),
 
     // Berechnet Statistik für einen Kurs
+    // OPTIMIERT: 2 Queries statt 26+ (N+1 eliminiert)
     getCourseStats: protectedProcedure
       .input(z.object({ courseId: z.number() }))
       .query(async ({ ctx, input }) => {
-        const questions = await db.getQuestionsByCourse(input.courseId);
-        const progress = await db.getQuestionProgressByCourse(ctx.user.id, input.courseId);
-        
-        const total = questions.length;
-        // Zähle nur Fragen die wirklich beantwortet wurden (nicht unanswered nach Reset)
-        const answered = progress.filter((p: any) => p.firstAttemptStatus !== 'unanswered').length;
-        // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
-        const correct = progress.filter((p: any) => p.firstAttemptStatus === 'correct').length;
-        const incorrect = progress.filter((p: any) => p.firstAttemptStatus === 'incorrect').length;
-        const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
-        
-        // Topic-Fortschritt berechnen
-        const topics = await db.getTopicsByCourse(input.courseId);
-        const topicProgress = await Promise.all(
-          topics.map(async (topic: any) => {
-            const topicQuestions = await db.getQuestionsByTopic(topic.id);
-            const topicProg = await db.getQuestionProgressByTopic(ctx.user.id, topic.id);
-            // Zähle nur wirklich beantwortete Fragen (nicht unanswered nach Reset)
-            const answered = topicProg.filter((p: any) => p.firstAttemptStatus !== 'unanswered').length;
-            return {
-              topicId: topic.id,
-              topicTitle: topic.title,
-              total: topicQuestions.length,
-              answered,
-              // WICHTIG: Fortschritt basiert auf firstAttemptStatus, nicht status! (Option B)
-              correct: topicProg.filter((p: any) => p.firstAttemptStatus === 'correct').length,
-              percentage: topicQuestions.length > 0 ? Math.round((topicProg.filter((p: any) => p.firstAttemptStatus === 'correct').length / topicQuestions.length) * 100) : 0,
-            };
-          })
-        );
-        
-        // Hole lastCompletedAt vom ersten Progress-Eintrag (alle haben denselben Wert)
-        const lastCompletedAt = progress.length > 0 && progress[0].lastCompletedAt 
-          ? progress[0].lastCompletedAt 
-          : null;
-        
-        return {
-          courseId: input.courseId,
-          total,
-          answered,
-          correct,
-          incorrect,
-          percentage,
-          topicProgress,
-          lastCompletedAt,
-        };
+        const { getCourseStatsWithTopics } = await import('./db-optimized');
+        const stats = await getCourseStatsWithTopics(ctx.user.id, input.courseId);
+        if (!stats) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Kurs nicht gefunden" });
+        }
+        return stats;
       }),
 
     // Setzt Fortschritt für einen Kurs zurück (löscht alle question_progress Einträge)
@@ -1122,17 +1069,10 @@ export const appRouter = router({
   // ============================================
   certificate: router({
     // Eigene Zertifikate abrufen
+    // OPTIMIERT: 1 Query statt 6+ (N+1 eliminiert)
     my: protectedProcedure.query(async ({ ctx }) => {
-      const certs = await db.getUserCertificates(ctx.user.id);
-      // Kursnamen hinzufügen
-      const certsWithCourse = await Promise.all(certs.map(async (cert: any) => {
-        const course = await db.getCourseById(cert.courseId);
-        return {
-          ...cert,
-          courseName: course?.title || 'Unbekannt',
-        };
-      }));
-      return certsWithCourse;
+      const { getUserCertificatesWithCourse } = await import('./db-optimized');
+      return getUserCertificatesWithCourse(ctx.user.id);
     }),
 
     // PDF generieren und URL zurückgeben

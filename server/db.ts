@@ -250,7 +250,13 @@ export async function getAllCourses() {
 export async function getActiveCourses() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(courses).where(eq(courses.isActive, true)).orderBy(courses.title);
+  
+  const start = process.hrtime.bigint();
+  const result = await db.select().from(courses).where(eq(courses.isActive, true)).orderBy(courses.title);
+  const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
+  console.log("[DB]", { fn: "getActiveCourses", ms: duration });
+  
+  return result;
 }
 
 export async function getCourseById(id: number) {
@@ -364,7 +370,12 @@ export async function getQuestionsByCourse(
   }
   
   // Combine all conditions with AND
-  return db.select().from(questions).where(and(...conditions));
+  const start = process.hrtime.bigint();
+  const result = await db.select().from(questions).where(and(...conditions));
+  const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
+  console.log("[DB]", { fn: "getQuestionsByCourse", courseId, ms: duration });
+  
+  return result;
 }
 
 export async function updateQuestion(id: number, data: Partial<InsertQuestion>) {
@@ -394,7 +405,13 @@ export async function deleteQuestion(id: number) {
 export async function getUserProgress(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(userProgress).where(eq(userProgress.userId, userId));
+  
+  const start = process.hrtime.bigint();
+  const result = await db.select().from(userProgress).where(eq(userProgress.userId, userId));
+  const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
+  console.log("[DB]", { fn: "getUserProgress", userId, ms: duration });
+  
+  return result;
 }
 
 export async function getUserCourseProgress(userId: number, courseId: number) {
@@ -470,7 +487,13 @@ export async function createCertificate(cert: InsertCertificate): Promise<number
 export async function getUserCertificates(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(certificates).where(eq(certificates.userId, userId));
+  
+  const start = process.hrtime.bigint();
+  const result = await db.select().from(certificates).where(eq(certificates.userId, userId));
+  const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
+  console.log("[DB]", { fn: "getUserCertificates", userId, ms: duration });
+  
+  return result;
 }
 
 export async function getCertificateByNumber(certNumber: string) {
@@ -521,6 +544,8 @@ export async function getQuestionProgressByCourse(userId: number, courseId: numb
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  const fnStart = process.hrtime.bigint();
+  
   // Hole alle Fragen des Kurses
   const courseQuestions = await getQuestionsByCourse(courseId);
   const questionIds = courseQuestions.map((q: any) => q.id);
@@ -530,13 +555,19 @@ export async function getQuestionProgressByCourse(userId: number, courseId: numb
   }
   
   // Hole Fortschritt für diese Fragen
-  return await db
+  const start = process.hrtime.bigint();
+  const result = await db
     .select()
     .from(questionProgress)
     .where(and(
       eq(questionProgress.userId, userId),
       inArray(questionProgress.questionId, questionIds)
     ));
+  const queryDuration = Number(process.hrtime.bigint() - start) / 1_000_000;
+  const totalDuration = Number(process.hrtime.bigint() - fnStart) / 1_000_000;
+  console.log("[DB]", { fn: "getQuestionProgressByCourse", userId, courseId, queryMs: queryDuration, totalMs: totalDuration });
+  
+  return result;
 }
 
 // Setzt Fortschritt für einen Kurs zurück (setzt firstAttemptStatus zurück, behält lastCompletedAt)

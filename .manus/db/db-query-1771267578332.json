@@ -1,0 +1,34 @@
+{
+  "query": "SELECT \n  c.id,\n  c.title,\n  c.description,\n  c.courseType,\n  c.isActive,\n  COUNT(DISTINCT q.id) as total\nFROM courses c\nLEFT JOIN topics t ON t.courseId = c.id\nLEFT JOIN questions q ON q.topicId = t.id\nWHERE c.isActive = 1\nGROUP BY c.id, c.title, c.description, c.courseType, c.isActive\nLIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  c.id,\n  c.title,\n  c.description,\n  c.courseType,\n  c.isActive,\n  COUNT(DISTINCT q.id) as total\nFROM courses c\nLEFT JOIN topics t ON t.courseId = c.id\nLEFT JOIN questions q ON q.topicId = t.id\nWHERE c.isActive = 1\nGROUP BY c.id, c.title, c.description, c.courseType, c.isActive\nLIMIT 3;",
+  "rows": [
+    {
+      "id": "30001",
+      "title": "Datenschutz Grundlagen",
+      "description": "Grundlegende Einführung in den Datenschutz nach DSGVO. Lernen Sie die wichtigsten Begriffe und Konzepte kennen.",
+      "courseType": "learning",
+      "isActive": "1",
+      "total": "6"
+    },
+    {
+      "id": "30002",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "description": "Sensibilisierung für IT-Sicherheitsrisiken im Arbeitsalltag. Erkennen Sie Phishing, Social Engineering und andere Bedrohungen.",
+      "courseType": "sensitization",
+      "isActive": "1",
+      "total": "12"
+    },
+    {
+      "id": "30003",
+      "title": "Datenschutz Zertifizierung",
+      "description": "Umfassende Prüfung Ihrer Datenschutzkenntnisse. Bestehen Sie die Jahresprüfung und erhalten Sie Ihr Zertifikat.",
+      "courseType": "certification",
+      "isActive": "1",
+      "total": "24"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tdescription\tcourseType\tisActive\ttotal\n30001\tDatenschutz Grundlagen\tGrundlegende Einführung in den Datenschutz nach DSGVO. Lernen Sie die wichtigsten Begriffe und Konzepte kennen.\tlearning\t1\t6\n30002\tIT-Sicherheit Sensibilisierung\tSensibilisierung für IT-Sicherheitsrisiken im Arbeitsalltag. Erkennen Sie Phishing, Social Engineering und andere Bedrohungen.\tsensitization\t1\t12\n30003\tDatenschutz Zertifizierung\tUmfassende Prüfung Ihrer Datenschutzkenntnisse. Bestehen Sie die Jahresprüfung und erhalten Sie Ihr Zertifikat.\tcertification\t1\t24\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

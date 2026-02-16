@@ -1,0 +1,8 @@
+{
+  "query": "SELECT \n  c.id,\n  c.title,\n  c.description,\n  c.course_type as courseType,\n  c.is_active as isActive,\n  COUNT(DISTINCT q.id) as total,\n  COUNT(DISTINCT CASE WHEN qp.first_attempt_status != 'unanswered' THEN qp.question_id END) as answered,\n  COUNT(DISTINCT CASE WHEN qp.first_attempt_status = 'correct' THEN qp.question_id END) as correct\nFROM courses c\nLEFT JOIN topics t ON t.course_id = c.id\nLEFT JOIN questions q ON q.topic_id = t.id\nLEFT JOIN question_progress qp ON qp.question_id = q.id AND qp.user_id = 1\nWHERE c.is_active = 1\nGROUP BY c.id, c.title, c.description, c.course_type, c.is_active\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT \n  c.id,\n  c.title,\n  c.description,\n  c.course_type as courseType,\n  c.is_active as isActive,\n  COUNT(DISTINCT q.id) as total,\n  COUNT(DISTINCT CASE WHEN qp.first_attempt_status != 'unanswered' THEN qp.question_id END) as answered,\n  COUNT(DISTINCT CASE WHEN qp.first_attempt_status = 'correct' THEN qp.question_id END) as correct\nFROM courses c\nLEFT JOIN topics t ON t.course_id = c.id\nLEFT JOIN questions q ON q.topic_id = t.id\nLEFT JOIN question_progress qp ON qp.question_id = q.id AND qp.user_id = 1\nWHERE c.is_active = 1\nGROUP BY c.id, c.title, c.description, c.course_type, c.is_active\nLIMIT 5;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 't.course_id' in 'on clause'"
+  ]
+}
