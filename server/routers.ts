@@ -96,6 +96,7 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const { verifyPassword, createToken } = await import('./auth');
         const { checkRateLimit, resetRateLimit } = await import('./rate-limit');
+        const { logSecurityEvent, getClientIp, getClientUserAgent } = await import('./security-logger');
         
         // Rate Limiting (IP-basiert)
         const clientIp = ctx.req.ip || ctx.req.headers['x-forwarded-for'] || 'unknown';
@@ -110,6 +111,15 @@ export const appRouter = router({
         
         const user = await db.getUserByEmail(input.email.toLowerCase());
         if (!user) {
+          // LOG: LOGIN_FAILED (User nicht gefunden)
+          await logSecurityEvent(
+            "LOGIN_FAILED",
+            null,
+            null,
+            { email: input.email, reason: "User nicht gefunden" },
+            getClientIp(ctx.req),
+            getClientUserAgent(ctx.req)
+          );
           throw new TRPCError({ code: "UNAUTHORIZED", message: "E-Mail oder Passwort falsch" });
         }
         if (!user.passwordHash) {
@@ -118,6 +128,15 @@ export const appRouter = router({
         
         const validPassword = await verifyPassword(input.password, user.passwordHash);
         if (!validPassword) {
+          // LOG: LOGIN_FAILED (Falsches Passwort)
+          await logSecurityEvent(
+            "LOGIN_FAILED",
+            user.id,
+            user.companyId || null,
+            { email: input.email, reason: "Falsches Passwort" },
+            getClientIp(ctx.req),
+            getClientUserAgent(ctx.req)
+          );
           throw new TRPCError({ code: "UNAUTHORIZED", message: "E-Mail oder Passwort falsch" });
         }
         
@@ -136,6 +155,16 @@ export const appRouter = router({
         
         // Erfolgreicher Login → Rate Limit zurücksetzen
         resetRateLimit(clientIp as string);
+        
+        // LOG: LOGIN_SUCCESS
+        await logSecurityEvent(
+          "LOGIN_SUCCESS",
+          user.id,
+          user.companyId || null,
+          { email: user.email, role: user.role },
+          getClientIp(ctx.req),
+          getClientUserAgent(ctx.req)
+        );
         
         // Last sign in aktualisieren (asynchron, blockiert Response nicht)
         db.updateUserLastSignedIn(user.id).catch(err => console.error('[Login] Failed to update lastSignedIn:', err));
@@ -174,6 +203,7 @@ export const appRouter = router({
       }))
       .mutation(async ({ ctx, input }) => {
         const { verifyPassword, hashPassword, validatePassword, createToken } = await import('./auth');
+        const { logSecurityEvent, getClientIp, getClientUserAgent } = await import('./security-logger');
         
         // Validiere neues Passwort
         const validation = validatePassword(input.newPassword);
@@ -198,6 +228,16 @@ export const appRouter = router({
         
         // Update Passwort + setze forcePasswordChange = false
         await db.updateUserPassword(user.id, newPasswordHash);
+        
+        // LOG: PASSWORD_CHANGED
+        await logSecurityEvent(
+          "PASSWORD_CHANGED",
+          user.id,
+          user.companyId || null,
+          { email: user.email, wasForced: user.forcePasswordChange },
+          getClientIp(ctx.req),
+          getClientUserAgent(ctx.req)
+        );
         
         // Neues Token erstellen (altes ist ungültig)
         const token = createToken(user.id, user.email, user.role);
@@ -247,6 +287,7 @@ export const appRouter = router({
       }))
       .mutation(async ({ ctx, input }) => {
         const { hashPassword, validatePassword, createToken } = await import('./auth');
+        const { logSecurityEvent, getClientIp, getClientUserAgent } = await import('./security-logger');
         
         const invitation = await db.getInvitationByToken(input.token);
         if (!invitation) {
@@ -316,6 +357,22 @@ export const appRouter = router({
         const token = createToken(userId, invitation.email, invitation.type);
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 }); // 24 Stunden
+        
+        // LOG: INVITATION_ACCEPTED
+        await logSecurityEvent(
+          "INVITATION_ACCEPTED",
+          userId,
+          invitation.companyId || null,
+          { 
+            email: invitation.email, 
+            role: invitation.type,
+            invitedBy: invitation.invitedBy,
+            firstName: invitation.firstName,
+            lastName: invitation.lastName
+          },
+          getClientIp(ctx.req),
+          getClientUserAgent(ctx.req)
+        );
 
         return { success: true };
       }),
@@ -1236,6 +1293,8 @@ export const appRouter = router({
         passed: z.boolean(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { logSecurityEvent, getClientIp, getClientUserAgent } = await import('./security-logger');
+        
         // Wenn Prüfung bestanden, Certificate erstellen (atomic)
         if (input.passed) {
           const database = await db.getDb();
@@ -1278,6 +1337,34 @@ export const appRouter = router({
             };
           });
           
+          // LOG: EXAM_COMPLETED + CERTIFICATE_CREATED
+          await logSecurityEvent(
+            "EXAM_COMPLETED",
+            ctx.user.id,
+            ctx.user.companyId || null,
+            { 
+              courseId: input.courseId, 
+              score: input.score, 
+              passed: true,
+              certificateNumber: result.certificateNumber
+            },
+            getClientIp(ctx.req),
+            getClientUserAgent(ctx.req)
+          );
+          
+          await logSecurityEvent(
+            "CERTIFICATE_CREATED",
+            ctx.user.id,
+            ctx.user.companyId || null,
+            { 
+              courseId: input.courseId,
+              certificateId: result.certificateId,
+              certificateNumber: result.certificateNumber
+            },
+            getClientIp(ctx.req),
+            getClientUserAgent(ctx.req)
+          );
+          
           return result;
         } else {
           // Prüfung nicht bestanden, nur ExamCompletion speichern
@@ -1287,6 +1374,21 @@ export const appRouter = router({
             score: input.score,
             passed: input.passed,
           });
+          
+          // LOG: EXAM_COMPLETED (nicht bestanden)
+          await logSecurityEvent(
+            "EXAM_COMPLETED",
+            ctx.user.id,
+            ctx.user.companyId || null,
+            { 
+              courseId: input.courseId, 
+              score: input.score, 
+              passed: false
+            },
+            getClientIp(ctx.req),
+            getClientUserAgent(ctx.req)
+          );
+          
           return { completionId };
         }
       }),
@@ -1336,8 +1438,9 @@ export const appRouter = router({
         newPassword: z.string().min(8),
         forcePasswordChange: z.boolean().optional().default(true),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const { hashPassword, validatePassword } = await import('./auth');
+        const { logSecurityEvent, getClientIp, getClientUserAgent } = await import('./security-logger');
         
         // Validiere neues Passwort
         const validation = validatePassword(input.newPassword);
@@ -1357,7 +1460,37 @@ export const appRouter = router({
           await db.updateUser(input.userId, { forcePasswordChange: true });
         }
         
+        // Hole User-Info für Logging
+        const targetUser = await db.getUserById(input.userId);
+        
+        // LOG: ADMIN_PASSWORD_RESET
+        await logSecurityEvent(
+          "ADMIN_PASSWORD_RESET",
+          input.userId,
+          targetUser?.companyId || null,
+          { 
+            adminId: ctx.user.id, 
+            adminEmail: ctx.user.email, 
+            targetEmail: targetUser?.email,
+            forcePasswordChange: input.forcePasswordChange 
+          },
+          getClientIp(ctx.req),
+          getClientUserAgent(ctx.req)
+        );
+        
         return { success: true };
+      }),
+    
+    // Security-Logs abrufen (Admin)
+    getSecurityLogs: adminProcedure
+      .input(z.object({
+        limit: z.number().optional().default(50),
+        offset: z.number().optional().default(0),
+        action: z.string().optional(),
+        userId: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getSecurityLogs(input);
       }),
   }),
 });

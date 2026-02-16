@@ -1796,3 +1796,14 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Rate Limiting für Login-Endpoint (5 Versuche / 15 Minuten)
 - [x] Admin-Funktion: Passwort manuell setzen + forcePasswordChange aktivieren
 - [x] Dokumentation: SECURITY-HARDENING-2026-02-16.md
+
+
+## Sprint 20 - Minimaler Security-Audit-Log
+- [x] Datenbank-Schema: security_logs Tabelle erstellen (Migration)
+- [x] Logging-Helper: logSecurityEvent Funktion implementieren
+- [x] Integration: LOGIN_SUCCESS, LOGIN_FAILED loggen
+- [x] Integration: PASSWORD_CHANGED, ADMIN_PASSWORD_RESET loggen
+- [x] Integration: INVITATION_ACCEPTED loggen
+- [x] Integration: EXAM_COMPLETED, CERTIFICATE_CREATED loggen
+- [x] Admin-UI: Security-Logs-Seite erstellen (/admin/security-logs)
+- [x] Dokumentation: SECURITY-AUDIT-LOG-2026-02-16.md

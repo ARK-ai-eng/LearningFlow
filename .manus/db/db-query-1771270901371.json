@@ -1,0 +1,20 @@
+{
+  "query": "SELECT * FROM security_logs ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT * FROM security_logs ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "NULL",
+      "companyId": "NULL",
+      "action": "LOGIN_FAILED",
+      "metadata": "\"{\\\"email\\\":\\\"admin@system.de\\\",\\\"reason\\\":\\\"User nicht gefunden\\\"}\"",
+      "ipAddress": "98.89.18.67",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+      "createdAt": "2026-02-16 19:41:24"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tcompanyId\taction\tmetadata\tipAddress\tuserAgent\tcreatedAt\n1\tNULL\tNULL\tLOGIN_FAILED\t\"{\\\"email\\\":\\\"admin@system.de\\\",\\\"reason\\\":\\\"User nicht gefunden\\\"}\"\t98.89.18.67\tMozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36\t2026-02-16 19:41:24\n",
+  "stderr": "",
+  "execution_time_ms": 158
+}

@@ -876,3 +876,55 @@ export async function getRandomUnansweredQuestion(userId: number, courseId: numb
   const sortedUnanswered = unansweredQuestions.sort((a: any, b: any) => a.id - b.id);
   return sortedUnanswered[0];
 }
+
+
+// ============================================
+// SECURITY LOGS
+// ============================================
+
+/**
+ * Hole Security-Logs mit Pagination und Filtern
+ */
+export async function getSecurityLogs(options: {
+  limit?: number;
+  offset?: number;
+  action?: string;
+  userId?: number;
+  companyId?: number;
+} = {}): Promise<{ logs: any[]; total: number }> {
+  const { limit = 50, offset = 0, action, userId, companyId } = options;
+  const database = await getDb();
+  if (!database) throw new Error("Datenbankverbindung fehlgeschlagen");
+
+  const { securityLogs } = await import('../drizzle/schema');
+  const { eq, and, count } = await import('drizzle-orm');
+
+  // Build WHERE conditions
+  const conditions = [];
+  if (action) {
+    conditions.push(eq(securityLogs.action, action));
+  }
+  if (userId) {
+    conditions.push(eq(securityLogs.userId, userId));
+  }
+  if (companyId) {
+    conditions.push(eq(securityLogs.companyId, companyId));
+  }
+
+  // Get total count
+  const [{ value: total }] = await database
+    .select({ value: count() })
+    .from(securityLogs)
+    .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+  // Get logs with pagination
+  const logs = await database
+    .select()
+    .from(securityLogs)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(securityLogs.createdAt)
+    .limit(limit)
+    .offset(offset);
+
+  return { logs, total: total || 0 };
+}

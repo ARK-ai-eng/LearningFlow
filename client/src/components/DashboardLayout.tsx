@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 // OAuth entfernt - alle nutzen /login
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users, Building2, BookOpen, Award, Upload } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Building2, BookOpen, Award, Upload, Shield } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -34,6 +34,7 @@ const getMenuItems = (role: string | undefined) => {
       { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
       { icon: Building2, label: "Firmen", path: "/admin/companies" },
       { icon: BookOpen, label: "Kurse", path: "/admin/courses" },
+      { icon: Shield, label: "Security Logs", path: "/admin/security-logs" },
     ];
   }
   if (role === 'companyadmin') {

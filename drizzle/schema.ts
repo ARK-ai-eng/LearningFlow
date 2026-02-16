@@ -225,3 +225,20 @@ export const examCompletions = mysqlTable("exam_completions", {
 
 export type ExamCompletion = typeof examCompletions.$inferSelect;
 export type InsertExamCompletion = typeof examCompletions.$inferInsert;
+
+// ============================================
+// SECURITY_LOGS - Minimaler Audit-Log für kritische Events
+// ============================================
+export const securityLogs = mysqlTable("security_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"), // nullable - z.B. bei LOGIN_FAILED
+  companyId: int("companyId"),
+  action: varchar("action", { length: 100 }).notNull(), // LOGIN_SUCCESS, LOGIN_FAILED, PASSWORD_CHANGED, etc.
+  metadata: json("metadata"), // Optional: zusätzliche Daten (z.B. { email, reason, oldRole, newRole })
+  ipAddress: varchar("ipAddress", { length: 45 }), // IPv4 (15) + IPv6 (45)
+  userAgent: text("userAgent"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SecurityLog = typeof securityLogs.$inferSelect;
+export type InsertSecurityLog = typeof securityLogs.$inferInsert;
