@@ -1822,5 +1822,13 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Identifiziere warum Kurse nicht angezeigt werden (db.execute() Result-Format)
 - [x] Implementiere Fix (extract rows from [rows, fields] tuple)
 - [x] Browser-Test mit FirmenAdmin-Account (3 Kurse sichtbar mit Titeln)
-- [ ] Checkpoint erstellen
+- [x] Checkpoint erstellen
 - [x] Dokumentation: Lesson Learned
+
+
+## Sprint 23 - Wissensmanagement-Vervollständigung (17.02.2026)
+- [ ] Erstelle zentrale docs/DO-DONT.md (konsolidiert alle Learnings)
+- [ ] Fülle docs/patterns/ mit wiederverwendbaren Code-Patterns
+- [ ] Erstelle docs/checklists/ mit Task-Checklisten (Deployment, Development, Code-Review)
+- [ ] Pushe alles zu GitHub
+- [ ] Checkpoint erstellen

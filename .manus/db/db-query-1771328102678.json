@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, email, name, role, isActive, forcePasswordChange FROM users WHERE email = 'testyou@me.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, email, name, role, isActive, forcePasswordChange FROM users WHERE email = 'testyou@me.com';",
+  "rows": [
+    {
+      "id": "7",
+      "email": "testyou@me.com",
+      "name": "Test User",
+      "role": "user",
+      "isActive": "1",
+      "forcePasswordChange": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\trole\tisActive\tforcePasswordChange\n7\ttestyou@me.com\tTest User\tuser\t1\t0\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}
