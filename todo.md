@@ -1807,3 +1807,10 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Integration: EXAM_COMPLETED, CERTIFICATE_CREATED loggen
 - [x] Admin-UI: Security-Logs-Seite erstellen (/admin/security-logs)
 - [x] Dokumentation: SECURITY-AUDIT-LOG-2026-02-16.md
+
+
+## Sprint 21 - Bugfix: Admin-Kurs-Route versehentlich gelöscht (17.02.2026)
+- [x] Fixe Admin-Kurs-Route in App.tsx (von /admin/kurse/:id/edit zurück zu /admin/courses/:id)
+- [x] Browser-Test: /admin/courses/30003 sollte CourseEditor öffnen
+- [ ] Checkpoint erstellen
+- [x] Dokumentation: Lesson Learned für Fehler-Vermeidung

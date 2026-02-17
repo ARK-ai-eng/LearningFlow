@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, title, isActive FROM courses LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3wc5j91T7XwfNX4.406ada0c06a9 --database RXc4pG5Wbo6eGZhnWSXpwa --execute SELECT id, title, isActive FROM courses LIMIT 5;",
+  "rows": [
+    {
+      "id": "30001",
+      "title": "Datenschutz Grundlagen",
+      "isActive": "1"
+    },
+    {
+      "id": "30002",
+      "title": "IT-Sicherheit Sensibilisierung",
+      "isActive": "1"
+    },
+    {
+      "id": "30003",
+      "title": "Datenschutz Zertifizierung",
+      "isActive": "1"
+    },
+    {
+      "id": "60001",
+      "title": "Test Course for Status Management",
+      "isActive": "0"
+    },
+    {
+      "id": "60002",
+      "title": "Test Course Progress",
+      "isActive": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tisActive\n30001\tDatenschutz Grundlagen\t1\n30002\tIT-Sicherheit Sensibilisierung\t1\n30003\tDatenschutz Zertifizierung\t1\n60001\tTest Course for Status Management\t0\n60002\tTest Course Progress\t0\n",
+  "stderr": "",
+  "execution_time_ms": 96
+}

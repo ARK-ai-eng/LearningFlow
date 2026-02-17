@@ -74,7 +74,8 @@ function Router() {
       <Route path="/admin/companies/new" component={CompanyCreate} />
       <Route path="/admin/companies/:id" component={CompanyEdit} />
       <Route path="/admin/courses" component={CourseList} />
-      <Route path="/admin/courses/new" component={CourseEditor} />      <Route path="/admin/kurse/:id/edit" component={CourseEditor} />
+      <Route path="/admin/courses/new" component={CourseEditor} />
+      <Route path="/admin/courses/:id" component={CourseEditor} />
       <Route path="/admin/security-logs" component={SecurityLogs} />     
       {/* 404 */}
       <Route path="/404" component={NotFound} />
