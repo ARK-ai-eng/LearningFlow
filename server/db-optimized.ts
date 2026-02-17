@@ -51,9 +51,12 @@ export async function getActiveCoursesWithStats(userId: number) {
 
   const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
   console.log('[DB]', { fn: 'getActiveCoursesWithStats', userId, ms: duration, queryCount: 1 });
+  
+  // db.execute() returns [rows, fields] - extract rows
+  const rows = Array.isArray(result[0]) ? result[0] : result;
 
   // Transformiere Ergebnis
-  return (result as any[]).map((row: any) => ({
+  return rows.map((row: any) => ({
     id: row.id,
     title: row.title,
     description: row.description,

@@ -1812,5 +1812,15 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 ## Sprint 21 - Bugfix: Admin-Kurs-Route versehentlich gelöscht (17.02.2026)
 - [x] Fixe Admin-Kurs-Route in App.tsx (von /admin/kurse/:id/edit zurück zu /admin/courses/:id)
 - [x] Browser-Test: /admin/courses/30003 sollte CourseEditor öffnen
-- [ ] Checkpoint erstellen
+- [x] Checkpoint erstellen
 - [x] Dokumentation: Lesson Learned für Fehler-Vermeidung
+
+
+## Sprint 22 - Bugfix: FirmenAdmin sieht keine Kurse im Dashboard (17.02.2026)
+- [x] Analysiere User-Dashboard Code (client/src/pages/user/Dashboard.tsx)
+- [x] Prüfe course.listActive Query und Multi-Tenancy-Filter
+- [x] Identifiziere warum Kurse nicht angezeigt werden (db.execute() Result-Format)
+- [x] Implementiere Fix (extract rows from [rows, fields] tuple)
+- [x] Browser-Test mit FirmenAdmin-Account (3 Kurse sichtbar mit Titeln)
+- [ ] Checkpoint erstellen
+- [x] Dokumentation: Lesson Learned
