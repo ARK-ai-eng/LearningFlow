@@ -4,6 +4,20 @@ import type { TrpcContext } from "./_core/context";
 
 // Mock db functions
 vi.mock("./db", () => ({
+  getDb: vi.fn().mockResolvedValue({
+    execute: vi.fn().mockResolvedValue([[], []]),
+    query: vi.fn().mockResolvedValue([]),
+    transaction: vi.fn().mockImplementation(async (callback) => {
+      // Mock transaction - values() returns Promise directly (no .execute())
+      const mockValues = vi.fn().mockResolvedValue([{ insertId: 1 }]);
+      const mockInsert = vi.fn().mockReturnValue({ values: mockValues });
+      
+      const mockTx = {
+        insert: mockInsert,
+      };
+      return callback(mockTx);
+    }),
+  }),
   getAllCompanies: vi.fn().mockResolvedValue([
     { id: 1, name: "Test GmbH", status: "active", maxUsers: 100, createdAt: new Date(), updatedAt: new Date() }
   ]),
@@ -68,6 +82,25 @@ vi.mock("./db", () => ({
     completedAt: new Date(),
     score: 90,
     passed: true,
+  }),
+}));
+
+// Mock db-optimized functions
+vi.mock("./db-optimized", () => ({
+  getActiveCoursesWithStats: vi.fn().mockResolvedValue([
+    {
+      id: 1,
+      title: "Datenschutz",
+      description: "Test",
+      courseType: "learning",
+      isActive: true,
+      stats: { total: 0, answered: 0, correct: 0, percentage: 0 }
+    }
+  ]),
+  getUserCertificatesWithCourse: vi.fn().mockResolvedValue([]),
+  getCourseStatsWithTopics: vi.fn().mockResolvedValue({
+    topics: [],
+    stats: { total: 0, answered: 0, correct: 0, percentage: 0 }
   }),
 }));
 
