@@ -254,6 +254,6 @@ pnpm dev
 
 ---
 
-**Gefixed von:** Manus AI  
+**Gefixed von:** Development Team  
 **Datum:** 15. Februar 2026, 08:15 Uhr  
 **Dauer:** 30 Minuten (Analyse + Fix + Tests + Dokumentation)

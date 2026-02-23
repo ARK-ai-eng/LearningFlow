@@ -9,7 +9,7 @@
 ## 📊 Baseline-Messung (VORHER)
 
 ### Test-Setup:
-- **Browser:** Chromium (Manus Browser)
+- **Browser:** Chromium (Browser Automation)
 - **Netzwerk:** Standard (keine Throttling)
 - **Cache:** Gelöscht (localStorage, sessionStorage, Cookies)
 - **User:** SysAdmin (arton.ritter@aismarterflow.de)

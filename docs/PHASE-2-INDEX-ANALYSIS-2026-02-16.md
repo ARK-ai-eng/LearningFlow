@@ -170,5 +170,5 @@ CREATE INDEX idx_certificates_user_issued ON certificates(userId, issuedAt DESC)
 
 ---
 
-**Erstellt von:** Manus Performance Engineer  
+**Erstellt von:** Performance Team  
 **Review:** ✅ Bereit für Implementierung

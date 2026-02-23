@@ -31,7 +31,7 @@ Dieses Verzeichnis dokumentiert alle **Sprints** chronologisch mit Features, Bug
 ### Features
 
 - [x] Projekt-Setup (React 19, Tailwind 4, Express 4, tRPC 11)
-- [x] Manus OAuth Integration
+- [x] OAuth Provider Integration
 - [x] JWT Token Management
 - [x] Datenbank-Schema (users, companies, courses, topics, questions)
 
@@ -42,7 +42,7 @@ Keine
 ### Lessons Learned
 
 - Drizzle ORM ist Type-Safe und einfach zu nutzen
-- Manus OAuth funktioniert out-of-the-box
+- OAuth Provider funktioniert out-of-the-box
 - JWT mit 7 Tagen Expiration ist sinnvoll
 
 ### Nächste Schritte

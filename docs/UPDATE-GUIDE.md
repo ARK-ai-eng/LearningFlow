@@ -912,4 +912,4 @@ Development (lokal) → Staging (Test-VPS) → Production (Live-VPS)
 
 **Letzte Aktualisierung:** 17.02.2026  
 **Version:** 1.0.0  
-**Autor:** Manus AI Agent
+**Autor:** Development Team

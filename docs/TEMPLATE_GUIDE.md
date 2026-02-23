@@ -12,7 +12,7 @@ Das Template basiert auf einer modernen, skalierbaren Architektur:
 | Styling | Tailwind CSS 4 + shadcn/ui | Dark Theme Design System |
 | Backend | Express + tRPC | Typsichere API |
 | Datenbank | MySQL/TiDB + Drizzle ORM | Relationale Daten |
-| Auth | Manus OAuth | Benutzerauthentifizierung |
+| Auth | OAuth Provider | Benutzerauthentifizierung |
 
 ## Verzeichnisstruktur
 

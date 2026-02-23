@@ -324,6 +324,6 @@ console.log('[DEBUG] Result structure:', {
 
 ---
 
-**Dokumentiert von:** Manus AI Agent  
+**Dokumentiert von:** Development Team  
 **Review:** User (test@me.com)  
 **Status:** Abgeschlossen ✅

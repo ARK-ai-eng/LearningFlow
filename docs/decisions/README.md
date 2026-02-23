@@ -122,7 +122,7 @@ Wie sollte Authentifizierung implementiert werden?
 
 - Stateless (skalierbar)
 - Einfach zu implementieren
-- Funktioniert mit Manus OAuth
+- Funktioniert mit OAuth Provider
 - Token-Expiration (7 Tage) reduziert Risiko
 
 ### Konsequenzen
@@ -130,7 +130,7 @@ Wie sollte Authentifizierung implementiert werden?
 ✅ **Positiv**:
 - Einfache Implementierung
 - Skalierbar
-- Funktioniert mit Manus Proxy
+- Funktioniert mit Reverse Proxy
 
 ❌ **Negativ**:
 - Token-Revocation braucht zusätzliche Logik

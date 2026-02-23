@@ -1,7 +1,7 @@
 # System-Prüfungsbericht - AISmarterFlow Academy
 
 **Datum:** 15. Februar 2026, 08:05 Uhr  
-**Durchgeführt von:** Manus AI  
+**Durchgeführt von:** Development Team  
 **Anlass:** Vollständige Stabilitäts- und Funktionsprüfung auf User-Anfrage
 
 ---
@@ -277,7 +277,7 @@ params: testyou@me.com
 2. **Screenshot Upload Failed**
    - **Problem:** webdev_check_status kann keinen Screenshot erstellen
    - **Impact:** Niedrig (nur für Preview)
-   - **Status:** Manus-Platform-Issue, nicht App-spezifisch
+   - **Status:** Platform Issue, nicht App-spezifisch
    - **Priorität:** Niedrig
 
 ### ✅ Keine kritischen Probleme
@@ -352,6 +352,6 @@ params: testyou@me.com
 
 ---
 
-**Geprüft von:** Manus AI  
+**Geprüft von:** Development Team  
 **Datum:** 15. Februar 2026, 08:05 Uhr  
 **Nächste Prüfung:** Nach größeren Features oder vor Production-Deployment

@@ -154,7 +154,7 @@ mysql -h $HOST -u $USER -p$PASS $DB -e "SELECT COUNT(*) FROM users;"
 
 ---
 
-**Autor:** Manus AI Agent  
+**Autor:** Development Team  
 **Reviewer:** Arton Ritter  
 **Status:** Accepted  
 **Letzte Änderung:** 14.02.2026 23:10 Uhr

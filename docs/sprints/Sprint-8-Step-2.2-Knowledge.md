@@ -1,7 +1,7 @@
 # Sprint 8 - Schritt 2.2: Einzelfrage-Ansicht mit Antwort-Shuffle
 
 **Datum**: 29.01.2026  
-**Implementiert von**: Manus AI Agent  
+**Implementiert von**: Development Team  
 **Status**: ✅ Abgeschlossen
 
 ---

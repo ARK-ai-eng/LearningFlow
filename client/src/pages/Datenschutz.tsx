@@ -77,9 +77,9 @@ export default function Datenschutz() {
               Wir hosten die Inhalte unserer Website bei folgendem Anbieter:
             </p>
             <p className="mb-4">
-              <strong>Manus Platform</strong><br />
-              Die Website wird auf der Manus Platform gehostet. Die Datenverarbeitung erfolgt auf Servern 
-              innerhalb der EU. Weitere Informationen entnehmen Sie der Datenschutzerklärung von Manus.
+              <strong>Platform</strong><br />
+              Die Website wird auf der Platform gehostet. Die Datenverarbeitung erfolgt auf Servern 
+              innerhalb der EU. Weitere Informationen entnehmen Sie der Datenschutzerklärung der Platform.
             </p>
           </section>
 

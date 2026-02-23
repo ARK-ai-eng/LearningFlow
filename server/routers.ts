@@ -279,7 +279,7 @@ export const appRouter = router({
         };
       }),
 
-    // Einladung annehmen und Passwort setzen (OHNE Manus OAuth)
+    // Einladung annehmen und Passwort setzen (OHNE OAuth Provider)
     accept: publicProcedure
       .input(z.object({ 
         token: z.string(),

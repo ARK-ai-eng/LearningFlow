@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Datum:** 15. Februar 2026  
-**Autor:** Manus AI
+**Autor:** Development Team
 
 ---
 
@@ -242,7 +242,7 @@ mysql -u user -p database < backup.sql
 Wenn du einen Checkpoint vor dem Fix erstellt hast:
 
 ```bash
-# In Manus Management UI: Rollback zu vorherigem Checkpoint
+# In Management UI: Rollback zu vorherigem Checkpoint
 ```
 
 ---

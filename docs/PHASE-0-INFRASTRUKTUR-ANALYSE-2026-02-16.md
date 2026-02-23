@@ -36,7 +36,7 @@ export async function getDb() {
 
 ## 2️⃣ HOSTING-TOPOLOGIE
 
-### Aktuelle Umgebung: **Manus Sandbox (Development)**
+### Aktuelle Umgebung: **Development Sandbox (Development)**
 
 **CPU:**
 - Kerne: **6 vCPUs**
@@ -57,7 +57,7 @@ export async function getDb() {
 
 **Network:**
 - IP: 169.254.0.21/30 (Private)
-- Typ: **Manus Proxy** (HTTPS-Tunnel)
+- Typ: **Reverse Proxy** (HTTPS-Tunnel)
 
 ### Geplante Production-Umgebung: **IONOS**
 - **Typ:** ❓ **UNBEKANNT** (Shared / VPS / Dedicated)
@@ -72,7 +72,7 @@ export async function getDb() {
 ## 3️⃣ LATENZ-QUELLEN (HYPOTHESE)
 
 ### Mögliche Bottlenecks:
-1. **Netzwerk-Latenz:** Manus Proxy → TiDB Cloud (❓ MUSS GEMESSEN WERDEN)
+1. **Netzwerk-Latenz:** Reverse Proxy → TiDB Cloud (❓ MUSS GEMESSEN WERDEN)
 2. **DB-Query-Zeit:** N+1 Queries (32 Queries pro Dashboard)
 3. **Node Event Loop:** PDF-Generierung blockiert (2-5s)
 4. **Rendering:** React Re-Renders (weniger wahrscheinlich)
@@ -158,14 +158,14 @@ Total Response Time = Network Latency + DB Query Time + Node Processing + Render
 
 ## 📊 VORLÄUFIGE ERKENNTNISSE
 
-### Aktuelle Umgebung (Manus Sandbox):
+### Aktuelle Umgebung (Development Sandbox):
 - **CPU:** 6 vCPUs (ausreichend für Development)
 - **RAM:** 3.8 GB (knapp, aber OK)
 - **Storage:** 42 GB (ausreichend)
-- **Network:** Manus Proxy (HTTPS-Tunnel, Latenz unbekannt)
+- **Network:** Reverse Proxy (HTTPS-Tunnel, Latenz unbekannt)
 
 ### Kritische Fragen:
-1. **Ist TiDB Cloud in gleicher Region wie Manus Sandbox?**
+1. **Ist TiDB Cloud in gleicher Region wie Development Sandbox?**
    - Wenn NEIN: 50-200ms Netzwerk-Latenz möglich
    - Wenn JA: < 10ms Netzwerk-Latenz
 2. **Ist IONOS Shared Hosting geplant?**

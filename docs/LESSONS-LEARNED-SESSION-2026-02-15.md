@@ -1,6 +1,6 @@
 # Lessons Learned: Dashboard-Fortschritt & Kurs-Wiederholung (15.02.2026)
 
-**Autor:** Manus AI  
+**Autor:** Development Team  
 **Datum:** 15. Februar 2026  
 **Dauer:** ~6 Stunden (08:15 - 15:04 Uhr)  
 **Status:** ✅ Abgeschlossen

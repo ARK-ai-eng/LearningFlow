@@ -595,4 +595,4 @@
 **Version:** 1.0.0  
 **Letzte Aktualisierung:** 17.02.2026  
 **Autor:** Konsolidiert aus 22 Sprints Entwicklung  
-**Maintainer:** Manus AI Agent
+**Maintainer:** Development Team

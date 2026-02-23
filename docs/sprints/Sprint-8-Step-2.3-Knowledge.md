@@ -1,7 +1,7 @@
 # Sprint 8 - Schritt 2.3: Dialog für Wiederholung fehlerhafter Fragen
 
 **Datum**: 29.01.2026  
-**Implementiert von**: Manus AI Agent  
+**Implementiert von**: Development Team  
 **Status**: ✅ Abgeschlossen
 
 ---

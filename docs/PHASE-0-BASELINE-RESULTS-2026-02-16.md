@@ -82,11 +82,11 @@ export async function verifyPassword(plainPassword: string, hashedPassword: stri
 
 ## 📋 INFRASTRUKTUR-ERKENNTNISSE
 
-### Hosting (Manus Sandbox):
+### Hosting (Development Sandbox):
 - **CPU:** 6 vCPUs (Intel Xeon @ 2.50GHz)
 - **RAM:** 3.8 GB (2.1 GB used, 1.4 GB available)
 - **Storage:** 42 GB (12 GB used)
-- **Network:** Manus Proxy (HTTPS-Tunnel)
+- **Network:** Reverse Proxy (HTTPS-Tunnel)
 
 ### Datenbank:
 - **Typ:** MySQL / TiDB (Cloud-basiert)

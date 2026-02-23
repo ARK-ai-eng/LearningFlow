@@ -113,12 +113,12 @@ AISmarterFlow Academy ist eine moderne Lernplattform mit **3 Rollen**, **3 Kurst
 - Großbuchstaben (A-Z)
 - Kleinbuchstaben (a-z)
 - Mindestens eine Zahl (0-9)
-- Beispiel: `Manus§123*` ✅
+- Beispiel: `SecurePass2026!` ✅
 
 ### Token-Management
 
 - **Format**: JWT (JSON Web Token)
-- **Speicherung**: localStorage (nicht cookies - Manus-Proxy-Kompatibilität)
+- **Speicherung**: localStorage (nicht cookies - Reverse Proxy-Kompatibilität)
 - **Übertragung**: Authorization Header (`Authorization: Bearer <token>`)
 - **Gültigkeit**: 7 Tage
 - **Refresh**: Automatisch bei jedem Login
@@ -313,7 +313,7 @@ pnpm test
 ### Token-Sicherheit
 - JWT mit HS256 Signatur
 - Kurze Gültigkeit (7 Tage)
-- localStorage statt Cookies (Manus-Proxy-Kompatibilität)
+- localStorage statt Cookies (Reverse Proxy-Kompatibilität)
 
 ### Datenbank-Sicherheit
 - E-Mail als unique Identifier (verhindert Duplikate)

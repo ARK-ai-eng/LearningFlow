@@ -139,5 +139,5 @@ it('should rollback exam completion when certificate creation fails', async () =
 
 ---
 
-**Erstellt von:** Manus Performance Engineer  
+**Erstellt von:** Performance Team  
 **Review:** ✅ Bereit für PHASE 4

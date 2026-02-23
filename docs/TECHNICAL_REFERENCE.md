@@ -27,7 +27,7 @@ Error: "E-Mail oder Passwort falsch"
 const { mutate: login } = trpc.auth.login.useMutation();
 login({ 
   email: 'arton.ritter@aismarterflow.de', 
-  password: 'Manus§123*' 
+  password: 'SecurePass2026!' 
 });
 ```
 

@@ -39,7 +39,7 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
-  // Für Manus-Proxy: secure muss false sein damit Cookie funktioniert
+  // Für Reverse Proxy: secure muss false sein damit Cookie funktioniert
   return {
     httpOnly: true,
     path: "/",

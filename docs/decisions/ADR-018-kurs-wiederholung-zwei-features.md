@@ -2,7 +2,7 @@
 
 **Status:** ✅ Akzeptiert  
 **Datum:** 15. Februar 2026  
-**Autor:** Manus AI  
+**Autor:** Development Team  
 **Kontext:** Bug-Fix Session (Dashboard-Fortschritt & Kurs-Wiederholung)
 
 ---
@@ -249,4 +249,4 @@ resetQuestionProgressByCourse(userId, courseId, resetType: 'all' | 'incorrect')
 
 | Datum | Autor | Änderung |
 |-------|-------|----------|
-| 15.02.2026 | Manus AI | Initial erstellt |
+| 15.02.2026 | Development Team | Initial erstellt |

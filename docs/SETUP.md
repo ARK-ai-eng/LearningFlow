@@ -13,7 +13,7 @@ Das System verwendet E-Mail + Passwort Authentifizierung (kein OAuth).
 
 ### SysAdmin-Zugang
 - E-Mail: `arton.ritter@aismarterflow.de`
-- Passwort: `Manus§123*`
+- Passwort: `SecurePass2026!`
 
 ### Technische Details
 - JWT-Token wird in localStorage gespeichert
@@ -57,7 +57,7 @@ pnpm tsc --noEmit
 
 ## Umgebungsvariablen
 
-Werden automatisch von der Manus-Plattform injiziert:
+Werden automatisch von der Platform injiziert:
 - `DATABASE_URL`
 - `JWT_SECRET`
 - `VITE_APP_ID`
@@ -65,6 +65,6 @@ Werden automatisch von der Manus-Plattform injiziert:
 
 ## Deployment
 
-Über die Manus-Plattform:
+Über die Platform:
 1. Checkpoint speichern
 2. "Publish" Button klicken

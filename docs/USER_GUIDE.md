@@ -17,7 +17,7 @@
 |------|------|
 | **URL** | https://3000-iy4m5go6oz49picqmrknl-a63212b2.us1.manus.computer/login |
 | **E-Mail** | arton.ritter@aismarterflow.de |
-| **Passwort** | Manus§123* |
+| **Passwort** | SecurePass2026! |
 
 ### Dashboard
 

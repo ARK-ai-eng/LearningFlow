@@ -44,7 +44,7 @@ Datei: /home/ubuntu/backups/aisf-backup-2026-02-14-1951.zip
 Größe: 520M
 
 Download:
-1. Öffne Manus File Manager
+1. Öffne File Manager
 2. Navigiere zu /home/ubuntu/backups/
 3. Lade aisf-backup-2026-02-14-1951.zip herunter
 
@@ -54,7 +54,7 @@ Lösche alte Backups (behalte nur 7 neueste)...
 
 ### Backup herunterladen
 
-1. **Öffne Manus File Manager** (im Browser)
+1. **Öffne File Manager** (im Browser)
 2. **Navigiere zu** `/home/ubuntu/backups/`
 3. **Klicke auf** `aisf-backup-YYYY-MM-DD-HHmm.zip`
 4. **Download** → Speichere lokal auf deinem Computer
@@ -223,7 +223,7 @@ aisf-backup-YYYY-MM-DD-HHmm.zip
 
 ### Problem: "DATABASE_URL nicht gefunden"
 
-**Ursache:** Script läuft nicht im Manus Webdev-Kontext
+**Ursache:** Script läuft nicht im Webdev Context
 
 **Lösung:**
 ```bash
@@ -283,11 +283,11 @@ rm aisf-backup-2026-01-*.zip  # Lösche alte Backups
 
 **3-2-1 Regel:**
 - **3** Kopien: Original + 2 Backups
-- **2** verschiedene Medien: Manus Sandbox + Lokaler Computer
+- **2** verschiedene Medien: Development Sandbox + Lokaler Computer
 - **1** Offsite: Cloud-Storage (Google Drive, Dropbox, etc.)
 
 **Empfehlung:**
-1. Backup in Manus erstellen (`/home/ubuntu/backups/`)
+1. Backup erstellen (`/home/ubuntu/backups/`)
 2. Herunterladen auf lokalen Computer
 3. Kopieren in Cloud-Storage
 
@@ -347,7 +347,7 @@ crontab -e
 
 **Problem:** Nach Sandbox-Neustart ist Cron-Job weg!
 
-**Bessere Lösung:** Manus Schedule-Feature verwenden (wenn verfügbar)
+**Bessere Lösung:** Schedule Feature verwenden (wenn verfügbar)
 
 ---
 
@@ -411,7 +411,7 @@ crontab -e
 
 ## Vergleich: Backup vs. Checkpoint
 
-| Feature | Backup (ZIP) | Checkpoint (Manus) |
+| Feature | Backup (ZIP) | Checkpoint (Platform) |
 |---------|--------------|-------------------|
 | **Datenbank** | ✅ Ja (SQL-Dump) | ❌ Nein |
 | **Code** | ✅ Ja (komplett) | ✅ Ja (Git-Snapshot) |

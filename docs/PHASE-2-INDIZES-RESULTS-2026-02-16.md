@@ -109,5 +109,5 @@
 
 ---
 
-**Erstellt von:** Manus Performance Engineer  
+**Erstellt von:** Performance Team  
 **Review:** ✅ Bereit für PHASE 3

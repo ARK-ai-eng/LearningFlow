@@ -70,7 +70,7 @@ Vollständige API-Dokumentation:
 
 1. **Anmeldung**: https://3000-iy4m5go6oz49picqmrknl-a63212b2.us1.manus.computer/login
 2. **Rolle auswählen**:
-   - **SysAdmin**: arton.ritter@aismarterflow.de / Manus§123*
+   - **SysAdmin**: arton.ritter@aismarterflow.de / SecurePass2026!
    - **FirmenAdmin**: Von SysAdmin erstellt
    - **Mitarbeiter**: Von FirmenAdmin erstellt
 3. **Lesen**: [USER_GUIDE.md](./USER_GUIDE.md)

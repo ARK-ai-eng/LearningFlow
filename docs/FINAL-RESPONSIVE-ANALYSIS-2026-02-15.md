@@ -304,7 +304,7 @@ Die LearningFlow-Plattform ist **sehr gut responsive gestaltet**. Die Verwendung
 
 ---
 
-**Test durchgeführt von:** Manus AI Agent  
+**Test durchgeführt von:** Development Team  
 **Datum:** 15.02.2026  
 **Methode:** Visuelle Browser-Tests (1920px, 768px, 375px) + Code-Analyse  
-**Tools:** Chrome DevTools, Manus Browser Automation
+**Tools:** Chrome DevTools, Browser Automation Automation

@@ -3,7 +3,7 @@
 **Projekt:** AISmarterFlow Academy  
 **Sprint:** 2 - Testversion vorbereiten  
 **Datum:** 27. Januar 2026  
-**Autor:** Manus AI
+**Autor:** Development Team
 
 ---
 

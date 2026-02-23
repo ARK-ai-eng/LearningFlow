@@ -29,7 +29,7 @@
 #### Auth-System
 - **Methode:** JWT (jsonwebtoken 9.0.3)
 - **Password Hashing:** bcryptjs 2.4.3 (10 Runden Salt)
-- **Token Storage:** localStorage (nicht Cookies - Manus-Proxy-Kompatibilität)
+- **Token Storage:** localStorage (nicht Cookies - Reverse Proxy-Kompatibilität)
 - **Token Übertragung:** Authorization Header (`Bearer <token>`)
 - **Token Gültigkeit:** 7 Tage
 - **Login-Flow:** E-Mail + Passwort → JWT → localStorage → Authorization Header
@@ -51,7 +51,7 @@
 - **Joins:** ❌ **KEINE JOINS** - Alle Queries sind separate SELECT-Statements
 
 #### Hosting-Umgebung
-- **Aktuell:** Manus Development Server (Sandbox)
+- **Aktuell:** Development Server (Sandbox)
 - **Geplant:** IONOS (erwähnt in Prompt, Details unbekannt)
 - **Constraints:** Unbekannt (CPU, RAM, Disk I/O, Network)
 - **Deployment:** Node.js + Vite Build (dist/index.js)
@@ -119,7 +119,7 @@ CLIENT (React)
   │
   ▼
 
-NETWORK (Manus Proxy)
+NETWORK (Reverse Proxy)
   │
   ├─ Latenz: ~50-200ms (Development)
   │
@@ -165,7 +165,7 @@ SERVER (Express + tRPC)
   │
   ▼
 
-NETWORK (Manus Proxy)
+NETWORK (Reverse Proxy)
   │
   ├─ Latenz: ~50-200ms (Development)
   │
@@ -209,7 +209,7 @@ USER sieht Ergebnis (Dashboard)
    - Dokumentiert: drizzle/schema.ts (Kommentar Zeile 9)
 
 2. **localStorage statt Cookies**
-   - Grund: Manus-Proxy-Kompatibilität
+   - Grund: Reverse Proxy-Kompatibilität
    - Dokumentiert: docs/ARCHITECTURE.md (Zeile 122)
 
 3. **JWT statt Session-Store**

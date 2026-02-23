@@ -174,5 +174,5 @@ WHERE cert.userId = ${userId}
 
 ---
 
-**Erstellt von:** Manus Performance Engineer  
+**Erstellt von:** Performance Team  
 **Review:** ✅ Bereit für Deployment

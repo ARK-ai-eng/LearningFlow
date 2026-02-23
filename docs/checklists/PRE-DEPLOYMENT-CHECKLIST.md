@@ -225,4 +225,4 @@ cd /var/www/learningflow
 
 **Version:** 1.0.0  
 **Letzte Aktualisierung:** 17.02.2026  
-**Maintainer:** Manus AI Agent
+**Maintainer:** Development Team

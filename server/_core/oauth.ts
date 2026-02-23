@@ -36,7 +36,7 @@ function decodeState(state: string): { callbackUrl: string; returnTo: string | n
 }
 
 export function registerOAuthRoutes(app: Express) {
-  // Manus OAuth nur für SysAdmin (Owner)
+  // OAuth Provider nur für SysAdmin (Owner)
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     console.log("[OAuth] Callback received");
     const code = getQueryParam(req, "code");
@@ -67,7 +67,7 @@ export function registerOAuthRoutes(app: Express) {
       const email = userInfo.email.toLowerCase();
       const { returnTo } = decodeState(state);
 
-      // NUR OWNER (SysAdmin) darf sich via Manus OAuth anmelden
+      // NUR OWNER (SysAdmin) darf sich via OAuth Provider anmelden
       const isOwner = userInfo.openId === ENV.ownerOpenId;
       console.log("[OAuth] Is owner:", isOwner, "userOpenId:", userInfo.openId, "ownerOpenId:", ENV.ownerOpenId);
       

@@ -211,5 +211,5 @@ Implementierung des kompletten Prüfungs-Workflows für Course 3 (Certification)
 
 ---
 
-**Dokumentiert von:** Manus AI Agent  
+**Dokumentiert von:** Development Team  
 **Review:** Ausstehend

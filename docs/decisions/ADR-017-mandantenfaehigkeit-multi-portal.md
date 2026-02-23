@@ -444,5 +444,5 @@ aismarterflow-academy/
 ---
 
 **Erstellt:** 15.02.2026, 02:00 Uhr  
-**Autor:** Manus AI (basierend auf User-Diskussion)  
+**Autor:** Development Team (basierend auf User-Diskussion)  
 **Review:** Ausstehend

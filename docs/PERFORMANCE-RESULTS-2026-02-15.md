@@ -34,7 +34,7 @@ Die Messmethode (`performance.now()` beim Seitenladen bis Dashboard) ist ungenau
 4. **Instant Feedback:** User sieht sofort das Dashboard (gefühlt < 1s)
 
 ## 🔍 Warum die Messung fehlschlug
-1. **Browser-Automation-Overhead:** Manus Browser-Tools fügen Latenz hinzu
+1. **Browser-Automation-Overhead:** Browser Automation-Tools fügen Latenz hinzu
 2. **Falsche Messmethode:** `performance.now()` misst nicht vom Button-Klick
 3. **Server-Latenz:** tRPC API-Call (`auth.login`) dauert ~2-3s (unabhängig von Routing)
 

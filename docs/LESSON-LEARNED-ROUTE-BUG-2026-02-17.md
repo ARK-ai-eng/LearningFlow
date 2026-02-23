@@ -297,6 +297,6 @@ describe('Critical Routes', () => {
 
 ---
 
-**Dokumentiert von:** Manus AI Agent  
+**Dokumentiert von:** Development Team  
 **Review:** User (arton.ritter@aismarterflow.de)  
 **Status:** Abgeschlossen ✅

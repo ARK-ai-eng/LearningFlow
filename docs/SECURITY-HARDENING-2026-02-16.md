@@ -229,6 +229,6 @@ await trpc.admin.resetUserPassword.mutate({
 
 ---
 
-**Erstellt von:** Manus AI  
+**Erstellt von:** Development Team  
 **Review:** Pending  
 **Status:** ✅ Implementiert, bereit für Deployment
