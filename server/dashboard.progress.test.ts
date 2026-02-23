@@ -196,15 +196,21 @@ describe('Dashboard Progress Calculation', () => {
 
     const progress = await db.getUserProgress(testUserId);
     
-    const inProgressCount = allCourses.filter((course: any) => {
-      const courseProgress = progress.filter((p: any) => p.courseId === course.id && p.topicId !== null);
-      if (courseProgress.length === 0) return false; // 0%
-      
-      const completedTopics = courseProgress.filter((p: any) => p.status === 'completed').length;
-      const percent = Math.round((completedTopics / courseProgress.length) * 100);
-      
-      return percent > 0 && percent < 100;
-    }).length;
+    const inProgressCount = await Promise.all(
+      allCourses.map(async (course: any) => {
+        const courseProgress = progress.filter((p: any) => p.courseId === course.id && p.topicId !== null);
+        if (courseProgress.length === 0) return false; // 0%
+        
+        // Hole ALLE Topics des Kurses (nicht nur completed)
+        const allTopics = await db.getTopicsByCourse(course.id);
+        if (allTopics.length === 0) return false;
+        
+        const completedTopics = courseProgress.filter((p: any) => p.status === 'completed').length;
+        const percent = Math.round((completedTopics / allTopics.length) * 100);
+        
+        return percent > 0 && percent < 100;
+      })
+    ).then(results => results.filter(Boolean).length);
 
     // Nur Kurs 3 ist "In Bearbeitung" (50%)
     expect(inProgressCount).toBe(1);
