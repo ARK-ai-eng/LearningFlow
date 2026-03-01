@@ -1837,4 +1837,4 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] Vollständiger Projekt-Check (Code, Tests, Dokumentation, Struktur)
 - [x] VPS Deployment-Guide erstellen/aktualisieren (DEPLOYMENT-VPS.md)
 - [x] Alles zu GitHub pushen (ARK-ai-eng/LearningFlow)
-- [ ] Checkpoint erstellen
+- [x] Checkpoint erstellen
