@@ -1832,3 +1832,9 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [ ] Erstelle docs/checklists/ mit Task-Checklisten (Deployment, Development, Code-Review)
 - [ ] Pushe alles zu GitHub
 - [ ] Checkpoint erstellen
+
+## Sprint 24 - Finaler Check, VPS Deployment-Guide & GitHub Push (01.03.2026)
+- [x] Vollständiger Projekt-Check (Code, Tests, Dokumentation, Struktur)
+- [x] VPS Deployment-Guide erstellen/aktualisieren (DEPLOYMENT-VPS.md)
+- [ ] Alles zu GitHub pushen (ARK-ai-eng/LearningFlow)
+- [ ] Checkpoint erstellen
