@@ -81,19 +81,16 @@ log "✓ Code backup created: code-$TIMESTAMP.tar.gz ($CODE_BACKUP_SIZE)"
 log "[4/9] Creating database backup..."
 if [ -n "$DATABASE_URL" ]; then
   # Extrahiere DB-Verbindungsdaten aus der URL mit Node.js (robuster als sed bei Sonderzeichen)
-  DB_INFO=$(node -e "
+  DB_INFO=$(DATABASE_URL="$DATABASE_URL" node -e "
     try {
-      const u = new URL('$DATABASE_URL');
-      console.log(u.hostname + ' ' + u.port + ' ' + u.username + ' ' + decodeURIComponent(u.password) + ' ' + u.pathname.replace('/','').split('?')[0]);
+      const u = new URL(process.env.DATABASE_URL);
+      const sep = '\x1F'; // ASCII Unit Separator - safe delimiter
+      process.stdout.write(u.hostname + sep + (u.port||'3306') + sep + u.username + sep + decodeURIComponent(u.password) + sep + u.pathname.replace('/','').split('?')[0] + '\n');
     } catch(e) { process.exit(1); }
   " 2>/dev/null || echo "")
 
   if [ -n "$DB_INFO" ]; then
-    DB_HOST=$(echo $DB_INFO | awk '{print $1}')
-    DB_PORT=$(echo $DB_INFO | awk '{print $2}')
-    DB_USER=$(echo $DB_INFO | awk '{print $3}')
-    DB_PASS=$(echo $DB_INFO | awk '{print $4}')
-    DB_NAME=$(echo $DB_INFO | awk '{print $5}')
+    IFS=$'\x1F' read -r DB_HOST DB_PORT DB_USER DB_PASS DB_NAME <<< "$DB_INFO"
 
     mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" \
       --ssl-mode=REQUIRED \
