@@ -134,7 +134,11 @@ export async function getCourseStatsWithTopics(userId: number, courseId: number)
   const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
   console.log('[DB]', { fn: 'getCourseStatsWithTopics', userId, courseId, ms: duration, queryCount: 2 });
 
-  const stats = (courseStats as any[])[0];
+  // db.execute() returns [rows, fields] - extract rows
+  const courseStatsRows = Array.isArray(courseStats[0]) ? (courseStats[0] as any[]) : (courseStats as any[]);
+  const topicProgressRows = Array.isArray(topicProgress[0]) ? (topicProgress[0] as any[]) : (topicProgress as any[]);
+
+  const stats = courseStatsRows[0];
   
   return {
     courseId,
@@ -144,7 +148,7 @@ export async function getCourseStatsWithTopics(userId: number, courseId: number)
     incorrect: Number(stats.incorrect),
     percentage: Number(stats.percentage),
     lastCompletedAt: stats.lastCompletedAt,
-    topicProgress: (topicProgress as any[]).map((row: any) => ({
+    topicProgress: topicProgressRows.map((row: any) => ({
       topicId: row.topicId,
       topicTitle: row.topicTitle,
       total: Number(row.total),
