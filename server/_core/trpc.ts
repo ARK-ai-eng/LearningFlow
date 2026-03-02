@@ -61,3 +61,21 @@ export const adminProcedure = t.procedure.use(
     });
   }),
 );
+
+// Erlaubt sysadmin UND companyadmin
+export const companyAdminProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user || (ctx.user.role !== 'sysadmin' && ctx.user.role !== 'companyadmin')) {
+      throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);

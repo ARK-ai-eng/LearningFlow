@@ -1481,8 +1481,8 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    // Kurs-Fortschritt eines Users zurücksetzen (Admin)
-    resetUserCourseProgress: adminProcedure
+    // Kurs-Fortschritt eines Users zurücksetzen (SysAdmin + FirmenAdmin)
+    resetUserCourseProgress: companyAdminProcedure
       .input(z.object({
         userId: z.number(),
         courseId: z.number(),
