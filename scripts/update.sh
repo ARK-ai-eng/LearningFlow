@@ -14,6 +14,7 @@ NC='\033[0m' # No Color
 # Configuration
 APP_DIR="/var/www/learningflow"
 BACKUP_DIR="$HOME/learningflow-backups"
+mkdir -p $BACKUP_DIR
 LOG_FILE="$BACKUP_DIR/update-$(date +%Y%m%d_%H%M%S).log"
 
 # Sicheres Lesen der DATABASE_URL aus .env (kein 'source' - verhindert Bash-Fehler bei Sonderzeichen)
@@ -61,7 +62,6 @@ log "✓ All dependencies installed"
 
 # 2. Create backup directory
 log "[2/9] Preparing backup directory..."
-mkdir -p $BACKUP_DIR
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 log "✓ Backup directory ready: $BACKUP_DIR"
 
