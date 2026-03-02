@@ -194,7 +194,10 @@ export async function getUserCertificatesWithCourse(userId: number) {
   const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
   console.log('[DB]', { fn: 'getUserCertificatesWithCourse', userId, ms: duration, queryCount: 1 });
 
-  return (result as any[]).map((row: any) => ({
+  // db.execute() returns [rows, fields] - extract rows
+  const rows = Array.isArray((result as any)[0]) ? (result as any)[0] : result;
+
+  return (rows as any[]).map((row: any) => ({
     id: row.id,
     userId: row.userId,
     courseId: row.courseId,
