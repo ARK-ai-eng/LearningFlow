@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import * as db from './db';
 
 describe('Dashboard Progress Calculation', () => {
   let testUserId: number;
   let testCourseId: number;
   let testTopicIds: number[];
+  const extraCourseIds: number[] = [];
 
   beforeAll(async () => {
     // Setup: Erstelle Test-User und Kurs mit 3 Topics
@@ -214,5 +215,16 @@ describe('Dashboard Progress Calculation', () => {
 
     // Nur Kurs 3 ist "In Bearbeitung" (50%)
     expect(inProgressCount).toBe(1);
+    // Merke IDs für Cleanup
+    extraCourseIds.push(course2Id, course3Id);
+  });
+
+  afterAll(async () => {
+    // Cleanup: Alle Test-Daten aus der Produktions-DB löschen
+    for (const id of extraCourseIds) {
+      await db.deleteCourse(id);
+    }
+    if (testCourseId) await db.deleteCourse(testCourseId);
+    if (testUserId) await db.deleteUser(testUserId);
   });
 });

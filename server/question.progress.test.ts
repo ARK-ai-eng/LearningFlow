@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { appRouter } from './routers';
 import * as db from './db';
 
@@ -7,6 +7,8 @@ describe('Question Progress API', () => {
   let testQuestionId: number;
   let testTopicId: number;
   let testCourseId: number;
+  let testCompanyId: number;
+  const extraUserIds: number[] = [];
 
   beforeAll(async () => {
     // Setup: Erstelle Test-User, Kurs, Thema, Frage
@@ -18,10 +20,11 @@ describe('Question Progress API', () => {
       isActive: true,
     });
 
-    const companyId = await db.createCompany({
+    testCompanyId = await db.createCompany({
       name: 'Test Company Progress',
       status: 'active',
     });
+    const companyId = testCompanyId;
 
     testCourseId = await db.createCourse({
       title: 'Test Course Progress',
@@ -287,6 +290,7 @@ describe('Question Progress API', () => {
         role: 'user',
         isActive: true,
       });
+      extraUserIds.push(newUserId);
 
       const newQuestionId = await db.createQuestion({
         topicId: testTopicId,
@@ -318,5 +322,15 @@ describe('Question Progress API', () => {
       
       expect(incorrectQuestions.length).toBe(0);
     });
+  });
+
+  afterAll(async () => {
+    // Cleanup: Alle Test-Daten aus der Produktions-DB löschen
+    for (const id of extraUserIds) {
+      await db.deleteUser(id);
+    }
+    if (testCourseId) await db.deleteCourse(testCourseId);
+    if (testUserId) await db.deleteUser(testUserId);
+    if (testCompanyId) await db.deleteCompany(testCompanyId);
   });
 });

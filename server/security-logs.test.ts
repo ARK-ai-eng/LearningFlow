@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { getDb, getSecurityLogs } from './db';
 import { logSecurityEvent } from './security-logger';
 import { securityLogs } from '../drizzle/schema';
@@ -109,6 +109,16 @@ describe('Security Audit Log', () => {
 
     expect(passwordLogs.logs.length).toBeGreaterThanOrEqual(1);
     expect(passwordLogs.logs.every(log => log.action === 'PASSWORD_CHANGED')).toBe(true);
+  });
+
+  afterAll(async () => {
+    // Cleanup: Test-Logs löschen
+    const db = await getDb();
+    await db.delete(securityLogs).where(eq(securityLogs.action, 'TEST_EVENT'));
+    await db.delete(securityLogs).where(eq(securityLogs.ipAddress, '10.0.0.1'));
+    await db.delete(securityLogs).where(eq(securityLogs.ipAddress, '1.1.1.1'));
+    await db.delete(securityLogs).where(eq(securityLogs.ipAddress, '2.2.2.2'));
+    await db.delete(securityLogs).where(eq(securityLogs.ipAddress, '3.3.3.3'));
   });
 
   it('should support pagination', async () => {

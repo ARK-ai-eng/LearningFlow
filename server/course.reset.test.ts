@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import * as db from './db';
 
 describe('Kurs-Wiederholungs-Feature', () => {
@@ -98,5 +98,11 @@ describe('Kurs-Wiederholungs-Feature', () => {
     
     // Prüfe: Alle 3 Fragen sind wieder verfügbar
     expect(unanswered.length).toBe(3);
+  });
+
+  afterAll(async () => {
+    // Cleanup: Test-Daten aus der Produktions-DB löschen
+    if (testCourseId) await db.deleteCourse(testCourseId);
+    if (testUserId) await db.deleteUser(testUserId);
   });
 });

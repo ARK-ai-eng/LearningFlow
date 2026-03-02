@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { appRouter } from './routers';
 import * as db from './db';
 
@@ -25,6 +25,13 @@ describe('Course Status Management', () => {
       courseType: 'learning',
     });
     testCourseId = result.id;
+  });
+
+  afterAll(async () => {
+    // Cleanup: Test-Kurs aus der DB löschen um Produktions-DB sauber zu halten
+    if (testCourseId) {
+      await db.deleteCourse(testCourseId);
+    }
   });
 
   describe('course.list', () => {
