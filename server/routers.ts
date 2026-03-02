@@ -1481,6 +1481,39 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    // Kurs-Fortschritt eines Users zurücksetzen (Admin)
+    resetUserCourseProgress: adminProcedure
+      .input(z.object({
+        userId: z.number(),
+        courseId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Prüfe ob User existiert
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User nicht gefunden" });
+        }
+        // Setze Kurs-Fortschritt zurück
+        await db.resetQuestionProgressByCourse(input.userId, input.courseId);
+        // Logging
+        const { logSecurityEvent, getClientIp, getClientUserAgent } = await import('./security-logger');
+        await logSecurityEvent(
+          "ADMIN_PASSWORD_RESET", // Nutze vorhandenen Typ als Placeholder
+          input.userId,
+          targetUser.companyId || null,
+          { 
+            adminId: ctx.user.id,
+            adminEmail: ctx.user.email,
+            action: 'COURSE_PROGRESS_RESET',
+            courseId: input.courseId,
+            targetEmail: targetUser.email,
+          },
+          getClientIp(ctx.req),
+          getClientUserAgent(ctx.req)
+        );
+        return { success: true };
+      }),
+
     // Security-Logs abrufen (Admin)
     getSecurityLogs: adminProcedure
       .input(z.object({

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
 import { useState } from "react";
-import { Users, UserPlus, Search, Trash2, ArrowLeft } from "lucide-react";
+import { Users, UserPlus, Search, Trash2, ArrowLeft, RotateCcw } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 import {
@@ -16,14 +16,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function EmployeeList() {
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  // Reset-Dialog State
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetUserId, setResetUserId] = useState<number | null>(null);
+  const [resetUserName, setResetUserName] = useState("");
+  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+
   const { data: employees, isLoading, refetch } = trpc.employee.list.useQuery();
-  
+  const { data: courses } = trpc.course.listAll.useQuery();
+
   const deleteMutation = trpc.employee.delete.useMutation({
     onSuccess: () => {
       toast.success("Mitarbeiter gelöscht");
@@ -34,6 +56,35 @@ export default function EmployeeList() {
       toast.error(error.message);
     },
   });
+
+  const resetProgressMutation = trpc.admin.resetUserCourseProgress.useMutation({
+    onSuccess: () => {
+      const courseName = courses?.find((c: any) => c.id === Number(selectedCourseId))?.title || "Kurs";
+      toast.success(`Kursfortschritt zurückgesetzt`, {
+        description: `${resetUserName}: "${courseName}" wurde zurückgesetzt.`,
+      });
+      setResetDialogOpen(false);
+      setSelectedCourseId("");
+    },
+    onError: (error) => {
+      toast.error("Fehler beim Zurücksetzen", { description: error.message });
+    },
+  });
+
+  const handleOpenResetDialog = (emp: any) => {
+    setResetUserId(emp.id);
+    setResetUserName(`${emp.firstName} ${emp.lastName}`);
+    setSelectedCourseId("");
+    setResetDialogOpen(true);
+  };
+
+  const handleConfirmReset = () => {
+    if (!resetUserId || !selectedCourseId) return;
+    resetProgressMutation.mutate({
+      userId: resetUserId,
+      courseId: Number(selectedCourseId),
+    });
+  };
 
   const filteredEmployees = employees?.filter((emp: any) => {
     const searchLower = search.toLowerCase();
@@ -71,7 +122,6 @@ export default function EmployeeList() {
             </Button>
           </div>
         </div>
-
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -123,13 +173,23 @@ export default function EmployeeList() {
                       {new Date(emp.createdAt).toLocaleDateString('de-DE')}
                     </td>
                     <td className="p-4 text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => setDeleteId(emp.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Kursfortschritt zurücksetzen"
+                          onClick={() => handleOpenResetDialog(emp)}
+                        >
+                          <RotateCcw className="w-4 h-4 text-amber-400" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setDeleteId(emp.id)}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -178,6 +238,46 @@ export default function EmployeeList() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Reset Course Progress Dialog */}
+      <Dialog open={resetDialogOpen} onOpenChange={(open) => { setResetDialogOpen(open); if (!open) setSelectedCourseId(""); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Kursfortschritt zurücksetzen</DialogTitle>
+            <DialogDescription>
+              Wählen Sie den Kurs aus, dessen Fortschritt für <strong>{resetUserName}</strong> zurückgesetzt werden soll. 
+              Alle beantworteten Fragen werden auf "unbeantwortet" gesetzt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Kurs auswählen..." />
+              </SelectTrigger>
+              <SelectContent>
+                {courses?.map((course: any) => (
+                  <SelectItem key={course.id} value={String(course.id)}>
+                    {course.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetDialogOpen(false)}>
+              Abbrechen
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={!selectedCourseId || resetProgressMutation.isPending}
+              onClick={handleConfirmReset}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {resetProgressMutation.isPending ? "Wird zurückgesetzt..." : "Fortschritt zurücksetzen"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

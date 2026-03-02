@@ -1838,3 +1838,9 @@ Score steigt bei korrekter Wiederholung, Progress bleibt gespeichert, Wiederholu
 - [x] VPS Deployment-Guide erstellen/aktualisieren (DEPLOYMENT-VPS.md)
 - [x] Alles zu GitHub pushen (ARK-ai-eng/LearningFlow)
 - [x] Checkpoint erstellen
+
+## Sprint 25 - Admin: Kurs-Fortschritt für User zurücksetzen (02.03.2026)
+- [x] Backend: admin.resetUserCourseProgress Endpoint (userId + courseId)
+- [x] Frontend: Reset-Button in User-Verwaltung (EmployeeList oder Admin-UserDetail)
+- [x] Tests schreiben
+- [ ] Checkpoint und GitHub-Push
