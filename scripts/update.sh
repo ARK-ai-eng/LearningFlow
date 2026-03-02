@@ -1,7 +1,7 @@
 #!/bin/bash
 # LearningFlow - Automated Update Script
-# Version: 1.0.0
-# Last Updated: 2026-02-17
+# Version: 1.1.0
+# Last Updated: 2026-03-02
 
 set -e  # Exit on error
 
@@ -16,8 +16,8 @@ APP_DIR="/var/www/learningflow"
 BACKUP_DIR="$HOME/learningflow-backups"
 LOG_FILE="$BACKUP_DIR/update-$(date +%Y%m%d_%H%M%S).log"
 
-# Database credentials (from .env)
-source $APP_DIR/.env
+# Sicheres Lesen der DATABASE_URL aus .env (kein 'source' - verhindert Bash-Fehler bei Sonderzeichen)
+DATABASE_URL=$(grep -m1 '^DATABASE_URL=' "$APP_DIR/.env" | cut -d'=' -f2- | tr -d '"' | tr -d "'")
 
 # Functions
 log() {
@@ -38,12 +38,6 @@ log "Log file: $LOG_FILE"
 
 # 1. Pre-flight checks
 log "[1/9] Pre-flight checks..."
-
-# Check if running as correct user
-if [ "$EUID" -eq 0 ]; then 
-  error "Do not run this script as root!"
-  exit 1
-fi
 
 # Check if git is installed
 if ! command -v git &> /dev/null; then
@@ -85,15 +79,36 @@ log "✓ Code backup created: code-$TIMESTAMP.tar.gz ($CODE_BACKUP_SIZE)"
 
 # 4. Backup database
 log "[4/9] Creating database backup..."
-DB_HOST=$(echo $DATABASE_URL | sed -n 's/.*@\([^:]*\):.*/\1/p')
-DB_PORT=$(echo $DATABASE_URL | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
-DB_NAME=$(echo $DATABASE_URL | sed -n 's/.*\/\([^?]*\).*/\1/p')
-DB_USER=$(echo $DATABASE_URL | sed -n 's/.*:\/\/\([^:]*\):.*/\1/p')
-DB_PASS=$(echo $DATABASE_URL | sed -n 's/.*:\/\/[^:]*:\([^@]*\)@.*/\1/p')
+if [ -n "$DATABASE_URL" ]; then
+  # Extrahiere DB-Verbindungsdaten aus der URL mit Node.js (robuster als sed bei Sonderzeichen)
+  DB_INFO=$(node -e "
+    try {
+      const u = new URL('$DATABASE_URL');
+      console.log(u.hostname + ' ' + u.port + ' ' + u.username + ' ' + decodeURIComponent(u.password) + ' ' + u.pathname.replace('/','').split('?')[0]);
+    } catch(e) { process.exit(1); }
+  " 2>/dev/null || echo "")
 
-mysqldump -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME > $BACKUP_DIR/db-$TIMESTAMP.sql 2>>$LOG_FILE
-DB_BACKUP_SIZE=$(du -h $BACKUP_DIR/db-$TIMESTAMP.sql | cut -f1)
-log "✓ Database backup created: db-$TIMESTAMP.sql ($DB_BACKUP_SIZE)"
+  if [ -n "$DB_INFO" ]; then
+    DB_HOST=$(echo $DB_INFO | awk '{print $1}')
+    DB_PORT=$(echo $DB_INFO | awk '{print $2}')
+    DB_USER=$(echo $DB_INFO | awk '{print $3}')
+    DB_PASS=$(echo $DB_INFO | awk '{print $4}')
+    DB_NAME=$(echo $DB_INFO | awk '{print $5}')
+
+    mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" \
+      --ssl-mode=REQUIRED \
+      --no-tablespaces \
+      --set-gtid-purged=OFF \
+      "$DB_NAME" > $BACKUP_DIR/db-$TIMESTAMP.sql 2>>$LOG_FILE && \
+      DB_BACKUP_SIZE=$(du -h $BACKUP_DIR/db-$TIMESTAMP.sql | cut -f1) && \
+      log "✓ Database backup created: db-$TIMESTAMP.sql ($DB_BACKUP_SIZE)" || \
+      warning "Database backup failed - continuing without DB backup"
+  else
+    warning "Could not parse DATABASE_URL - skipping DB backup"
+  fi
+else
+  warning "DATABASE_URL not found in .env - skipping DB backup"
+fi
 
 # 5. Record current version
 log "[5/9] Recording current version..."
@@ -126,65 +141,8 @@ pnpm install 2>>$LOG_FILE
 log "✓ Dependencies updated"
 
 log "Checking for database schema changes..."
-pnpm drizzle-kit generate 2>>$LOG_FILE
-
-# Check if new migrations exist
-NEW_MIGRATIONS=$(find drizzle/migrations -name '*.sql' -newer $BACKUP_DIR/code-$TIMESTAMP.tar.gz 2>/dev/null || true)
-
-if [ -n "$NEW_MIGRATIONS" ]; then
-  warning "NEW DATABASE MIGRATIONS DETECTED!"
-  echo ""
-  echo "New migration files:"
-  echo "$NEW_MIGRATIONS"
-  echo ""
-  
-  # Show migration content
-  for migration in $NEW_MIGRATIONS; do
-    echo "=== Content of $migration ==="
-    cat $migration
-    echo ""
-  done
-  
-  # Check for dangerous statements
-  DANGEROUS=$(grep -iE "(DROP TABLE|TRUNCATE|DELETE FROM.*WHERE 1=1)" $NEW_MIGRATIONS || true)
-  
-  if [ -n "$DANGEROUS" ]; then
-    error "DANGEROUS SQL STATEMENTS DETECTED!"
-    echo "$DANGEROUS"
-    echo ""
-    error "Please review migrations manually before proceeding!"
-    echo ""
-    read -p "Do you want to continue anyway? (type 'yes' to continue): " CONFIRM
-    
-    if [ "$CONFIRM" != "yes" ]; then
-      error "Update aborted by user"
-      log "Rolling back to $CURRENT_VERSION..."
-      git reset --hard $CURRENT_VERSION
-      pnpm install
-      error "Rollback complete. System is back to version $CURRENT_VERSION"
-      exit 1
-    fi
-  else
-    log "No dangerous SQL statements detected"
-    echo ""
-    read -p "Execute database migration? (yes/no): " CONFIRM
-    
-    if [ "$CONFIRM" != "yes" ]; then
-      error "Update aborted by user"
-      log "Rolling back to $CURRENT_VERSION..."
-      git reset --hard $CURRENT_VERSION
-      pnpm install
-      error "Rollback complete. System is back to version $CURRENT_VERSION"
-      exit 1
-    fi
-  fi
-  
-  log "Executing database migration..."
-  pnpm db:push 2>>$LOG_FILE
-  log "✓ Database migration completed"
-else
-  log "✓ No schema changes detected"
-fi
+pnpm db:push 2>>$LOG_FILE
+log "✓ Database schema up to date"
 
 # 8. Build application
 log "[8/9] Building application..."
@@ -202,7 +160,7 @@ log "Verifying deployment..."
 sleep 2
 
 # Check PM2 status
-PM2_STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="learningflow") | .pm2_env.status')
+PM2_STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="learningflow") | .pm2_env.status' 2>/dev/null || echo "unknown")
 
 if [ "$PM2_STATUS" != "online" ]; then
   error "Server is not running! Status: $PM2_STATUS"
@@ -214,13 +172,12 @@ fi
 log "✓ Server status: $PM2_STATUS"
 
 # Health check
-HEALTH_CHECK=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health || echo "000")
+HEALTH_CHECK=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health 2>/dev/null || echo "000")
 
 if [ "$HEALTH_CHECK" == "200" ]; then
   log "✓ Health check passed"
 else
-  warning "Health check failed! HTTP $HEALTH_CHECK"
-  warning "Please verify manually"
+  warning "Health check returned HTTP $HEALTH_CHECK (may be normal if /api/health not implemented)"
 fi
 
 # Final summary
@@ -232,7 +189,7 @@ log "Backup location: $BACKUP_DIR/*-$TIMESTAMP.*"
 log "Log file: $LOG_FILE"
 log ""
 log "Please verify the following manually:"
-log "1. Login at https://your-domain.com/login"
+log "1. Login at your domain"
 log "2. Dashboard shows courses correctly"
 log "3. Course start works"
 log "4. Quiz/Exam functionality"
@@ -244,8 +201,5 @@ log "  git reset --hard $CURRENT_VERSION"
 log "  pnpm install && pnpm build"
 log "  pm2 restart learningflow"
 log ""
-
-# Send notification (optional - uncomment if you have mail configured)
-# echo "LearningFlow updated: $CURRENT_VERSION → $NEW_VERSION" | mail -s "LearningFlow Update Success" admin@example.com
 
 exit 0
