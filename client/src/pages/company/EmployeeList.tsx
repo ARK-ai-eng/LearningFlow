@@ -44,7 +44,7 @@ export default function EmployeeList() {
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
 
   const { data: employees, isLoading, refetch } = trpc.employee.list.useQuery();
-  const { data: courses } = trpc.course.listAll.useQuery();
+  const { data: courses } = trpc.course.listActive.useQuery();
 
   const deleteMutation = trpc.employee.delete.useMutation({
     onSuccess: () => {
